@@ -1,0 +1,12 @@
+name: "CursoBigData"
+output_dir: "docs"
+navbar:
+  title: "Curso"
+  left:
+    - text: "Índice"
+      href: index.html
+    - text: "Contenidos"
+      href: Contenidos.html
+output:
+  html_document:
+    theme: cosmo
