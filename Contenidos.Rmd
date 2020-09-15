@@ -16,9 +16,15 @@ knitr::opts_chunk$set(echo = TRUE)
   - descargadlos en un subdirectorio de vuestro directorio de trabajo para poder usarlos en el futuro
 
 
-## Primera semana
+## Semana 1 (14-Sept. a 18-Sept.)
 
   * [Introducción](0Intro.html)
   * [Introducción a R y a RStudio](Tema01.html)
   
   
+<<<<<<< HEAD
+  * [Tema 01 - R y RStudio](Tema01.html)
+  
+  
+=======
+>>>>>>> b4d617e894590a8d85b76cc1e6fb8859c30c67da
