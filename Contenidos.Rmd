@@ -8,7 +8,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Datos
 
-* En las clases utilizaremos [este conjunto de datos](./data/)
+* En las clases utilizaremos [este conjunto de datos](data/)
 
   - descargadlos en un subdirectorio de vuestro directorio de trabajo para poder usarlos en el futuro
 
