@@ -768,7 +768,7 @@ factor_genero <- factor(genero)
 
 ```{r, echo=TRUE, eval=FALSE}
 satisfaccion <- c("Alto", "Bajo", "Alto", "Bajo", "Medio")
-factor_satisfaccion <- factor(desempeno_laboral, order = TRUE, 
+factor_satisfaccion <- factor(satisfaccion, order = TRUE, 
                               levels = c("Bajo", "Medio", "Alto"))
 ```
 
