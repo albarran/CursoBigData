@@ -26,6 +26,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Alberto Pérez 
 
+* Despacho 70, Segundo (último) piso, Edificio 34 (Ciencias Sociales)
+
+
+* e-mail: [alberto.perezbernabeu@ua.es](mailto:alberto.perezbernabeu@ua.es)
+
+
+* Tutorias: Miércoles de 10:30 a 12:30
+
+    (solicitada previamente con al menos 24 horas de antelación, por UACloud o email)
+
+* También podéis usar la herramienta de tutorías de UACloud
+
 
 
 ## Requisitos
