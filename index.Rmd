@@ -1,5 +1,5 @@
 ---
-title: "Íntroducción"
+title: "Introducción"
 output: html_document
 ---
 
