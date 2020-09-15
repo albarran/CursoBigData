@@ -1,5 +1,5 @@
 ---
-title: "index"
+title: "Íntroducción"
 output: html_document
 ---
 
@@ -7,22 +7,21 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Profesores
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+### [Pedro Albarrán](https://sites.google.com/site/pedroalbarran)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+* Despacho 19, Segundo (último) piso, Edificio 31
+[(Facultad de Ciencias Económicas y Empresariales)](https://www.google.es/maps/@38.3835237,-0.5130815,17z)
 
-```{r cars}
-summary(cars)
-```
+* e-mail: [albarran@ua.es](mailto:albarran@ua.es)
 
-## Including Plots
 
-You can also embed plots, for example:
+* Tutorias: Martes de 15:30 a 17:30h y Jueves de 11 a 13h
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+    (solicitada previamente con al menos 24 horas de antelación, por UACloud o email)
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+* También podéis usar UACloud
+
+
+### Alberto Pérez 
