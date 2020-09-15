@@ -1,9 +1,9 @@
 name: "CursoBigData"
 output_dir: "docs"
 navbar:
-  title: "Big Data (Ua)"
+  title: "Big Data (UA)"
   left:
-    - text: "Íntroducción"
+    - text: "Introducción"
       href: index.html
     - text: "Contenidos"
       href: Contenidos.html
