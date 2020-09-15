@@ -8,8 +8,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Datos
 
+<!--
 * En las clases utilizaremos [este conjunto de datos](./data/)
-
+-->
 
 ## Primera semana
 
