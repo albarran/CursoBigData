@@ -19,5 +19,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Primera semana
 
   * [Introducción](0Intro.html)
+  * [Introducción a R y a RStudio](Tema01.html)
   
   
