@@ -24,7 +24,7 @@ knitr::opts_chunk$set(echo = TRUE)
 * También podéis usar UACloud
 
 
-### Alberto Pérez 
+### Alberto Pérez  
 
 * Despacho 70, Segundo (último) piso, Edificio 34 (Ciencias Sociales)
 
