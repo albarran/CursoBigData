@@ -15,7 +15,7 @@ output:
   ioslides_presentation: default
 #  beamer_presentation: 
 #      slide_level: 2
-#output_dir: "docs"
+output_dir: "docs"
 widescreen: yes
 ---
 
@@ -65,7 +65,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 <center>
 
-![](./figs/feedback-loop.png){ width=40% }
+![](./pic/feedback-loop.png){ width=40% }
 
 </center>
 
@@ -74,14 +74,14 @@ knitr::opts_chunk$set(echo = FALSE)
 
 <center>
 
-![](./figs/figure03_Conway.png){ width=45% }
+![](./pic/figure03_Conway.png){ width=45% }
 
 </center>
 
 
 ## “Datificación” de la vida diaria
 
-![](./figs/datificacion.png){ width=70% }
+![](./pic/datificacion.png){ width=70% }
 
 
 
@@ -105,7 +105,7 @@ knitr::opts_chunk$set(echo = FALSE)
 -   Análisis de Datos y Business Intelligence
 
 
-![](./figs/bi.png){ width=70% }
+![](./pic/bi.png){ width=70% }
 
 
 -->
@@ -118,13 +118,13 @@ knitr::opts_chunk$set(echo = FALSE)
 
 - Pero esto NO es magia
 
-![](./figs/170306.bigdata.jpg){ width=70% }
+![](./pic/170306.bigdata.jpg){ width=70% }
 
 
 ## Aprendiendo a analizar datos (y 2)
 
 - Y requiere saber lo que sé hace
-![](./figs/140113.bigdata.jpg)
+![](./pic/140113.bigdata.jpg)
 
 
 - [Dan Ariely](https://es.wikipedia.org/wiki/Dan_Ariely) sobre Big Data: [aquí](https://twitter.com/observer1896/status/725596722257367040)
@@ -135,7 +135,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 <center>    
 
-![](./figs/indice.png)
+![](./pic/pipeline.png)
 
 </center>   
 

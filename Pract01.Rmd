@@ -1,0 +1,422 @@
+---
+#subtitle: "Técnicas para 'Big Data' en Economía"
+#subtitle: "Muestreo y Análisis de Datos"
+title    :  "Práctica 01 - Introducción a RMarkdown"
+author: 
+  - "Prof.: Pedro Albarrán"
+  - "Prof.: Alberto Pérez"
+job: "Universidad de Alicante" 
+date: "Universidad de Alicante, Curso 2020/21"  
+---
+
+```{r, setup, include=TRUE, echo=FALSE}
+# paquetes y opciones adicionales para uso general aqui
+setwd("/home/albarran/Archivos/teaching/MAD/00.TEC")
+```
+
+## 1. Introducción
+
+[R Markdown](http://rmarkdown.rstudio.com/index.html) proporciona un marco de autoría unificado para la ciencia de los datos, que combina su código, sus resultados y su comentario en prosa. Los documentos de R Markdown son completamente **reproducibles** y soportan docenas de formatos de salida, como archivos PDF, archivos de Word, presentaciones de diapositivas y más.
+
+![Flujo de Trabajo.](./pic/pipeline.png)
+
+Los archivos R Markdown están diseñados para usarse de tres maneras:
+
+1. Para comunicarse con quienes toman decisiones, que quieren centrarse en las conclusiones, no el código detrás del análisis.
+
+2. Para colaborar con otros analistas de datos (¡incluido tú en el futuro!), quiénes están interesados en las conclusiones y cómo se alcanzaron (es decir, el código).
+
+3. Como un entorno en el que hacer análisis de los datos, como un cuaderno de laboratorio actual donde se puede capturar no sólo lo que hizo, sino también lo que estaba pensando.
+
+### Análisis reproducible con R Markdown
+
+El concepto de programación literaria o letrada ("literate programming") fue introducido por Donald Knuth hace décadas. La idea es que la documentación pertinente para el código -que es comprensible no sólo para el programador, sino también para otros seres humanos- se produce junto con el propio código. En el análisis de datos, esto se manifiesta como la necesidad de tener tres tipos de cosas en un documento: el código, los resultados de ese código y el análisis escrito. 
+
+Los paquetes de R `rmarkdown` y `knitr` son el entorno ideal para un flujo de trabajo de análisis reproducible. [Esta presentación](https://prezi.com/rtmytpb6iwsw/reproducible-20/) de Prezi lo explica muy bien.
+
+### Obteniendo ayuda 
+
+<!--  `rmarkdown` se instala por primera vez al pedir generar un documento de este tipo en RStudio -->
+
+R Markdown integra una serie de paquetes de R, incluyendo `rmarkdown` y` knitr`, y  herramientas externas. Esto significa que la ayuda, por lo general, no está disponible a través de `?`. En su lugar, al usar R Markdown en el futuro, ten estos recursos a mano:
+
+- "Chuleta" ("Cheat Sheet") de R Markdown: *Help > Cheatsheets > R Markdown Cheat Sheet*,
+
+- Guía de Referencia de R Markdown: *Help > Cheatsheets > R Markdown Reference Guide*.
+
+Como ya hemos visto con otras, estas chuletas también están disponibles en http://rstudio.com/resources/cheatsheets. También podéis encontrar un libro online sobre R Markdown [aquí](https://bookdown.org/yihui/rmarkdown/).
+
+
+## 2. Guía básica de R Markdown 
+
+Comenzamos por crear un nuevo documento de R Markdown. Dentro de RStudio, se puede generar un nuevo archivo de R Markdown a partir de una plantilla seleccionando R Markdown en la opción Nuevo archivo del menú Archivo (*File > New File > R Markdown*). Si el paquete `rmarkdown` no está instalado y cargado, en este momento RStudio nos pedirá instalarlo. Esto genera el cuadro de diálogo. El formato de salida predeterminado es HTML, pero otras opciones (PDF o Microsoft Word) están disponibles.
+La salida formateada se puede generar y mostrar haciendo clic en HTML del botón "Knit" en RStudio. En el botón de al lado, con forma de tuerca, se pueden cambiar algunas opciones por defecto, como dónde se visualiza, si se ejecuta el código, etc.
+
+Sin el beneficio de RStudio, se pueden utilizar los comandos en el siguiente bloque de código, que también se puede utilizar cuando se ejecuta R.
+
+```{r eval = FALSE}
+library(rmarkdown)
+render("nombreArchivo.Rmd")      # crea nombreArchivo.html
+browseURL("nombreArchivo.html")
+```
+
+Cuando *tejes* ("knit"), compilas o renderizas el documento, R Markdown envía el archivo .Rmd a [knitr](http://yihui.name/knitr/), que ejecuta todos los fragmentos de código y crea un nuevo documento de markdown (.md) que incluye el código y su salida. El archivo generado por knitr es procesado por *pandoc*, que es responsable de crear el archivo finalizado. La ventaja de este flujo de trabajo de dos pasos es que puede crear una amplia gama de formatos de salida.
+
+En principio, tendríamos que instalar Pandoc (http://pandoc.org) por separado;  afortunadamente RStudio lo lleva incluido. A continuación se debería instalar el paquete `rmarkdown` en R, si no está instalado. Los documentos de R Markdown pueden aprovechar muchas las características disponibles a través de [Pandoc Markdown](http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html). Estas características no tienen nada que ver con la programación en R, pero proporcionan una rica experiencia de autoría de documentos.  
+
+Para crear la salida de PDF, sería necesario tener instalado una distribución de [LaTeX](https://es.wikipedia.org/wiki/LaTeX) como [MiKTeX](https://miktex.org/), disponible para Windows y para Mac OS. Para quienes no hayan instalado LaTeX anteriormente, es recomendable instalar TinyTeX (https://yihui.name/tinytex/):
+
+```{r tinytex, eval=FALSE}
+install.packages("tinytex")
+tinytex::install_tinytex()
+```
+
+TinyTeX es una distribución LaTeX ligera, portátil, multiplataforma y fácil de mantener. El paquete complementario R `tinytex` instala automáticamente los paquetes LaTeX que faltan al compilar documentos LaTeX o R Markdown en PDF y también asegura que se compila un documento LaTeX el número correcto de veces para resolver todas las referencias cruzadas. (Si no entiendes lo que significan estas dos cosas, probablemente deberías instalar TinyTeX.)
+
+Con el paquete `rmarkdown`, RStudio/Pandoc y LaTeX, debería poder compilar la mayoría de los documentos de R Markdown. En algunos casos, es posible que necesite otros paquetes de software.
+
+#### Practicando
+
+1. Crea un nuevo documento de R Markdown con *File > New File > R Markdown*. Lee las instrucciones y genera el documento haciendo click en el botón adecuado. 
+
+2. Crea un nuevo documento de R Markdown para cada uno de los tres formatos incorporados: HTML, PDF y Word. Usa *knit* para generar cada uno de los tres documentos. ¿Cómo difiere la salida? ¿Cómo difieren las entradas? 
+
+<!--
+4. Crea un nuevo "notebook" de R con *File > New File > R Notebook*. Lee las instrucciones y practica ejecutando los fragmentos de código. Comprueba que puede modificar el código, volver a ejecutarlo y ver la salida modificada. (¿Cuáles son la similitud y la diferencia entre un cuaderno de R ("notebook") y un documento de R Markdown, al producir HTML?)
+
+*** sobre R scripts, R markdown y R notebooks
+https://rviews.rstudio.com/2018/11/01/r-markdown-a-better-approach/
+https://rviews.rstudio.com/2017/03/15/why-i-love-r-notebooks/
+https://bookdown.org/yihui/rmarkdown/notebook.html
+
+An R Notebook is a special execution mode of R Markdown with two characteristics that make it very useful for communicating results:
+
+	- Rendering a preview of an R Notebook does not execute R code, making it computationally convenient to create reports during or after interactive analyses.
+	- R Notebooks have an embedded copy of the source code, making it convenient for others to examine your work.
+Like R scripts, you can do interactive data analyses and see all your code, but unlike R scripts you can easily create reports that explain why your code is important.
+
+-->
+
+## 3. Formato de texto con Markdown
+
+Los archivos `.Rmd` están escritos en Markdown, un conjunto ligero de convenciones para el formato de archivos de texto sin formato. Markdown está diseñado para ser fácil de leer y fácil de escribir. También es muy fácil de aprender. La siguiente guía muestra cómo usar el Markdown de Pandoc, una versión ligeramente extendida de Markdown que R Markdown entiende.
+
+### Formato de texto 
+
+```
+*cursiva*  o _cursiva_
+**negrita**   __negrita__
+`código`
+superíndice^2^ y subíndice~2~
+~~tachado~~
+```
+
+### Encabezamientos
+
+```
+# Encabezado de 1er. nivel
+
+## Encabezado de 2º nivel
+
+### Encabezado de 3er. nivel
+
+#### Encabezado de 4º nivel
+```
+
+<!--
+```
+Forma alternativa de 1er. nivel
+===============================
+
+Forma alternativa de 2º nivel
+-----------------------------
+```
+-->
+
+
+### Listas
+
+```
+*   Item (elemento) 1 de la lista (no numeradas)
+
+*   Item 2
+
+    - Item 2a (+ y - son una alternativa a * para listas no numeradas)
+    
+        + sub-sub-item
+
+    - Item 2b
+
+1.  Item 1 de la lista numerada
+
+1.  Item 2. Los números se incrementan automáticamente en la salida.
+
+1)  Otra forma de crear listas numeradas.
+
+2)  En ambos caso, se puede poner explícitamente el número.
+```
+
+
+### Líneas de separación
+
+```
+---
+
+***
+```
+
+
+### Enlaces e imágenes
+
+```
+<http://example.com>
+
+[frase con vínculo](http://example.com)
+
+![texto del subtítulo opcional](dirección/hacia/img.png)
+
+
+[![RUsers](http://rusersgroup.com/img/final5x5.png)](https://cran.r-project.org/ )
+
+
+[Página de R][1]
+
+[1]: https://cran.r-project.org/        "Página para descargar R
+
+
+#### Título 1 {#tit1}
+[Enlace a titulo1 mediante su identificador](#tit1)
+```
+
+### Notas a pie de página
+
+```
+Esto es un texto con nota al pie [^nota1] 
+y esta es otra nota [^ Esto es la segunda nota al pie.]
+
+
+[^nota1]: Esto es una nota al pie de página.
+[^nota2]: Esto es la segunda nota al pie.
+```
+
+
+### Tablas 
+
+```
+Primer encabezado  | Segundo encabezado
+------------------ | ------------------
+Celda              | Celda
+Celda              | Celda
+```
+
+Con alineación de columnas
+
+```
+| Items    | Cantidad | Precio   |
+| :------- | :------: | -------: |
+| Item 1   | 15       | 9,050    |
+| Item 2   | 3250     | 239,99   |
+```
+
+
+### Bloques de citas literales
+
+
+```
+> Esto es parte de un bloque de cita.
+> Esto es parte del mismo bloque de cita.
+>
+> > Esto es otro bloque de cita anidado.
+> > Esto es parte del bloque anidado.
+>
+> Esto es parte del bloque de cita de primer nivel.
+Esto es una línea normal
+```
+
+La barra invertida \  antes de cualquier símbolo de formato o enlace, provoca que no tengan efecto a la hora de convertirse en negritas, cursivas, links, etc.
+
+Se puede introducir directamente código en HTML (útil para algunos formateos como centrar) y LaTeX (útil para ecuaciones); también se pueden incluir diagramas UML. 
+
+## 4. Fragmentos de código
+
+Se puede escribir código de R en un documento de R Markdown. Una opción es escribir código "entre líneas" usando entre dos caracteres "` `". Por ejemplo, `r 2+3` aparecerá en el documento final como "5". Para ejecutar varias líneas código dentro de un documento de Markdown R, se debe insertar un fragmento. Hay tres maneras de hacerlo:
+
+1. El atajo de teclado Cmd / Ctrl + Alt + I
+
+2. El icono de botón "Insertar" en la barra de herramientas del editor.
+
+3. Escribiendo manualmente los delimitadores de fragmento ` ```{r} ` y ` ``` `.
+
+Los fragmentos del código de R se pueden utilizar para producir salida de R en documentos o para mostrar simplemente el código como ilustración. Aquí está un fragmento simple del código de R que resultará en el código y su salida que es incluida:
+```{r}
+summary(cars)
+```
+
+Para mostrar el resultado del fragmento de código, pero no código de R que lo genera, se especifica la opción `echo=FALSE`:
+```{r, echo=FALSE}
+summary(cars)
+```
+
+Se puede incluir un identificador del fragmento despues de `r` (separado por espacio o por comas igual que el resto de opciones del fragmento):
+```{r, ejemplo1, echo=FALSE}
+summary(cars)
+```
+
+
+Tened en cuenta que los trozos de código R también se pueden utilizar sólo para procesar el código de R, mostrando el resultado pero no el código:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Para mostrar el código R sin evaluarlo, especifique la opción `eval = FALSE`:
+```{r, eval=FALSE}
+summary(cars)
+```
+
+Como se ha visto anteriormente, la salida de fragmentos puede personalizarse con opciones, . Una lista completa de opciones de los fragmentos (argumentos suministrados en el encabezado del fragmento) está disponible [aquí](http://yihui.name/knitr/options/). Prestad especial atención a las opciones:
+
+* `echo`
+
+* `eval` e `include`
+
+* `warning`, `error` y `message`
+
+* `fig.width` y `fig.height` (o `fig.dim`) y `out.width`, `out.height`
+
+* `fig.align`, `fig.cap`, `fig.show`
+
+Por ejemplo, podemos poner dos figuras una al lado de otra con `fig.show = "hold"` y `out.width = "50%"`:
+
+
+```{r, echo=TRUE, fig.show="hold", out.width="50%"}
+# en la izquierda
+plot(cars)
+# en la derecha
+plot(cars, type = "l")
+```
+El comando `opts_chunk$set()` cambia las opciones por defecto globales en un documento: por ejemplo, `knitr::opts_chunk$set(echo=FALSE, fig.width=6, fig.height=6)`. 
+
+### Comentarios adicionales
+
+Para mejorar la salida de algunos comandos que producen tablas, es conveniente utilizar librerias adicionales que mejoren la presentación:
+
+* La librería `printr` mejora las salidas en html de algunas tablas
+
+* La libreria `xtable` ofrece el comando `xtable` y otros para presentar objetos de R de forma más elegantes en html y LaTeX
+
+* La libreria `knitr` ofrece la función `kable()`. Existe una librería que extiende su funcionalidad, `kableExtra`; se puede encontrar ayuda [aquí](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html).
+
+* La librería `pander` ofrece el comando `pandoc.table()`.
+
+## Formato en la cabecera (YAML)
+
+Además de las opciones para controlar la forma en que se muestran los fragmento del código de R, una serie de características del documento se pueden especificar en R Markdown. Para esto, podemos establecer unos parámetros en la cabecera del documento con YMAL ("Yet Another Markup Language"). Con la síntaxis de YAML se pueden especificar opciones del documento desde título, autor, etc hasta opciones de visualización. Por ejemplo, 
+
+```
+---
+title: "Título"
+author: Autor 
+date: 15 septiembre 2020
+output: html_document
+---
+```
+
+incluye también una línea de fecha y el tipo de documento de salida por defecto como HTML. Podéis encontrar una descripción bastante completa de las opciones (en inglés) [aquí](https://bookdown.org/yihui/rmarkdown/html-document.html). 
+
+Algunas opciones que podéis encontrar relevantes son (no todas tienen que especifacarse a la vez) son incluir un índice (`toc`), tener secciones numeradas (`number_sections`), la posibilidad de ocultar del código en un fragmento (`code_folding`), cambiar el tema (`theme`) del documento (p.e., con uno extraido de la galería [Bootswatch](https://bootswatch.com/3/))
+
+```
+---
+title: "Título"
+output:
+  html_document:
+    toc: true
+    number_sections: true
+    code_folding: hide
+    theme: united
+---
+```
+
+También se pueden fijar características de las figuras directamente en el encabezado
+```
+---
+title: "Título"
+output:
+  html_document:
+    fig_width: 7
+    fig_height: 6
+    fig_caption: true
+---
+```
+
+Finalmente una opción interesante cuando queremos mostrar un conjunto de datos muy largo es fijar la opción `df_print` a `paged` (además de la opción por defecto, otra posibilidad es `kabble`)
+
+```
+---
+title: "Título"
+output:
+  html_document:
+    df_print: paged
+---
+```
+
+
+## Mini-práctica
+
+1. Iniciar un nuevo documento de R Markdown desde el menú Archivo. Mantén los dos fragmentos de código, pero elimina el texto incluido por defecto y cambialo por un título y un par de secciones propias en castellano (no importan lo que diga, puede ser copia-pega de cualquier sitio)<!-- o un [lorem ipsum](https://es.wikipedia.org/wiki/Lorem_ipsum), p.e., generado [aquí](https://loremipsum.io/generator/) )-->. Renderiza el documento y experimenta con el ajuste YAML para el ancho de figura, observando cómo cambia.
+
+2. Mostar en un fragmento de código el conjunto de datos `mtcars`. Comprobar el efecto de incluir `df_print: paged` en el encabezado
+
+3. Comprobar cómo cambia el documento al incluir `code_folding: hide` y al cambiar el tema.
+
+4. Usar el código `format(Sys.time(), "%B %e, %Y a las %H:%M:%S"))` en una línea de texto para mostrar la fecha y hora en la que el documento se renderiza.
+
+5. Añade al texto
+
+  * algún párrafo adicional
+  * un par de secciones y/o sub-secciones adicionales
+  * un par de listas
+  * algún vínculo
+  * una imagen
+  * alguna nota a pie de página
+  * citas
+  
+6. Rellenad este [FORMULARIO](https://docs.google.com/forms/d/e/1FAIpQLScu-pRFqep38pnpyRtwR5TgZfpbQSAbwUjo6pU_2Sc6Pq8e1g/viewform) con vuestros datos y subid 
+
+    * vuestro archivo de .Rmd 
+    * el archivo .html resultado de compilarlo en RStudio. 
+
+    IMPORTANTE: los nombres de los dos archivos DEBEN EMPEZAR con vuestro número de DNI (el resto es libre): ej., 
+
+    > 12345678_P01_midoc.Rmd
+    
+    > 12345678_P01_midoc.html
+
+<!--
+* referencias: http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html
+    http://www.carlboettiger.info/2012/05/30/knitcitations.html
+-->
+
+
+<!--
+#### Ejercicios
+
+
+a. Crea un archivo de código de R llamado "APELLIDO-NOMBRE-P01a.R" ((reemplaza APELLIDO-NOMBRE por tu primer apellido y nombre). Este código debe permitir responder a las siguientes preguntas. Los resultados del código deben guardarse en un fichero de salida incluido al comienzo del fichero de código con el comando `sink`: `sink(file="APELLIDO-NOMBRE-P01a_resultados.txt")`.
+
+    i. En esta dirección de internet http://www.openintro.org/stat/data/arbuthnot.csv, disponéis del conjunto de recopilados por el Dr. John Arbuthnot, un médico, escritor y matemático del siglo XVIII, que reunió registros de bautismo de los niños nacidos en Londres para cada año. Leer los datos en R y mostrar las 6 primeras observaciones.
+    
+    ii. ¿Qué rango de años se incluyen en este conjunto de datos? ¿Cuáles son las dimensiones del "data frame"? ¿Cuáles son los nombres de las variables (columnas)?
+    
+    iii. Crea un gráfico mostrando la evolución en el tiempo de la ratio de niños sobre el total de recién nacidos, generando previamente las variables necesarias. El gráfico debe incluir títulos y nombres de los ejes.
+    
+    iv. Muestra en una tabla y en un histrograma la frecuencia con nacen más niños que niñas, generando previamente las variables necesarias.
+    
+b. Practica lo que has aprendido creando un informe. Tu archivo .Rmd tendrá nombre "APELLIDO-NOMBRE-P01b". 
+  
+    * El título será `Análisis de Datos, Práctica 1b` y tú nombre debe ser el autor. Debes incluir secciones, listas, imágenes (pueden ser disponible a traves de una dirección de internet). El resultado final debe ser un documento .html.
+
+    * Debes elegir varias series de datos de FRED o de Yahoo, con `quantmod'. Debes representarlas gráficas para todo el periodo disponible. Debes analizar sus estadísticos descriptivos básicos y analizar la correlación entre al menos dos de ellas. Luego repite los análisis para un subperiodo de tu elección.
+    
+-->

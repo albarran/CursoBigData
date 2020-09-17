@@ -7,7 +7,7 @@ author:
   - "Prof.: Alberto Pérez"
 job: "Universidad de Alicante" 
 date: "Universidad de Alicante, Curso 2020/21"  
-output: 
+output:
   ioslides_presentation: 
     widescreen: yes
 #  beamer_presentation: 
