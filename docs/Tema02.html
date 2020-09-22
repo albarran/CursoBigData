@@ -139,31 +139,61 @@ install.packages(&quot;tidyverse&quot;)</pre>
 <li>Es necesario cargar la biblioteca antes de usarla</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>library(&quot;AER&quot;)
-library(&quot;tidyverse&quot;)</pre>
+<pre class = 'prettyprint lang-r'>library(&quot;tidyverse&quot;)</pre>
 
 <ul>
 <li>Pasa a formar parte del &ldquo;Global Environment&rdquo;</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>search()
-library(&quot;Hmisc&quot;)
+library(&quot;AER&quot;)
 search()</pre>
-
-<pre class = 'prettyprint lang-r'>find(&quot;units&quot;)</pre>
 
 <ul>
 <li>Se puede buscar información en la ayuda (ej. de RStudio), que puede incluir &ldquo;vignettes&rdquo; sobre el uso de las funciones de la biblioteca</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>library(help=utils)      # Ayuda para una biblioteca concreta
-library(help=tidyverse) </pre>
-
 </article></slide><slide class=""><hgroup><h2>Bibliotecas (cont.)</h2></hgroup><article  id="bibliotecas-cont.-1">
 
 <ul>
-<li>Notad que el nombre completo de un objeto de R es <code>paquete::nombre</code></li>
+<li>Notad que el nombre completo de un objeto de R es <code>biblioteca::nombre</code></li>
 </ul>
+
+<!-- (se puede notar en una búsqueda en la ayudar) -->
+
+<pre class = 'prettyprint lang-r'>?log
+base::log(1)
+log(1)</pre>
+
+<ul>
+<li>Aunque la primera parte se suele omitir, salvo conflicto entre bibliotecas</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>find(&quot;units&quot;)
+library(&quot;Hmisc&quot;)
+find(&quot;units&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>El paquete <code>tidyverse</code></h2></hgroup><article  id="el-paquete-tidyverse">
+
+<ul>
+<li>El <strong>meta-paquete</strong> <code>tidyverse</code> incluye una colección de otros paquetes y librerías para todo el proceso &ldquo;tratamiento de datos&rdquo;.</li>
+</ul>
+
+<p>El núcleo de <code>tidyverse</code> lo componen los siguientes paquetes (podéis ver una descripción <a href='https://www.tidyverse.org/packages/' title=''>aquí</a>):</p>
+
+<div style="display: flex;">
+<div>
+<ul>
+<li><code>readr</code></li>
+<li><code>tibble</code></li>
+<li><code>ggplot2</code></li>
+<li><code>tidyr</code></li>
+<li><code>purrr</code></li>
+<li><code>dplyr</code></li>
+</ul></div>
+
+<div>
+<img width="45%" src='pic/tidyverse_full.jpg' title=''/></div></div>
 
 </article></slide><slide class=""><hgroup><h2>Datos incorporados en bibliotecas de R</h2></hgroup><article  id="datos-incorporados-en-bibliotecas-de-r">
 
@@ -180,72 +210,86 @@ library(help=tidyverse) </pre>
 <pre class = 'prettyprint lang-r'>help(&quot;Affairs&quot;)</pre>
 
 <ul>
-<li>cargar una base de datos</li>
+<li>Cargar una base de datos</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>data(&quot;Affairs&quot;)
 str(Affairs)     # También en &quot;Environment&quot; de RStudio
+glimpse(Affairs) # Alternativa a str en tidyverse
 head(Affairs)</pre>
 
 <ul>
-<li><p>RStudio muestra visualmente la tabla de datos</p></li>
-<li><p>Se trabaja con las variables de la forma habitual, accediendo con &lsquo;$&rsquo;</p></li>
+<li>RStudio muestra visualmente la tabla de datos</li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Función &lsquo;attach&rsquo;</h2></hgroup><article  id="función-attach">
+<!--
+* Se trabaja con las variables de la forma habitual, accediendo con '$'
+-->
 
-<pre class = 'prettyprint lang-r'>head(Affairs$gender)
-head(gender)          # no se encuentra</pre>
+</article></slide><slide class=""><hgroup><h2>Función &lsquo;attach&rsquo;</h2></hgroup><article  id="función-attach">
 
 <ul>
 <li>&lsquo;Attach&rsquo; permite carga un objeto como parte del &ldquo;Environment&rdquo; principal</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>attach(Affairs)</pre>
+<pre class = 'prettyprint lang-r'>attach(Affairs)
+head(gender)</pre>
 
 <ul>
-<li>Ahora se accede a las variables solo por su nombre.</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>head(gender)</pre>
-
-<ul>
-<li>Útil si se usa una sola base de datos o no hay lugar a confusión</li>
-<li>Se deja de vincular la base de datos (o una biblioteca) con &lsquo;detach&rsquo;</li>
+<li><p>Ahora se accede a las variables solo por nombre (sin <code>$</code>)</p></li>
+<li><p>Útil si se usa una sola base de datos o no hay lugar a confusión</p></li>
+<li><p>Se deja de vincular la base de datos (o una biblioteca) con &lsquo;detach&rsquo;</p></li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>detach(Affairs)
 head(gender)</pre>
 
-</article></slide><slide class=""><hgroup><h2>Función &lsquo;with&rsquo;</h2></hgroup><article  id="función-with">
-
 <ul>
-<li>Notar que se pueden tener más de una base de datos (como cualquier objeto), aunque haya variables de mismo nombre en ellas</li>
+<li>La función <code>base::with</code> también permite trabajar fácilmente con variables</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>data(&quot;PSID1982&quot;)  # help(PSID1982)
+<pre class = 'prettyprint lang-r'>age2 &lt;- with(Affairs, age^2)</pre>
+
+<!--
+## Función 'with'
+
+
+
+* Notar que se pueden tener más de una base de datos (como cualquier objeto), 
+aunque haya variables de mismo nombre en ellas
+
+
+```r
+data("PSID1982")  # help(PSID1982)
 
 head(Affairs$gender)
-head(PSID1982$gender)</pre>
+head(PSID1982$gender)
+```
 
-<ul>
-<li>Para evitar el uso de &lsquo;$&rsquo;, se puede usar &lsquo;with&rsquo;</li>
-</ul>
+* Para evitar el uso de '$', se puede usar 'with'
 
-<pre class = 'prettyprint lang-r'>with(PSID1982,  head(wage))</pre>
 
-<ul>
-<li>Más relevante con enunciados complejos</li>
-</ul>
+```r
+with(PSID1982,  head(wage))
+```
 
-<pre class = 'prettyprint lang-r'>annualWage &lt;- PSID1982$wage * PSID1982$weeks  # sin &#39;with&#39;
-annualWage &lt;- with(PSID1982, wage * weeks)    # con &#39;with&#39;</pre>
+* Más relevante con enunciados complejos
+
+
+```r
+annualWage <- PSID1982$wage * PSID1982$weeks  # sin 'with'
+annualWage <- with(PSID1982, wage * weeks)    # con 'with'
+```
+-->
 
 </article></slide><slide class=""><hgroup><h2>Estadísticas en R</h2></hgroup><article  id="estadísticas-en-r">
 
-<p>Estadísticos descriptivos</p>
+<ul>
+<li>Estadísticos descriptivos</li>
+</ul>
 
-<pre class = 'prettyprint lang-r'>summary(PSID1982$wage)     # de una variable
+<pre class = 'prettyprint lang-r'>data(&quot;PSID1982&quot;)  # help(PSID1982)
+summary(PSID1982$wage)     # de una variable
 summary(PSID1982)          # de todo el marco de datos</pre>
 
 <ul>
@@ -280,7 +324,7 @@ var(wage)
 table(wage)</pre>
 
 <ul>
-<li>¿Cómo obtendríaamos la moda?</li>
+<li>¿Cómo obtendríamos la moda? Tu respuesta <a href='https://docs.google.com/forms/d/e/1FAIpQLSc2dYxHSuTLF-aGuVkusM3UevEKkCu6Iky2HC7aL6wkcP3r0g/viewform' title=''>aquí</a></li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Gráficos Básicos</h2></hgroup><article  id="gráficos-básicos">
@@ -297,16 +341,15 @@ plot(a)     # Notar la pestaña de Studio donde aparece</pre>
 </ul>
 
 <pre class = 'prettyprint lang-r'>plot(sin, -pi, 2*pi)
-plot(log, 1,10)</pre>
+plot(log, 1, 10)</pre>
 
 <ul>
 <li>Dibujar dos vectores uno contra el otro</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>b &lt;- 2:20
-plot(a,b)              # deben ser de la misma longitud
-
-plot(a,b[1:10])</pre>
+plot(a, b)              # deben ser de la misma longitud
+plot(a, b[1:10])</pre>
 
 </article></slide><slide class=""><hgroup><h2>Gráficos Básicos (cont.)</h2></hgroup><article  id="gráficos-básicos-cont.">
 
@@ -314,16 +357,16 @@ plot(a,b[1:10])</pre>
 <li>Se pueden añadir títulos</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>plot(a,b[1:10],xlab=&quot;Eje X&quot;,ylab=&quot;Eje Y&quot;,main=&quot;Mi título&quot;)</pre>
+<pre class = 'prettyprint lang-r'>plot(a, b[1:10], xlab=&quot;Eje X&quot;, ylab=&quot;Eje Y&quot;, main=&quot;Mi título&quot;)</pre>
 
 <ul>
-<li>en lugar de puntos, type = &ldquo;p&rdquo; (defecto), se puede usar líneas &lsquo;type=&ldquo;l&rdquo;&rsquo;</li>
+<li>En lugar de puntos <code>type = &quot;p&quot;</code> (defecto), se pueden usar líneas <code>type=&quot;l&quot;</code></li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>plot(a,b[1:10],type=&quot;l&quot;)</pre>
+<pre class = 'prettyprint lang-r'>plot(a, b[1:10], type=&quot;l&quot;)</pre>
 
 <ul>
-<li>o ambos type = &ldquo;b&rdquo;</li>
+<li>o ambos <code>type = &quot;b&quot;</code></li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>plot(a,b[1:10],type=&quot;b&quot;)</pre>
@@ -339,11 +382,10 @@ cor(wage, experience)</pre>
 </article></slide><slide class=""><hgroup><h2>Regresión en R</h2></hgroup><article  id="regresión-en-r">
 
 <ul>
-<li>Función &lsquo;lm&rsquo; y notación de fórmula en R</li>
+<li>Función <code>lm</code> y notación de fórmula en R</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>lm(data=PSID1982, wage ~ experience)
-
 res &lt;- lm(data=PSID1982, wage ~ experience)   # str(res)
 summary(res)</pre>
 
@@ -352,10 +394,7 @@ summary(res)</pre>
 </ul>
 
 <pre class = 'prettyprint lang-r'>summary(lm(data=PSID1982, wage ~ experience + gender))
-
-summary(lm(data=PSID1982, wage ~ experience +I(experience^2)+ gender))
-
-summary(lm(data=PSID1982, wage ~ experience +I(experience^2)+ experience*gender))</pre>
+summary(lm(data=PSID1982, wage ~ experience + I(experience^2) + experience*gender))</pre>
 
 <ul>
 <li>Educación como variable continua o como factor</li>
@@ -363,13 +402,12 @@ summary(lm(data=PSID1982, wage ~ experience +I(experience^2)+ experience*gender)
 
 <pre class = 'prettyprint lang-r'>table(education)
 summary(lm(data=PSID1982, wage ~ experience + education))
-
 summary(lm(data=PSID1982, wage ~ experience + as.factor(education)))</pre>
 
 </article></slide><slide class=""><hgroup><h2>Datos &ldquo;nativos&rdquo; en R</h2></hgroup><article  id="datos-nativos-en-r">
 
 <ul>
-<li>Los objetos del espacio de trabajo se guardan con la función &lsquo;save&rsquo;</li>
+<li>Los objetos del espacio de trabajo se guardan con la función <code>save</code></li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>x &lt;- 2 * pi
@@ -379,8 +417,8 @@ save(x, file=&quot;x.RData&quot;)      # un solo objeto
 save(x, y, file=&quot;xy.RData&quot;)  # varios objetos</pre>
 
 <ul>
-<li>O todo el workspace con &lsquo;save.image&rsquo; (= icono de guardar en RStudio)</li>
-<li>Se cargan al espacio de trabajo con &lsquo;load&rsquo; (también icono en RStudio)</li>
+<li>O todo el workspace con <code>save.image</code> (= icono de guardar en RStudio)</li>
+<li>Se cargan al espacio de trabajo con <code>load</code> (también icono en RStudio)</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>rm( list=ls() )
@@ -403,18 +441,18 @@ load(&quot;xy.RData&quot;)   </pre>
 <li>Formatos de hojas de cálculo o de bases de dato SQL</li>
 <li>Formatos de software estadístico</li>
 </ul></li>
-<li><p>Varias bibliotecas para cada caso: ej. &lsquo;utils&rsquo; en R base y &lsquo;readr&rsquo; (&lsquo;tidyverse&rsquo;)</p></li>
+<li><p>Varias bibliotecas para cada caso: ej. <code>utils</code> (R base) y <code>readr</code> (<code>tidyverse</code>)</p></li>
 <li><p>&ldquo;Import Dataset&rdquo; de RStudio: acceso por menús a algunas de estas funciones</p></li>
 <li><p>Texto plano con delimitadores</p>
 
 <ul>
 <li>La primera línea puede contener nombre, los datos en resto</li>
-<li>Una línea por caso, columnas separadas por delimitador (espacio, tabulador, coma, punto y coma)</li>
+<li>Una línea por caso, columnas separadas por delimitador (ej., coma) <!--       (espacio, tabulador, coma, punto y coma) --></li>
 <li>Variables de caracteres con valores entre comillas</li>
 </ul></li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>&lsquo;read.table&rsquo; de &lsquo;utils&rsquo;</h2></hgroup><article  id="read.table-de-utils">
+</article></slide><slide class=""><hgroup><h2><code>read.table</code> de <code>utils</code></h2></hgroup><article  id="read.table-de-utils">
 
 <pre class = 'prettyprint lang-r'>?read.table</pre>
 
@@ -422,34 +460,42 @@ load(&quot;xy.RData&quot;)   </pre>
 <li>Se debe especificar: el archivo, si existe encabezamiento y el separador.</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>sexdata &lt;- read.table(&quot;/home/albarran/Archivos/teaching/MAD/00.TEC/data/sex_data.csv&quot;, 
+<pre class = 'prettyprint lang-r'>sexdata &lt;- read.table(&quot;data/sex_data.csv&quot;, 
                       header=TRUE, sep=&quot;,&quot;)</pre>
 
-<ul>
-<li>si se fija el directorio de trabajo</li>
-</ul>
+<!--
 
-<pre class = 'prettyprint lang-r'>setwd(&quot;/home/albarran/Archivos/teaching/MAD/00.TEC&quot;)
-setwd(&quot;E:/Archivos/teaching/MAD/00.TEC&quot;)
+```r
+sexdata <- read.table("/home/albarran/Archivos/teaching/MAD/00.TEC/data/sex_data.csv", 
+                      header=TRUE, sep=",")
+```
 
-sexdata &lt;- read.table(&quot;data/sex_data.csv&quot;, 
-                      header=TRUE, sep=&quot;,&quot;)</pre>
+* si se fija el directorio de trabajo
 
-</article></slide><slide class=""><hgroup><h2>&lsquo;read.table&rsquo; de &lsquo;utils&rsquo; (cont.)</h2></hgroup><article  id="read.table-de-utils-cont.">
 
-<ul>
-<li>Se puede dar nombres a las columnas, especificar la clase de las variables, etc.</li>
-</ul>
+```r
+setwd("/home/albarran/Archivos/teaching/MAD/00.TEC")
+setwd("E:/Archivos/teaching/MAD/00.TEC")
+
+sexdata <- read.table("data/sex_data.csv", 
+                      header=TRUE, sep=",")
+```
+
+## 'read.table' de 'utils'  (cont.)
+
+* Se puede dar nombres a las columnas, especificar la clase de las variables, etc.
+
+-->
 
 <pre class = 'prettyprint lang-r'>sexdata &lt;- read.table(&quot;data/sex_data.csv&quot;, 
                       header=F, sep=&quot;,&quot;, 
                       col.names = c(&quot;valor&quot;, &quot;fecha&quot;, &quot;otra&quot;, as.character(4:25)),
                       colClasses = c(rep(&quot;character&quot;,25)))</pre>
 
-</article></slide><slide class=""><hgroup><h2>&lsquo;read.csv&rsquo;, &lsquo;read.delim&rsquo;, etc.</h2></hgroup><article  id="read.csv-read.delim-etc.">
+</article></slide><slide class=""><hgroup><h2><code>read.csv</code>, <code>read.delim</code>, etc.</h2></hgroup><article  id="read.csv-read.delim-etc.">
 
 <ul>
-<li><p>Existen implementaciones simplificadas derivadas de &lsquo;read.table&rsquo; que fijan las opciones habituales<br/>y el resto igual a read.table (&ldquo;…&rdquo;)</p></li>
+<li><p>Existen implementaciones simplificadas derivadas de <code>read.table</code> que fijan las opciones habituales<br/>y el resto igual a read.table (&ldquo;…&rdquo;)</p></li>
 <li><p>Dos opciones equivalentes:</p></li>
 </ul>
 
@@ -475,11 +521,11 @@ x &lt;- read.fwf(
   skip=4,
   widths=c(12, 7, 4, 9, 4, 9, 4, 9, 4))</pre>
 
-</article></slide><slide class=""><hgroup><h2>Funciones en &lsquo;readr&rsquo; (parte de &lsquo;tidyverse&rsquo;)</h2></hgroup><article  id="funciones-en-readr-parte-de-tidyverse">
+</article></slide><slide class=""><hgroup><h2>Funciones en <code>readr</code></h2></hgroup><article  id="funciones-en-readr">
 
 <ul>
-<li>Ofrece versiones equivalentes a las de &lsquo;utils&rsquo;: read_csv, read_tsv y read_delim</li>
-<li>Diferentes opciones por defecto, más rápidas</li>
+<li><p>Ofrece versiones equivalentes a las anteriores: <code>read_csv</code>, <code>read_tsv</code> y <code>read_delim</code></p></li>
+<li><p>Diferentes opciones por defecto, más rápidas</p></li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>library(&quot;readr&quot;)
@@ -488,11 +534,11 @@ x &lt;- read.fwf(
 sexdata3 &lt;- read_csv(&quot;data/sex_data.csv&quot;)</pre>
 
 <ul>
-<li><p>Notar el diferente tratamiento de caracteres: en &lsquo;readr&rsquo; por defecto <em>no</em> se convierten en factores</p></li>
+<li><p>Notar el diferente tratamiento de caracteres: en <code>readr</code> por defecto <em>no</em> se convierten en factores</p></li>
 <li><p>Ayuda adicional en la &ldquo;viñeta&rdquo; (vignette) de <a href='https://cran.r-project.org/web/packages/readr/vignettes/readr.html' title=''>&lsquo;readr&rsquo;</a></p></li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Funciones en &lsquo;readr&rsquo; (cont.)</h2></hgroup><article  id="funciones-en-readr-cont.">
+</article></slide><slide class=""><hgroup><h2>Funciones en <code>readr</code> (cont.)</h2></hgroup><article  id="funciones-en-readr-cont.">
 
 <ul>
 <li>Permite cargar un fragmento del archivo de datos</li>
@@ -505,6 +551,7 @@ sexdata3 &lt;- read_csv(&quot;data/sex_data.csv&quot;)</pre>
 </ul>
 
 <pre class = 'prettyprint lang-r'>nombres &lt;- names(sexdata)
+arch &lt;- file.path(&quot;data&quot;, &quot;sex_data.csv&quot;)
 sexdata4 &lt;- read_csv(arch, skip = 6, n_max = 5, 
                      col_names = nombres, 
                      col_types = &quot;ciiiiiiiiiiiiiiiifnfinnnn&quot;)</pre>
@@ -512,9 +559,9 @@ sexdata4 &lt;- read_csv(arch, skip = 6, n_max = 5,
 </article></slide><slide class=""><hgroup><h2>Paquetes para formato de hoja de cálculo</h2></hgroup><article  id="paquetes-para-formato-de-hoja-de-cálculo">
 
 <ul>
-<li>&lsquo;openxlsx&rsquo;, &lsquo;gdata&rsquo; (solo .xls)</li>
-<li>readxl: lectura tanto de .xls como .xlsx</li>
-<li>XLConnect: lee y cambia archivos .xls y .xlsx; requiere Java.</li>
+<li><code>openxlsx</code>, <code>gdata</code> (solo .xls)</li>
+<li><code>readxl</code>: lectura tanto de .xls como .xlsx</li>
+<li><code>XLConnect</code>: lee y cambia archivos .xls y .xlsx; requiere Java.</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>library(readxl)
@@ -536,7 +583,7 @@ read_excel(&quot;archivo.xls&quot;, sheet = 2)</pre>
 </article></slide><slide class=""><hgroup><h2>Formatos de software estadístico</h2></hgroup><article  id="formatos-de-software-estadístico">
 
 <ul>
-<li>Biblioteca &lsquo;foreign&rsquo;: .dta de Stata y .sav de SPSS</li>
+<li>Biblioteca <code>foreign</code>: .dta de Stata y .sav de SPSS</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>library(foreign)
@@ -548,7 +595,7 @@ earn &lt;- read.spss(&quot;data/earnings_data.sav&quot;,
 head(earn) </pre>
 
 <ul>
-<li>Bibilioteca &lsquo;haven&rsquo;: además formato de SAS</li>
+<li>Bibilioteca <code>haven</code>: además formato de SAS</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>library(haven)
@@ -636,7 +683,7 @@ earnComplete &lt;- earn[s,]</pre>
 <li>El número de casos completos depende de las variables que queramos usar</li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>Estadísticas por grupos: &lsquo;aggregate&rsquo;</h2></hgroup><article  id="estadísticas-por-grupos-aggregate">
+</article></slide><slide class=""><hgroup><h2>Estadísticas por grupos: <code>aggregate</code></h2></hgroup><article  id="estadísticas-por-grupos-aggregate">
 
 <ul>
 <li>Estadísticas de una variable por grupos definidos por otra</li>
@@ -660,7 +707,7 @@ aggregate(earnings ~ gender, data=earnComplete,  FUN=mean)</pre>
 <pre class = 'prettyprint lang-r'>a &lt;- aggregate( cbind(earnings, age) ~ year + degree, data=earnComplete, mean )
 str(a) # &#39;a&#39; es un data frame!</pre>
 
-</article></slide><slide class=""><hgroup><h2>ACCESO A DATOS DE INTERNET</h2></hgroup><article  id="acceso-a-datos-de-internet">
+</article></slide><slide class=""><hgroup><h2>Acceso a Datos de Internet</h2></hgroup><article  id="acceso-a-datos-de-internet">
 
 <ul>
 <li><p>Existen muchas bases de datos disponibles &ldquo;online&rdquo; y varias posibilidades de acceder a ellas</p></li>
@@ -738,7 +785,7 @@ gdp &lt;- MKTGDPESA646NWDB       # rm(FPCPITOTLZGESP, MKTGDPESA646NWDB)</pre>
 <pre class = 'prettyprint lang-r'>cor(inf, gdp) </pre>
 
 <ul>
-<li>Cuidado con NAs y que las longuitudes de los vectores sean iguales</li>
+<li>Cuidado con NAs y que las longitudes de los vectores sean iguales</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>dim(inf)

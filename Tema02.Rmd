@@ -38,25 +38,18 @@ install.packages("tidyverse")
 * Es necesario cargar la biblioteca antes de usarla
 
 ```{r eval=FALSE, echo=T}
-library("AER")
 library("tidyverse")
 ```
 
 * Pasa a formar parte del "Global Environment"
 ```{r eval=FALSE, echo=TRUE}
 search()
-library("Hmisc")
+library("AER")
 search()
 ```
 
-
-
-```{r eval=FALSE, echo=TRUE}
-find("units")
-```
-
 * Se puede buscar información en la ayuda (ej. de RStudio), que puede incluir "vignettes" sobre el uso de las funciones de la biblioteca
-```{r eval=FALSE, echo=TRUE}
+```{r eval=FALSE, echo=FALSE}
 library(help=utils)      # Ayuda para una biblioteca concreta
 library(help=tidyverse) 
 ```
@@ -64,10 +57,48 @@ library(help=tidyverse)
 
 ## Bibliotecas (cont.)
 
+* Notad que el nombre completo de un objeto de R es `biblioteca::nombre` 
 
-* Notad que el nombre completo de un objeto de R es `paquete::nombre`
+<!-- (se puede notar en una búsqueda en la ayudar) -->
 
+```{r eval=FALSE, echo=TRUE}
+?log
+base::log(1)
+log(1)
+```
 
+* Aunque la primera parte se suele omitir, salvo conflicto entre bibliotecas
+```{r eval=FALSE, echo=TRUE}
+find("units")
+library("Hmisc")
+find("units")
+```
+
+## El paquete `tidyverse`
+
+* El **meta-paquete** `tidyverse` incluye una colección de otros paquetes  y librerías para todo el proceso "tratamiento de datos". 
+
+El núcleo de `tidyverse` lo componen los siguientes paquetes (podéis ver una descripción [aquí](https://www.tidyverse.org/packages/)):
+
+:::: {style="display: flex;"}
+
+::: {}
+
+* `readr`
+* `tibble`
+* `ggplot2`
+* `tidyr`
+* `purrr`
+* `dplyr`
+:::
+
+::: {}
+
+![](pic/tidyverse_full.jpg){width=45%}
+
+:::
+
+::::
 
 ## Datos incorporados en bibliotecas de R
 
@@ -87,17 +118,20 @@ data()
 help("Affairs")
 ```
 
-* cargar una base de datos
+* Cargar una base de datos
 
 ```{r eval=FALSE, echo=TRUE}
 data("Affairs")
 str(Affairs)     # También en "Environment" de RStudio
+glimpse(Affairs) # Alternativa a str en tidyverse
 head(Affairs)
 ```
 
 * RStudio muestra visualmente la tabla de datos
 
+<!--
 * Se trabaja con las variables de la forma habitual, accediendo con '$'
+-->
 
 ```{r eval=FALSE, echo=FALSE}
 head(Affairs)    # mostrar unas pocas observaciones
@@ -109,7 +143,6 @@ dim(Affairs)
 #* acceder a una de las variables en el marco de datos
 Affairs$affairs
 Affairs$gender
-
 ```
 ```{r eval=FALSE, echo=F}
 edad <- Affairs$age
@@ -119,30 +152,22 @@ is(edad)
 
 ## Función 'attach'
 
-```{r eval=FALSE, echo=F}
-# * Se accede a variables del marco de datos con '$'
-
-```
-```{r eval=FALSE, echo=T}
-head(Affairs$gender)
-head(gender)          # no se encuentra
-```
-
 * 'Attach' permite carga un objeto como parte del "Environment" principal
 
 ```{r eval=FALSE, echo=T}
 attach(Affairs)
-
+head(gender)
 ```
+
 ```{r eval=FALSE, echo=F}
 search()          # (ver también en RStudio)
 attach(Affairs)
 search()
 ```
 
-* Ahora se accede a las variables solo por su nombre. 
+* Ahora se accede a las variables solo por nombre (sin `$`)
 
-```{r eval=FALSE, echo=T}
+```{r eval=FALSE, echo=F}
 head(gender)
 ```
 ```{r eval=FALSE, echo=F}
@@ -150,6 +175,7 @@ class(gender)
 ```
 
 * Útil si se usa una sola base de datos o no hay lugar a confusión
+
 * Se deja de vincular la base de datos (o una biblioteca) con 'detach' 
 
 ```{r eval=FALSE, echo=T}
@@ -157,7 +183,13 @@ detach(Affairs)
 head(gender)
 ```
 
+* La función `base::with` también permite trabajar fácilmente con variables 
 
+```{r eval=FALSE, echo=T}
+age2 <- with(Affairs, age^2)
+```
+
+<!--
 ## Función 'with'
 
 ```{r eval=FALSE, echo=F}
@@ -186,12 +218,15 @@ with(PSID1982,  head(wage))
 annualWage <- PSID1982$wage * PSID1982$weeks  # sin 'with'
 annualWage <- with(PSID1982, wage * weeks)    # con 'with'
 ```
+-->
+
 
 ## Estadísticas en R
 
-Estadísticos descriptivos
+* Estadísticos descriptivos
 
 ```{r eval=FALSE, echo=T}
+data("PSID1982")  # help(PSID1982)
 summary(PSID1982$wage)     # de una variable
 summary(PSID1982)          # de todo el marco de datos
 ```
@@ -245,7 +280,7 @@ var(wage)
 table(wage)
 ```
 
-* ¿Cómo obtendríaamos la moda?
+* ¿Cómo obtendríamos la moda? Tu respuesta [aquí](https://docs.google.com/forms/d/e/1FAIpQLSc2dYxHSuTLF-aGuVkusM3UevEKkCu6Iky2HC7aL6wkcP3r0g/viewform)
 
 ```{r eval=FALSE, echo=F}
 # tabla <- table(wage); tabla
@@ -276,37 +311,36 @@ plot(a)     # Notar la pestaña de Studio donde aparece
 
 ```{r eval=FALSE, echo=T}
 plot(sin, -pi, 2*pi)
-plot(log, 1,10)
+plot(log, 1, 10)
 ```
 
 * Dibujar dos vectores uno contra el otro
 
 ```{r eval=FALSE, echo=T}
 b <- 2:20
-plot(a,b)              # deben ser de la misma longitud
-
-plot(a,b[1:10])
+plot(a, b)              # deben ser de la misma longitud
+plot(a, b[1:10])
 ```
 
 ##  Gráficos Básicos (cont.)
 * Se pueden añadir títulos
 
 ```{r eval=FALSE, echo=T}
-plot(a,b[1:10],xlab="Eje X",ylab="Eje Y",main="Mi título")
+plot(a, b[1:10], xlab="Eje X", ylab="Eje Y", main="Mi título")
 ```
 
-* en lugar de puntos, type = "p" (defecto), se puede usar líneas 'type="l"' 
+* En lugar de puntos  `type = "p"` (defecto), se pueden usar líneas `type="l"`
 
 ```{r eval=FALSE, echo=T}
-plot(a,b[1:10],type="l")
+plot(a, b[1:10], type="l")
 ```
 
-* o ambos type = "b"
+* o ambos `type = "b"`
 
 ```{r eval=FALSE, echo=T}
 plot(a,b[1:10],type="b")
-
 ```
+
 ```{r eval=FALSE, echo=F}
 # * para dibujar funciones, 
 #  podems definir el dominio usando secuencias
@@ -326,32 +360,36 @@ plot(x,y,type="l",xlab = "x", ylab = "f(x) = sin(x)",
 attach(PSID1982)
 plot(wage, experience)
 cor(wage, experience)
-
-
 ```
+
 ```{r eval=FALSE, echo=F}
 # * Mejores gráficos con  GGPLOT2
 ```
 
 ## Regresión en R
 
-* Función 'lm' y notación de fórmula en R
+* Función `lm` y notación de fórmula en R
 
 ```{r eval=FALSE, echo=T}
 lm(data=PSID1982, wage ~ experience)
-
 res <- lm(data=PSID1982, wage ~ experience)   # str(res)
 summary(res)
 ```
 
 * Regresión múltiple
 
+
 ```{r eval=FALSE, echo=T}
 summary(lm(data=PSID1982, wage ~ experience + gender))
+summary(lm(data=PSID1982, wage ~ experience + I(experience^2) + experience*gender))
+```
 
-summary(lm(data=PSID1982, wage ~ experience +I(experience^2)+ gender))
+```{r eval=FALSE, echo=F}
+summary(lm(data=PSID1982, wage ~ experience + gender))
 
-summary(lm(data=PSID1982, wage ~ experience +I(experience^2)+ experience*gender))
+summary(lm(data=PSID1982, wage ~ experience + I(experience^2) + gender))
+
+summary(lm(data=PSID1982, wage ~ experience + I(experience^2) + experience*gender))
 ```
 
 * Educación como variable continua o como factor
@@ -359,7 +397,6 @@ summary(lm(data=PSID1982, wage ~ experience +I(experience^2)+ experience*gender)
 ```{r eval=FALSE, echo=T}
 table(education)
 summary(lm(data=PSID1982, wage ~ experience + education))
-
 summary(lm(data=PSID1982, wage ~ experience + as.factor(education)))
 ```
 
@@ -369,7 +406,7 @@ summary(lm(data=PSID1982, wage ~ experience + as.factor(education)))
 # * Al cerrar RStudio pide guardarlo
 ```
 
-* Los objetos del espacio de trabajo se guardan con la función 'save'
+* Los objetos del espacio de trabajo se guardan con la función `save`
 
 ```{r eval=FALSE, echo=T}
 x <- 2 * pi
@@ -379,8 +416,8 @@ save(x, file="x.RData")      # un solo objeto
 save(x, y, file="xy.RData")  # varios objetos
 ```
 
-* O todo el workspace con 'save.image' (= icono de guardar en RStudio)
-* Se cargan al espacio de trabajo con 'load' (también icono en RStudio)
+* O todo el workspace con `save.image` (= icono de guardar en RStudio)
+* Se cargan al espacio de trabajo con `load` (también icono en RStudio)
 
 ```{r eval=FALSE, echo=T}
 rm( list=ls() )
@@ -400,17 +437,17 @@ unlink("xy.RData")
      + Formatos de hojas de cálculo o de bases de dato SQL
      + Formatos de software estadístico
 * Varias bibliotecas para cada caso: 
-ej. 'utils' en R base y 'readr' ('tidyverse') 
+ej. `utils` (R base) y `readr` (`tidyverse`) 
  
 * "Import Dataset" de RStudio: acceso por menús a algunas de estas funciones
 
 * Texto plano con delimitadores
      + La primera línea puede contener nombre, los datos en resto
-     + Una línea por caso, columnas separadas por delimitador 
-       (espacio, tabulador, coma, punto y coma)
+     + Una línea por caso, columnas separadas por delimitador (ej., coma) 
+<!--       (espacio, tabulador, coma, punto y coma) -->
      + Variables de caracteres con valores entre comillas
 
-## 'read.table' de 'utils'  
+## `read.table` de `utils`  
 
 
 ```{r eval=FALSE, echo=T}
@@ -419,6 +456,13 @@ ej. 'utils' en R base y 'readr' ('tidyverse')
 
 * Se debe especificar: el archivo, si existe encabezamiento y el separador.
 
+```{r eval=FALSE, echo=T}
+sexdata <- read.table("data/sex_data.csv", 
+                      header=TRUE, sep=",")
+```
+
+
+<!--
 ```{r eval=FALSE, echo=T}
 sexdata <- read.table("/home/albarran/Archivos/teaching/MAD/00.TEC/data/sex_data.csv", 
                       header=TRUE, sep=",")
@@ -438,10 +482,13 @@ sexdata <- read.table("data/sex_data.csv",
 
 * Se puede dar nombres a las columnas, especificar la clase de las variables, etc.
 
+-->
+
 ```{r eval=FALSE, echo=F}
 arch <- file.path("data", "sex_data.csv")
-
 ```
+
+
 ```{r eval=FALSE, echo=T}
 sexdata <- read.table("data/sex_data.csv", 
                       header=F, sep=",", 
@@ -449,9 +496,9 @@ sexdata <- read.table("data/sex_data.csv",
                       colClasses = c(rep("character",25)))
 ```
 
-## 'read.csv', 'read.delim', etc.
+## `read.csv`, `read.delim`, etc.
 
-* Existen implementaciones simplificadas derivadas de 'read.table' 
+* Existen implementaciones simplificadas derivadas de `read.table` 
 que fijan las opciones habituales  
 y el resto igual a read.table ("...")
 
@@ -489,8 +536,9 @@ x <- read.fwf(
   widths=c(12, 7, 4, 9, 4, 9, 4, 9, 4))
 ```
 
-## Funciones en 'readr' (parte de 'tidyverse') 
-* Ofrece versiones equivalentes a las de 'utils': read_csv, read_tsv y read_delim
+## Funciones en `readr` 
+* Ofrece versiones equivalentes a las anteriores: `read_csv`, `read_tsv` y `read_delim`
+
 * Diferentes opciones por defecto, más rápidas
 
 ```{r eval=FALSE, echo=T}
@@ -500,12 +548,12 @@ library("readr")
 sexdata3 <- read_csv("data/sex_data.csv")
 ```
 
-* Notar el diferente tratamiento de caracteres: en 'readr' 
+* Notar el diferente tratamiento de caracteres: en `readr` 
 por defecto _no_ se convierten en factores
 
 * Ayuda adicional en la "viñeta" (vignette) de ['readr'](https://cran.r-project.org/web/packages/readr/vignettes/readr.html)
 
-## Funciones en 'readr' (cont.) 
+## Funciones en `readr` (cont.) 
 * Permite cargar un fragmento del archivo de datos
 
 ```{r eval=FALSE, echo=F}
@@ -521,6 +569,7 @@ y el tipo de las variables
 
 ```{r eval=FALSE, echo=T}
 nombres <- names(sexdata)
+arch <- file.path("data", "sex_data.csv")
 sexdata4 <- read_csv(arch, skip = 6, n_max = 5, 
                      col_names = nombres, 
                      col_types = "ciiiiiiiiiiiiiiiifnfinnnn")
@@ -531,9 +580,9 @@ sexdata4 <- read_csv(arch, skip = 6, n_max = 5,
 ```
 
 ##  Paquetes para formato de hoja de cálculo
-* 'openxlsx', 'gdata' (solo .xls)
-* readxl: lectura tanto de .xls como .xlsx
-* XLConnect:  lee y cambia archivos .xls y .xlsx; requiere Java.
+* `openxlsx`, `gdata` (solo .xls)
+* `readxl`: lectura tanto de .xls como .xlsx
+* `XLConnect`:  lee y cambia archivos .xls y .xlsx; requiere Java.
 
 ```{r eval=FALSE, echo=T}
 library(readxl)
@@ -554,7 +603,7 @@ read_excel("archivo.xls", na = "NA")
 ```
 
 ## Formatos de software estadístico
-* Biblioteca 'foreign': .dta de Stata y .sav de SPSS
+* Biblioteca `foreign`: .dta de Stata y .sav de SPSS
 
 ```{r eval=FALSE, echo=T}
 library(foreign)
@@ -571,7 +620,7 @@ earn <- read.spss("data/earnings_data.sav",
 head(earn) 
 ```
 
-* Bibilioteca 'haven': además formato de SAS
+* Bibilioteca `haven`: además formato de SAS
 
 ```{r eval=FALSE, echo=T}
 library(haven)
@@ -690,7 +739,7 @@ mean(dataC$y, na.rm=T)
 ```
 
 
-## Estadísticas por grupos: 'aggregate'
+## Estadísticas por grupos: `aggregate`
 
 * Estadísticas de una variable por grupos definidos por otra
 
@@ -707,8 +756,6 @@ with(subset(earnComplete, earnComplete$gender==1), mean(earnings))
 ```{r eval=FALSE, echo=T}
 aggregate(earnComplete$earnings, by=list(earnComplete$gender), FUN=mean)
 aggregate(earnings ~ gender, data=earnComplete,  FUN=mean)
-
-
 ```
 
 ```{r eval=FALSE, echo=FALSE}
@@ -736,7 +783,7 @@ a <- aggregate( cbind(earnings, age) ~ year + degree, data=earnComplete, mean )
 str(a) # 'a' es un data frame!
 ```
 
-## ACCESO A DATOS DE INTERNET
+## Acceso a Datos de Internet
 *  Existen muchas bases de datos disponibles "online"
 y varias posibilidades de acceder a ellas
  
@@ -828,7 +875,7 @@ gdp <- MKTGDPESA646NWDB       # rm(FPCPITOTLZGESP, MKTGDPESA646NWDB)
 cor(inf, gdp) 
 ```
 
-* Cuidado con NAs y que las longuitudes de los vectores sean iguales
+* Cuidado con NAs y que las longitudes de los vectores sean iguales
 
 ```{r eval=FALSE, echo=T}
 dim(inf)
