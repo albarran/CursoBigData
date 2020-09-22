@@ -41,8 +41,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
   * [Tema 02 - Más R](Tema02.html) 
 
-  <!--
-  * [Práctica 01 - Introducción a RMarkdown](Pract01.html) -->
+  * [Práctica 01 - Introducción a RMarkdown](Pract01.html)
 
 :::
 
