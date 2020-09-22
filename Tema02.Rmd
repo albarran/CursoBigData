@@ -1,0 +1,841 @@
+---
+#subtitle: "Técnicas para 'Big Data' en Economía"
+#subtitle: "Muestreo y Análisis de Datos"
+title    :  "Tema 02 - Más R"
+author: 
+  - "Prof.: Pedro Albarrán"
+  - "Prof.: Alberto Pérez"
+job: "Universidad de Alicante" 
+date: "Universidad de Alicante, Curso 2020/21"  
+output:
+  ioslides_presentation: 
+    widescreen: yes
+#  beamer_presentation: 
+#      slide_level: 2
+#widescreen: yes
+---
+
+## Bibliotecas ("libraries")
+* R puede extenderse con capacidades adicionales 
+instalando paquetes con bibliotecas
+* Una biblioteca contiene un conjunto (nuevo) 
+de objetos de R: funciones, datos, etc.
+* Para instalar una nueva biblioteca:
+
+```{r eval=FALSE, echo=TRUE}
+install.packages("AER")
+install.packages("tidyverse")
+```
+
+* También se pueden instalar:
+  - en el menú: Tools > Install packages
+  - en el cuadrante inferior-derecha de RStudio, pestaña de Packages
+
+* Nota: conviene mantener actualizados los paquetes instalados
+
+## Bibliotecas (cont.)
+
+* Es necesario cargar la biblioteca antes de usarla
+
+```{r eval=FALSE, echo=T}
+library("AER")
+library("tidyverse")
+```
+
+* Pasa a formar parte del "Global Environment"
+```{r eval=FALSE, echo=TRUE}
+search()
+library("Hmisc")
+search()
+```
+
+
+
+```{r eval=FALSE, echo=TRUE}
+find("units")
+```
+
+* Se puede buscar información en la ayuda (ej. de RStudio), que puede incluir "vignettes" sobre el uso de las funciones de la biblioteca
+```{r eval=FALSE, echo=TRUE}
+library(help=utils)      # Ayuda para una biblioteca concreta
+library(help=tidyverse) 
+```
+
+
+## Bibliotecas (cont.)
+
+
+* Notad que el nombre completo de un objeto de R es `paquete::nombre`
+
+
+
+## Datos incorporados en bibliotecas de R
+
+```{r eval=FALSE, echo=FALSE}
+# * R incluye objetos "data frames" en bibliotecas
+```
+
+* Para listar los datos de las bibliotecas cargadas
+
+```{r eval=FALSE, echo=TRUE}
+data()
+```
+
+* Información detallada de los datos en ayuda (nombre de variables, etc)
+
+```{r eval=FALSE, echo=TRUE}
+help("Affairs")
+```
+
+* cargar una base de datos
+
+```{r eval=FALSE, echo=TRUE}
+data("Affairs")
+str(Affairs)     # También en "Environment" de RStudio
+head(Affairs)
+```
+
+* RStudio muestra visualmente la tabla de datos
+
+* Se trabaja con las variables de la forma habitual, accediendo con '$'
+
+```{r eval=FALSE, echo=FALSE}
+head(Affairs)    # mostrar unas pocas observaciones
+tail(Affairs)
+# * otra información sobre los datos
+names(Affairs)
+dim(Affairs)
+
+#* acceder a una de las variables en el marco de datos
+Affairs$affairs
+Affairs$gender
+
+```
+```{r eval=FALSE, echo=F}
+edad <- Affairs$age
+is(edad)
+```
+
+
+## Función 'attach'
+
+```{r eval=FALSE, echo=F}
+# * Se accede a variables del marco de datos con '$'
+
+```
+```{r eval=FALSE, echo=T}
+head(Affairs$gender)
+head(gender)          # no se encuentra
+```
+
+* 'Attach' permite carga un objeto como parte del "Environment" principal
+
+```{r eval=FALSE, echo=T}
+attach(Affairs)
+
+```
+```{r eval=FALSE, echo=F}
+search()          # (ver también en RStudio)
+attach(Affairs)
+search()
+```
+
+* Ahora se accede a las variables solo por su nombre. 
+
+```{r eval=FALSE, echo=T}
+head(gender)
+```
+```{r eval=FALSE, echo=F}
+class(gender)
+```
+
+* Útil si se usa una sola base de datos o no hay lugar a confusión
+* Se deja de vincular la base de datos (o una biblioteca) con 'detach' 
+
+```{r eval=FALSE, echo=T}
+detach(Affairs)
+head(gender)
+```
+
+
+## Función 'with'
+
+```{r eval=FALSE, echo=F}
+# * Forma alternativa para evitar la repetición del nombre de marco de datos
+```
+
+* Notar que se pueden tener más de una base de datos (como cualquier objeto), 
+aunque haya variables de mismo nombre en ellas
+
+```{r eval=FALSE, echo=T}
+data("PSID1982")  # help(PSID1982)
+
+head(Affairs$gender)
+head(PSID1982$gender)
+```
+
+* Para evitar el uso de '$', se puede usar 'with'
+
+```{r eval=FALSE, echo=T}
+with(PSID1982,  head(wage))
+```
+
+* Más relevante con enunciados complejos
+
+```{r eval=FALSE, echo=T}
+annualWage <- PSID1982$wage * PSID1982$weeks  # sin 'with'
+annualWage <- with(PSID1982, wage * weeks)    # con 'with'
+```
+
+## Estadísticas en R
+
+Estadísticos descriptivos
+
+```{r eval=FALSE, echo=T}
+summary(PSID1982$wage)     # de una variable
+summary(PSID1982)          # de todo el marco de datos
+```
+
+* Notar el tratamiento diferente de variables factores
+
+```{r eval=FALSE, echo=F}
+# No es por ser binaria
+summary(as.numeric(PSID12$gender))
+# diferente tipo de informacion, diferente tipo de summary 
+```
+
+* Tabla de frecuencias
+
+```{r eval=FALSE, echo=T}
+table(PSID1982$gender) 
+```
+
+* El resultado es un objeto de R, que puede ser usado en otras funciones
+
+```{r eval=FALSE, echo=T}
+df <- table(PSID1982$gender)  
+str(df)
+prop.table(df)
+```
+```{r eval=FALSE, echo=F}
+prop.table(table(PSID1982$gender))
+
+```
+```{r eval=FALSE, echo=F}
+# pensamiento algoritmico
+df/(df[1]+df[2])
+df/sum(df)         # mas corto, claro y general
+```
+
+## Otras funciones de estadísticos
+
+```{r eval=FALSE, echo=T}
+attach(PSID1982)
+
+min(wage)
+max(wage)
+range(wage)
+
+mean(wage)    
+median(wage)
+sum(wage)
+sd(wage)
+var(wage)
+
+table(wage)
+```
+
+* ¿Cómo obtendríaamos la moda?
+
+```{r eval=FALSE, echo=F}
+# tabla <- table(wage); tabla
+# ma <- max(tabla); ma
+# moda <- tabla[tabla==ma]; str(moda); moda
+# dimnames(moda)
+#
+# tabla[tabla==max(tabla)]
+
+```
+```{r eval=FALSE, echo=F}
+# https://stackoverflow.com/questions/2547402/is-there-a-built-in-function-for-finding-the-mode
+Mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+```
+
+##  Gráficos Básicos 
+* Dibujar un vector frente al indice
+
+```{r eval=FALSE, echo=T}
+a <- 1:10
+plot(a)     # Notar la pestaña de Studio donde aparece
+```
+
+* Dibujar funciones
+
+```{r eval=FALSE, echo=T}
+plot(sin, -pi, 2*pi)
+plot(log, 1,10)
+```
+
+* Dibujar dos vectores uno contra el otro
+
+```{r eval=FALSE, echo=T}
+b <- 2:20
+plot(a,b)              # deben ser de la misma longitud
+
+plot(a,b[1:10])
+```
+
+##  Gráficos Básicos (cont.)
+* Se pueden añadir títulos
+
+```{r eval=FALSE, echo=T}
+plot(a,b[1:10],xlab="Eje X",ylab="Eje Y",main="Mi título")
+```
+
+* en lugar de puntos, type = "p" (defecto), se puede usar líneas 'type="l"' 
+
+```{r eval=FALSE, echo=T}
+plot(a,b[1:10],type="l")
+```
+
+* o ambos type = "b"
+
+```{r eval=FALSE, echo=T}
+plot(a,b[1:10],type="b")
+
+```
+```{r eval=FALSE, echo=F}
+# * para dibujar funciones, 
+#  podems definir el dominio usando secuencias
+x <- seq(0,2*pi,0.1)
+y <- sin(x)
+```
+```{r eval=FALSE, echo=F}
+# * Todo junto
+plot(x,y)
+plot(x,y,type="l",xlab = "x", ylab = "f(x) = sin(x)", 
+     main="Gráfico de sin(x)")
+```
+
+* Los gráficos aportan __información__ útil sobre variables 
+
+```{r eval=FALSE, echo=T}
+attach(PSID1982)
+plot(wage, experience)
+cor(wage, experience)
+
+
+```
+```{r eval=FALSE, echo=F}
+# * Mejores gráficos con  GGPLOT2
+```
+
+## Regresión en R
+
+* Función 'lm' y notación de fórmula en R
+
+```{r eval=FALSE, echo=T}
+lm(data=PSID1982, wage ~ experience)
+
+res <- lm(data=PSID1982, wage ~ experience)   # str(res)
+summary(res)
+```
+
+* Regresión múltiple
+
+```{r eval=FALSE, echo=T}
+summary(lm(data=PSID1982, wage ~ experience + gender))
+
+summary(lm(data=PSID1982, wage ~ experience +I(experience^2)+ gender))
+
+summary(lm(data=PSID1982, wage ~ experience +I(experience^2)+ experience*gender))
+```
+
+* Educación como variable continua o como factor
+
+```{r eval=FALSE, echo=T}
+table(education)
+summary(lm(data=PSID1982, wage ~ experience + education))
+
+summary(lm(data=PSID1982, wage ~ experience + as.factor(education)))
+```
+
+## Datos "nativos" en R
+
+```{r eval=FALSE, echo=F}
+# * Al cerrar RStudio pide guardarlo
+```
+
+* Los objetos del espacio de trabajo se guardan con la función 'save'
+
+```{r eval=FALSE, echo=T}
+x <- 2 * pi
+y <- x + 1
+
+save(x, file="x.RData")      # un solo objeto
+save(x, y, file="xy.RData")  # varios objetos
+```
+
+* O todo el workspace con 'save.image' (= icono de guardar en RStudio)
+* Se cargan al espacio de trabajo con 'load' (también icono en RStudio)
+
+```{r eval=FALSE, echo=T}
+rm( list=ls() )
+load("xy.RData")   
+```
+
+*  Un fichero del disco se elimina con 'unlink'
+
+```{r }
+unlink("xy.RData")
+```
+
+##  Cargar datos externos
+* Existen varias formas de almacenar datos
+     + Texto plano con delimitadores 
+     + Texto plano con variables definidas por ancho fijo
+     + Formatos de hojas de cálculo o de bases de dato SQL
+     + Formatos de software estadístico
+* Varias bibliotecas para cada caso: 
+ej. 'utils' en R base y 'readr' ('tidyverse') 
+ 
+* "Import Dataset" de RStudio: acceso por menús a algunas de estas funciones
+
+* Texto plano con delimitadores
+     + La primera línea puede contener nombre, los datos en resto
+     + Una línea por caso, columnas separadas por delimitador 
+       (espacio, tabulador, coma, punto y coma)
+     + Variables de caracteres con valores entre comillas
+
+## 'read.table' de 'utils'  
+
+
+```{r eval=FALSE, echo=T}
+?read.table
+```
+
+* Se debe especificar: el archivo, si existe encabezamiento y el separador.
+
+```{r eval=FALSE, echo=T}
+sexdata <- read.table("/home/albarran/Archivos/teaching/MAD/00.TEC/data/sex_data.csv", 
+                      header=TRUE, sep=",")
+```
+
+* si se fija el directorio de trabajo
+
+```{r eval=FALSE, echo=T}
+setwd("/home/albarran/Archivos/teaching/MAD/00.TEC")
+setwd("E:/Archivos/teaching/MAD/00.TEC")
+
+sexdata <- read.table("data/sex_data.csv", 
+                      header=TRUE, sep=",")
+```
+
+## 'read.table' de 'utils'  (cont.)
+
+* Se puede dar nombres a las columnas, especificar la clase de las variables, etc.
+
+```{r eval=FALSE, echo=F}
+arch <- file.path("data", "sex_data.csv")
+
+```
+```{r eval=FALSE, echo=T}
+sexdata <- read.table("data/sex_data.csv", 
+                      header=F, sep=",", 
+                      col.names = c("valor", "fecha", "otra", as.character(4:25)),
+                      colClasses = c(rep("character",25)))
+```
+
+## 'read.csv', 'read.delim', etc.
+
+* Existen implementaciones simplificadas derivadas de 'read.table' 
+que fijan las opciones habituales  
+y el resto igual a read.table ("...")
+
+```{r eval=FALSE, echo=F}
+?read.table
+```
+
+* Dos opciones equivalentes:
+
+```{r eval=FALSE, echo=T}
+sexdata  <- read.table("data/sex_data.csv", 
+                      header=TRUE, sep=",")
+sexdata1 <- read.csv("data/sex_data.csv")
+```
+
+* Si no se quiere que los caracteres sean factores
+
+```{r eval=FALSE, echo=T}
+sexdata2 <- read.csv("data/sex_data.csv", stringsAsFactors=F)
+```
+
+## Formato de ancho fijo
+
+```{r eval=FALSE, echo=F}
+download.file("http://www.cpc.ncep.noaa.gov/data/indices/wksst8110.for", "data/fichero.txt")
+```
+
+* Se debe especificar el ancho de cada variable
+
+```{r eval=FALSE, echo=T}
+?read.fwf
+x <- read.fwf(
+  file="data/fichero.txt",
+  skip=4,
+  widths=c(12, 7, 4, 9, 4, 9, 4, 9, 4))
+```
+
+## Funciones en 'readr' (parte de 'tidyverse') 
+* Ofrece versiones equivalentes a las de 'utils': read_csv, read_tsv y read_delim
+* Diferentes opciones por defecto, más rápidas
+
+```{r eval=FALSE, echo=T}
+library("readr")
+?read_csv
+
+sexdata3 <- read_csv("data/sex_data.csv")
+```
+
+* Notar el diferente tratamiento de caracteres: en 'readr' 
+por defecto _no_ se convierten en factores
+
+* Ayuda adicional en la "viñeta" (vignette) de ['readr'](https://cran.r-project.org/web/packages/readr/vignettes/readr.html)
+
+## Funciones en 'readr' (cont.) 
+* Permite cargar un fragmento del archivo de datos
+
+```{r eval=FALSE, echo=F}
+# * el numero de filas iniciales a saltar: skip
+# * el numero de observaciones a cargar: n_max
+```
+```{r eval=FALSE, echo=T}
+sexdata4 <- read_csv(arch, skip = 6, n_max = 5)
+```
+
+* Tambien se puede asignar el nombre de las columnas
+y el tipo de las variables
+
+```{r eval=FALSE, echo=T}
+nombres <- names(sexdata)
+sexdata4 <- read_csv(arch, skip = 6, n_max = 5, 
+                     col_names = nombres, 
+                     col_types = "ciiiiiiiiiiiiiiiifnfinnnn")
+
+```
+```{r eval=FALSE, echo=F}
+# * fread de data.table
+```
+
+##  Paquetes para formato de hoja de cálculo
+* 'openxlsx', 'gdata' (solo .xls)
+* readxl: lectura tanto de .xls como .xlsx
+* XLConnect:  lee y cambia archivos .xls y .xlsx; requiere Java.
+
+```{r eval=FALSE, echo=T}
+library(readxl)
+beauty<-read_excel("data/beauty.xls")        
+```
+
+* Se puede especificar hoja por nombre o número
+
+```{r eval=FALSE, echo=T}
+read_excel("archivo.xls", sheet = "data")
+read_excel("archivo.xls", sheet = 2)
+```
+
+* Se puede especificar qué representa missing/NA si no es celda en blanco
+
+```{r eval=FALSE, echo=T}
+read_excel("archivo.xls", na = "NA")
+```
+
+## Formatos de software estadístico
+* Biblioteca 'foreign': .dta de Stata y .sav de SPSS
+
+```{r eval=FALSE, echo=T}
+library(foreign)
+?read.dta                             
+```
+```{r eval=FALSE, echo=F}
+read.dta(path, convert.factors=F)
+
+```
+```{r eval=FALSE, echo=T}
+?read.spss
+earn <- read.spss("data/earnings_data.sav", 
+                  to.data.frame=TRUE, use.value.labels=FALSE)
+head(earn) 
+```
+
+* Bibilioteca 'haven': además formato de SAS
+
+```{r eval=FALSE, echo=T}
+library(haven)
+?read_sas()
+?read_stata()
+?read_sav()
+```
+
+## Exportar datos a formatos no nativos
+* Esto permite portar datos para ser leidos en otro software
+
+```{r eval=FALSE, echo=T}
+sex <- read.spss("data/sex_data.sav", 
+                 to.data.frame=TRUE, use.value.labels=FALSE)
+write.csv(sex, "data/sex_data2.csv")
+```
+
+## Valores ausentes ("missing values"): 'NA'
+* En (muchas) ocasiones, no se tendrá información 
+para todas las variables de todas las observaciones
+* Funciones con información sobre 'NA':
+
+```{r eval=FALSE, echo=T}
+x <- earn$earnings
+
+is.na(x)          # es el elemento un NA?
+any(is.na(x))     # hay algun NAs?
+which(is.na(x))   # qué elementos son NA
+```
+
+* En los datos de 'earnings'
+
+```{r eval=FALSE, echo=T}
+table(is.na(x))
+```
+
+## Valores ausentes (cont.)
+* el resultado habitual de un cálculo con NAs es NA
+
+```{r eval=FALSE, echo=T}
+mean(x)
+sum(x)
+quantile( x, probs=c(0.25, 0.75) ) # 1er y 3er cuartil
+cor(x, earn$age)
+```
+
+* Muchas funciones tienen un argumento na.rm ("NA remove") 
+
+```{r eval=FALSE, echo=T}
+mean(x, na.rm=TRUE)
+sum(x, na.rm=TRUE)
+quantile( x, probs=c(0.25, 0.75), na.rm=TRUE ) # 1er y 3er cuartil
+```
+
+* Mirar ayuda: el argumento es diferente en otras
+
+```{r eval=FALSE, echo=T}
+cor(x, earn$age, use="complete.obs")   
+```
+
+## Tratamiento de datos con valores ausentes
+
+* Una opción es reemplazando los NAs con un nuevo valor
+
+```{r eval=FALSE, echo=T}
+y <- replace(x, which(is.na(x)), -1)   # nuevo vector con valores reemplazados
+x[ is.na(x) ] <- -1                    # reemplaza en el vector original
+```
+
+* Otra es seleccionar solo observaciones completas 
+<!-- (como también hace 'na.rm') -->
+
+```{r eval=FALSE, echo=T}
+y <- x[!is.na(x)]
+
+```
+```{r eval=FALSE, echo=F}
+# Una manera algo más complicada
+#x <- c(1:4,NA,6)
+#na.omit(x)          # itera sobre la lista completa, pero ignora NAs
+#x[na.omit(x)]
+```
+
+* O con la función 'complete.cases' 
+
+```{r eval=FALSE, echo=T}
+s <- complete.cases(x)    # str(s)
+earnComplete <- earn[s,]
+```
+
+* El número de casos completos depende de las variables que queramos usar
+
+```{r eval=FALSE, echo=F}
+table( complete.cases(earn$earnings) )
+table( complete.cases(earn) )
+
+```
+```{r eval=FALSE, echo=F}
+nrow(earnComplete)
+
+```
+```{r eval=FALSE, echo=F}
+#x <- c(1, 0,NA,0 ,0,NA)
+#y <- c(0,NA,1 ,NA,1,NA)
+#data <- as.data.frame(cbind(x,y))
+data <- data.frame("x" = c(1, 0,NA,0 ,0,NA) ,
+                   "y" = c(0,NA,1 ,NA,1,NA) )
+
+mean(data$x, na.rm=T)
+mean(data$y, na.rm=T)
+
+cor(x,y, use="complete.obs")
+dataC <- subset(data, complete.cases(data))
+mean(dataC$x, na.rm=T)
+mean(dataC$y, na.rm=T)
+```
+
+
+## Estadísticas por grupos: 'aggregate'
+
+* Estadísticas de una variable por grupos definidos por otra
+
+```{r eval=FALSE, echo=T}
+earnComplete <- earn[complete.cases(earn), ]
+
+```
+```{r eval=FALSE, echo=F}
+mean(earnComplete$earnings[earnComplete$gender==1])
+with(earnComplete, mean(earnings[gender==1]))
+with(subset(earnComplete, earnComplete$gender==1), mean(earnings))
+
+```
+```{r eval=FALSE, echo=T}
+aggregate(earnComplete$earnings, by=list(earnComplete$gender), FUN=mean)
+aggregate(earnings ~ gender, data=earnComplete,  FUN=mean)
+
+
+```
+
+```{r eval=FALSE, echo=FALSE}
+## PREGUNTA: cómo se haría con regresión?
+
+
+
+
+
+```
+```{r eval=FALSE, echo=F}
+lm(data=earnComplete, earnings ~ gender)
+```
+
+* O de varias variables por otra
+
+```{r eval=FALSE, echo=T}
+aggregate( cbind(earnings, age) ~ year, data=earnComplete, FUN=mean )
+```
+
+* O de varias variables por varias variables
+
+```{r eval=FALSE, echo=T}
+a <- aggregate( cbind(earnings, age) ~ year + degree, data=earnComplete, mean )
+str(a) # 'a' es un data frame!
+```
+
+## ACCESO A DATOS DE INTERNET
+*  Existen muchas bases de datos disponibles "online"
+y varias posibilidades de acceder a ellas
+ 
+* Muchas plataformas incluyen 
+[APIs](https://es.wikipedia.org/wiki/Interfaz_de_programaci%C3%B3n_de_aplicaciones)
+para acceder a sus datos
+* Entre las varias opciones disponibles en R, 
+veremos la biblioteca 'quantmod'
+
+```{r eval=FALSE, echo=T}
+install.packages("quantmod")
+library("quantmod")
+help(quantmod)
+?getSymbols
+```
+
+## Datos macroeconómicos
+ 
+*  En [FRED](https://fred.stlouisfed.org/) 
+se puede acceder a datos macroeconomicos de muchos países
+
+* Se busca un dato: ej., inflación en España
+
+    +  Elegimos en concreto
+    
+    +  "Inflation, consumer prices for Spain; Percent, Annual, Not Seasonally Adjusted"
+* Averiguamos el "symbol" o nombre interno de la variable
+
+```{r eval=FALSE, echo=T}
+getSymbols("FPCPITOTLZGESP",src='FRED')
+plot(FPCPITOTLZGESP)
+
+str(FPCPITOTLZGESP)
+
+plot(FPCPITOTLZGESP[1:20,])
+```
+
+## Datos Financieros
+
+* Se pueden obtener datos de [Yahoo Finance](https://es.finance.yahoo.com/) 
+
+* Nuevamente, se busca un dato (ej., "Telefonica, Equity - NYQ") 
+y averiguamos su símbolo
+
+
+```{r eval=FALSE, echo=T}
+getSymbols('TEF',src='yahoo')
+dim(TEF)
+plot(TEF$TEF.Close)
+```
+
+## Datos Financieros (cont.)
+
+* 'quantmod' incorpora funciones específicas de análisis, 
+incluyendo de gráficos
+
+```{r eval=FALSE, echo=T}
+candleChart(TEF, up.col = "black", dn.col = "red", 
+            theme = "white")
+
+```
+```{r eval=FALSE, echo=F}
+candleChart(TEF[-(1:3200),], up.col = "black", dn.col = "red", 
+            theme = "white")
+
+```
+```{r eval=FALSE, echo=T}
+getSymbols('^IBEX',src='yahoo')
+candleChart(IBEX[1:20,], up.col = "black", dn.col = "red", theme = "white")
+
+candleChart(IBEX[-(1:3150),], up.col = "black", dn.col = "red", theme = "white")
+```
+
+## Más análisis con 'quantmod'
+* Conviene renombrar las variables para que sean más descriptivas
+
+```{r eval=FALSE, echo=T}
+getSymbols('MKTGDPESA646NWDB',
+           src='FRED')        #  Gross Domestic Product for Spain
+                              # Current U.S. Dollars, Annual, Not Seasonally Adjusted
+
+inf <- FPCPITOTLZGESP
+gdp <- MKTGDPESA646NWDB       # rm(FPCPITOTLZGESP, MKTGDPESA646NWDB)
+```
+
+* Podemos hacer estadísticas descriptivas
+
+```{r eval=FALSE, echo=T}
+cor(inf, gdp) 
+```
+
+* Cuidado con NAs y que las longuitudes de los vectores sean iguales
+
+```{r eval=FALSE, echo=T}
+dim(inf)
+dim(gdp)
+cor(inf[1:56,], gdp[1:56,]) 
+
+
+# https://datos.gob.es/es
+```
+

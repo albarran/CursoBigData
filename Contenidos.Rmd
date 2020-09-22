@@ -1,5 +1,7 @@
 ---
 title: "Contenidos"
+classoption:
+- twocolumn
 ---
 
 ```{r setup, include=FALSE}
@@ -15,9 +17,34 @@ knitr::opts_chunk$set(echo = TRUE)
 
   - descargadlos en un subdirectorio de vuestro directorio de trabajo para poder usarlos en el futuro
 
+***
 
-## Semana 1 (14-Sept. a 18-Sept.)
+:::: {style="display: flex;"}
+
+::: {}
+
+## Semana 1  {.columns-2}
+(14-Sept. a 18-Sept.)
 
   * [Introducción](0Intro.html)
   * [Tema 01 - Introducción a R y a RStudio](Tema01.html)
   
+:::
+
+::: {}
+
+## Semana 2
+(21-Sept. a 25-Sept.)
+
+  * Certificado de completar el curso de Datacamp
+    - Entrega [aquí](https://docs.google.com/forms/d/e/1FAIpQLScxZ3PuU3y58buOupBmtpNhoIprMKgTydX4wH_WdontaEo9Mg/viewform): vie. 25-Sept. 23:55
+
+  <!--
+
+  * [Tema 02 - Más R](Tema02.html) 
+
+  * [Práctica 01 - Introducción a RMarkdown](Pract01.html) -->
+
+:::
+
+::::
