@@ -55,6 +55,16 @@ library(help=tidyverse)
 ```
 
 
+<!--
+En Linux puede ser necesario 
+
+libcurl4-openssl-dev
+libssl-dev
+libxml2-dev 
+
+https://community.rstudio.com/t/packages-installation-process-failed-on-linux-probably-due-to-missing-path-in-the-pkg-config-search-path/50619
+-->
+
 ## Bibliotecas (cont.)
 
 * Notad que el nombre completo de un objeto de R es `biblioteca::nombre` 
@@ -78,7 +88,7 @@ find("units")
 
 * El **meta-paquete** `tidyverse` incluye una colección de otros paquetes  y librerías para todo el proceso "tratamiento de datos". 
 
-El núcleo de `tidyverse` lo componen los siguientes paquetes (podéis ver una descripción [aquí](https://www.tidyverse.org/packages/)):
+* El núcleo de `tidyverse` lo componen los siguientes paquetes (podéis ver una descripción [aquí](https://www.tidyverse.org/packages/)):
 
 :::: {style="display: flex;"}
 
@@ -155,8 +165,9 @@ is(edad)
 * 'Attach' permite carga un objeto como parte del "Environment" principal
 
 ```{r eval=FALSE, echo=T}
+head(age)
 attach(Affairs)
-head(gender)
+head(age)
 ```
 
 ```{r eval=FALSE, echo=F}
@@ -176,11 +187,15 @@ class(gender)
 
 * Útil si se usa una sola base de datos o no hay lugar a confusión
 
-* Se deja de vincular la base de datos (o una biblioteca) con 'detach' 
+```{r eval=FALSE, echo=T}
+data("PSID1982")
+```
+
+
+* Se deja de vincular la base de datos (o una biblioteca) con `detach`
 
 ```{r eval=FALSE, echo=T}
 detach(Affairs)
-head(gender)
 ```
 
 * La función `base::with` también permite trabajar fácilmente con variables 
@@ -286,7 +301,8 @@ table(wage)
 # tabla <- table(wage); tabla
 # ma <- max(tabla); ma
 # moda <- tabla[tabla==ma]; str(moda); moda
-# dimnames(moda)
+#### # moda <- which(tabla==ma); str(moda); moda
+# names(moda); as. numeric(moda)
 #
 # tabla[tabla==max(tabla)]
 

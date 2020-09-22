@@ -153,6 +153,16 @@ search()</pre>
 <li>Se puede buscar información en la ayuda (ej. de RStudio), que puede incluir &ldquo;vignettes&rdquo; sobre el uso de las funciones de la biblioteca</li>
 </ul>
 
+<!--
+En Linux puede ser necesario 
+
+libcurl4-openssl-dev
+libssl-dev
+libxml2-dev 
+
+https://community.rstudio.com/t/packages-installation-process-failed-on-linux-probably-due-to-missing-path-in-the-pkg-config-search-path/50619
+-->
+
 </article></slide><slide class=""><hgroup><h2>Bibliotecas (cont.)</h2></hgroup><article  id="bibliotecas-cont.-1">
 
 <ul>
@@ -176,10 +186,9 @@ find(&quot;units&quot;)</pre>
 </article></slide><slide class=""><hgroup><h2>El paquete <code>tidyverse</code></h2></hgroup><article  id="el-paquete-tidyverse">
 
 <ul>
-<li>El <strong>meta-paquete</strong> <code>tidyverse</code> incluye una colección de otros paquetes y librerías para todo el proceso &ldquo;tratamiento de datos&rdquo;.</li>
+<li><p>El <strong>meta-paquete</strong> <code>tidyverse</code> incluye una colección de otros paquetes y librerías para todo el proceso &ldquo;tratamiento de datos&rdquo;.</p></li>
+<li><p>El núcleo de <code>tidyverse</code> lo componen los siguientes paquetes (podéis ver una descripción <a href='https://www.tidyverse.org/packages/' title=''>aquí</a>):</p></li>
 </ul>
-
-<p>El núcleo de <code>tidyverse</code> lo componen los siguientes paquetes (podéis ver una descripción <a href='https://www.tidyverse.org/packages/' title=''>aquí</a>):</p>
 
 <div style="display: flex;">
 <div>
@@ -232,17 +241,22 @@ head(Affairs)</pre>
 <li>&lsquo;Attach&rsquo; permite carga un objeto como parte del &ldquo;Environment&rdquo; principal</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>attach(Affairs)
-head(gender)</pre>
+<pre class = 'prettyprint lang-r'>head(age)
+attach(Affairs)
+head(age)</pre>
 
 <ul>
 <li><p>Ahora se accede a las variables solo por nombre (sin <code>$</code>)</p></li>
 <li><p>Útil si se usa una sola base de datos o no hay lugar a confusión</p></li>
-<li><p>Se deja de vincular la base de datos (o una biblioteca) con &lsquo;detach&rsquo;</p></li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>detach(Affairs)
-head(gender)</pre>
+<pre class = 'prettyprint lang-r'>data(&quot;PSID1982&quot;)</pre>
+
+<ul>
+<li>Se deja de vincular la base de datos (o una biblioteca) con <code>detach</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>detach(Affairs)</pre>
 
 <ul>
 <li>La función <code>base::with</code> también permite trabajar fácilmente con variables</li>

@@ -513,26 +513,29 @@ Esto es una línea normal</code></pre>
 <p><img src="Pract01_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>Para mostrar el código R sin evaluarlo, especifique la opción <code>eval = FALSE</code>:</p>
 <pre class="r"><code>summary(cars)</code></pre>
-<p>Como se ha visto anteriormente, la salida de fragmentos puede personalizarse con opciones, . Una lista completa de opciones de los fragmentos (argumentos suministrados en el encabezado del fragmento) está disponible <a href="http://yihui.name/knitr/options/">aquí</a>. Prestad especial atención a las opciones:</p>
+<p>Notad que sí un fragmento no se evalua, sus resultados no están disponibles para partes posteriores del documento. Es importante que si queremos cargar unos datos o una biblioteca necesarios para después o hacemos un cálculo cuyo resultado se usa posteriormente nos aseguremos de que estamos evaluando ese fragmento.</p>
+<p>Como se ha visto anteriormente, la salida de fragmentos puede personalizarse con opciones. Una lista completa de opciones de los fragmentos (argumentos suministrados en el encabezado del fragmento) está disponible <a href="http://yihui.name/knitr/options/">aquí</a>. Prestad especial atención a las opciones:</p>
 <ul>
-<li><p><code>echo</code></p></li>
-<li><p><code>eval</code> e <code>include</code></p></li>
-<li><p><code>warning</code>, <code>error</code> y <code>message</code></p></li>
-<li><p><code>fig.width</code> y <code>fig.height</code> (o <code>fig.dim</code>) y <code>out.width</code>, <code>out.height</code></p></li>
-<li><p><code>fig.align</code>, <code>fig.cap</code>, <code>fig.show</code></p></li>
+<li><p><code>echo</code>, <code>eval</code> e <code>include</code> (ya comentadas)</p></li>
+<li><p><code>warning</code>, <code>error</code> y <code>message</code>: mostar o no avisos, errores</p></li>
+<li><p><code>fig.width</code> y <code>fig.height</code> (o <code>fig.dim</code>): fijar las dimensiones de una figura</p></li>
+<li><p><code>out.width</code> y <code>out.height</code>: dimensiones de una figura en el documento de salida (pueden ser diferentes de lo anterior, que son las reales de la figura)</p></li>
+<li><p><code>fig.align</code>: mostrar la figura centrada o alineada a derecha o izquierda</p></li>
+<li><p><code>fig.cap</code>: leyenda de la figura</p></li>
+<li><p><code>fig.show</code>: cómo mostrar la figura</p></li>
 </ul>
 <p>Por ejemplo, podemos poner dos figuras una al lado de otra con <code>fig.show = "hold"</code> y <code>out.width = "50%"</code>:</p>
 <pre class="r"><code># en la izquierda
 plot(cars)
 # en la derecha
 plot(cars, type = &quot;l&quot;)</code></pre>
-<p><img src="Pract01_files/figure-html/unnamed-chunk-6-1.png" width="50%" /><img src="Pract01_files/figure-html/unnamed-chunk-6-2.png" width="50%" /> El comando <code>opts_chunk$set()</code> cambia las opciones por defecto globales en un documento: por ejemplo, <code>knitr::opts_chunk$set(echo=FALSE, fig.width=6, fig.height=6)</code>.</p>
+<p><img src="Pract01_files/figure-html/unnamed-chunk-6-1.png" width="50%" /><img src="Pract01_files/figure-html/unnamed-chunk-6-2.png" width="50%" /> El comando <code>opts_chunk$set()</code> cambia las opciones por defecto globales en un documento: por ejemplo, <code>knitr::opts_chunk$set(echo=FALSE, fig.width=6, fig.height=6)</code>. Este comando se suele situar al principio del documento, en un fragmento que sí se incluye para evaluar. También es conveniente incluir (casi) todas las bibliotecas en el primer fragmento de código que se dedica a opciones generales (generalmente sin mostrar, al menos, los mensajes).</p>
 <div id="comentarios-adicionales" class="section level3">
 <h3>Comentarios adicionales</h3>
 <p>Para mejorar la salida de algunos comandos que producen tablas, es conveniente utilizar librerias adicionales que mejoren la presentación:</p>
 <ul>
 <li><p>La librería <code>printr</code> mejora las salidas en html de algunas tablas</p></li>
-<li><p>La libreria <code>xtable</code> ofrece el comando <code>xtable</code> y otros para presentar objetos de R de forma más elegantes en html y LaTeX</p></li>
+<li><p>La libreria <code>xtable</code> ofrece el comando <code>xtable</code> y otros para presentar objetos de R de forma más elegantes en html y LaTeX. Nota: si el objeto no es un “data frame”, lo convierte en uno; esto puede implicar que añada nombres de filas.</p></li>
 <li><p>La libreria <code>knitr</code> ofrece la función <code>kable()</code>. Existe una librería que extiende su funcionalidad, <code>kableExtra</code>; se puede encontrar ayuda <a href="https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html">aquí</a>.</p></li>
 <li><p>La librería <code>pander</code> ofrece el comando <code>pandoc.table()</code>.</p></li>
 </ul>
@@ -578,23 +581,26 @@ output:
 <div id="mini-práctica" class="section level2">
 <h2>Mini-práctica</h2>
 <ol style="list-style-type: decimal">
-<li><p>Iniciar un nuevo documento de R Markdown desde el menú Archivo. Mantén los dos fragmentos de código, pero elimina el texto incluido por defecto y cambialo por un título y un par de secciones propias en castellano (no importan lo que diga, puede ser copia-pega de cualquier sitio)<!-- o un [lorem ipsum](https://es.wikipedia.org/wiki/Lorem_ipsum), p.e., generado [aquí](https://loremipsum.io/generator/) )-->. Renderiza el documento y experimenta con el ajuste YAML para el ancho de figura, observando cómo cambia.</p></li>
-<li><p>Mostar en un fragmento de código el conjunto de datos <code>mtcars</code>. Comprobar el efecto de incluir <code>df_print: paged</code> en el encabezado</p></li>
+<li><p>Iniciar un nuevo documento de R Markdown desde el menú Archivo. Añade un encabezado con, al menos, título y tu nombre como autor o autora. Mantén los dos fragmentos de código, pero elimina el texto incluido por defecto y cambialo por un título y un par de secciones propias en castellano (no importan lo que diga, puede ser copia-pega de cualquier sitio)<!-- o un [lorem ipsum](https://es.wikipedia.org/wiki/Lorem_ipsum), p.e., generado [aquí](https://loremipsum.io/generator/) )-->. Renderiza el documento y experimenta con el ajuste YAML para el ancho de figura, observando cómo cambia.</p></li>
+<li><p>Añade al texto</p>
+<ul>
+<li><p>un par de secciones y/o sub-secciones adicionales</p></li>
+<li><p>algún párrafo o línea de texto adicional</p></li>
+<li><p>un par de listas</p></li>
+<li><p>algún vínculo</p></li>
+<li><p>una imagen</p></li>
+<li><p>alguna nota a pie de página</p></li>
+<li><p>citas</p></li>
+</ul></li>
+<li><p>Reutiliza los fragmentos del <code>summary</code> y del gráfico para generar nuevos fragmentos en los que cambias los valores <code>echo</code>. Añade una frase antes de cada código, una leyenda en uno de los gráficos y renderiza el documento.</p></li>
+<li><p>Añade un fragmento con el código <code>a &lt;- 2</code>, y la opción <code>eval=FALSE</code>. Añade otro fragmento posterior con código <code>3 + a</code> (que sea evaluado). Renderiza el documento y comprueba que da un error. Cambia las opciones para que se pueda renderizar el documento.</p></li>
+<li><p>Carga la biblioteca <code>printr</code> entre dos comandos de <code>summary</code> y renderiza el documento. Comprueba las diferencias entre la salida antes y después de cargar <code>printr</code>.</p></li>
+<li><p>Antes de que <code>printr</code> esté cargado, añade fragmentos mostrando <code>head(mtcars)</code> y <code>summary(mtcars)</code> como tablas usando las funciones <code>xtable()</code> y <code>kable()</code>. Renderiza el documento y añade una frase comentando la diferencia entre la salida directa de los comandos y las salidas con cada función.</p></li>
+<li><p>Carga la biblioteca <code>tidyverse</code> en un fragmento de código. Cambia los valores de <code>warning</code>, <code>error</code> y <code>message</code> y renderiza el documento para observar los cambios.</p></li>
+<li><p>Mostar en un fragmento de código el conjunto de datos <code>mtcars</code>. Comprobar el efecto antes y después de incluir <code>df_print: paged</code> en el encabezado.</p></li>
 <li><p>Comprobar cómo cambia el documento al incluir <code>code_folding: hide</code> y al cambiar el tema.</p></li>
 <li><p>Usar el código <code>format(Sys.time(), "%B %e, %Y a las %H:%M:%S"))</code> en una línea de texto para mostrar la fecha y hora en la que el documento se renderiza.</p></li>
-<li><p>Añade al texto</p></li>
-</ol>
-<ul>
-<li>algún párrafo adicional</li>
-<li>un par de secciones y/o sub-secciones adicionales</li>
-<li>un par de listas</li>
-<li>algún vínculo</li>
-<li>una imagen</li>
-<li>alguna nota a pie de página</li>
-<li>citas</li>
-</ul>
-<ol start="6" style="list-style-type: decimal">
-<li><p>Rellenad este <a href="https://docs.google.com/forms/d/e/1FAIpQLScu-pRFqep38pnpyRtwR5TgZfpbQSAbwUjo6pU_2Sc6Pq8e1g/viewform">FORMULARIO</a> con vuestros datos y subid</p>
+<li><p>Rellenad este <a href="https://docs.google.com/forms/d/e/1FAIpQLSduXM4PuReNC5opsb17nBcv9YCEj1fb2-lxLJ4WdjJFX2ukvg/viewform">FORMULARIO</a> con vuestros datos y subid</p>
 <ul>
 <li>vuestro archivo de .Rmd</li>
 <li>el archivo .html resultado de compilarlo en RStudio.</li>
