@@ -53,6 +53,8 @@ knitr::opts_chunk$set(echo = TRUE)
 (28-Sept. a 2-Oct.)
 
   * [Práctica 02 - Visualización de Datos](Pract02.html)
+  
+  * [Tema 03 - Manipulación de Datos](Tema03sl.html)
 
 :::
 
