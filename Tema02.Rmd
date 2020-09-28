@@ -394,7 +394,6 @@ summary(res)
 
 * Regresión múltiple
 
-
 ```{r eval=FALSE, echo=T}
 summary(lm(data=PSID1982, wage ~ experience + gender))
 summary(lm(data=PSID1982, wage ~ experience + I(experience^2) + experience*gender))
@@ -577,6 +576,7 @@ por defecto _no_ se convierten en factores
 # * el numero de observaciones a cargar: n_max
 ```
 ```{r eval=FALSE, echo=T}
+arch <- file.path("data", "sex_data.csv")
 sexdata4 <- read_csv(arch, skip = 6, n_max = 5)
 ```
 
@@ -585,7 +585,6 @@ y el tipo de las variables
 
 ```{r eval=FALSE, echo=T}
 nombres <- names(sexdata)
-arch <- file.path("data", "sex_data.csv")
 sexdata4 <- read_csv(arch, skip = 6, n_max = 5, 
                      col_names = nombres, 
                      col_types = "ciiiiiiiiiiiiiiiifnfinnnn")

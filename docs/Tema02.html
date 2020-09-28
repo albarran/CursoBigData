@@ -558,14 +558,14 @@ sexdata3 &lt;- read_csv(&quot;data/sex_data.csv&quot;)</pre>
 <li>Permite cargar un fragmento del archivo de datos</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>sexdata4 &lt;- read_csv(arch, skip = 6, n_max = 5)</pre>
+<pre class = 'prettyprint lang-r'>arch &lt;- file.path(&quot;data&quot;, &quot;sex_data.csv&quot;)
+sexdata4 &lt;- read_csv(arch, skip = 6, n_max = 5)</pre>
 
 <ul>
 <li>Tambien se puede asignar el nombre de las columnas y el tipo de las variables</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>nombres &lt;- names(sexdata)
-arch &lt;- file.path(&quot;data&quot;, &quot;sex_data.csv&quot;)
 sexdata4 &lt;- read_csv(arch, skip = 6, n_max = 5, 
                      col_names = nombres, 
                      col_types = &quot;ciiiiiiiiiiiiiiiifnfinnnn&quot;)</pre>
