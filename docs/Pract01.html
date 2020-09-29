@@ -332,9 +332,14 @@ $(document).ready(function () {
 <h2>2. Guía básica de R Markdown</h2>
 <p>Comenzamos por crear un nuevo documento de R Markdown. Dentro de RStudio, se puede generar un nuevo archivo de R Markdown a partir de una plantilla seleccionando R Markdown en la opción Nuevo archivo del menú Archivo (<em>File &gt; New File &gt; R Markdown</em>). Si el paquete <code>rmarkdown</code> no está instalado y cargado, en este momento RStudio nos pedirá instalarlo. Esto genera el cuadro de diálogo. El formato de salida predeterminado es HTML, pero otras opciones (PDF o Microsoft Word) están disponibles. La salida formateada se puede generar y mostrar haciendo clic en HTML del botón “Knit” en RStudio. En el botón de al lado, con forma de tuerca, se pueden cambiar algunas opciones por defecto, como dónde se visualiza, si se ejecuta el código, etc.</p>
 <p>Sin el beneficio de RStudio, se pueden utilizar los comandos en el siguiente bloque de código, que también se puede utilizar cuando se ejecuta R.</p>
+<pre class="r"><code>library(rmarkdown)
+render(&quot;nombreArchivo.Rmd&quot;)      # crea nombreArchivo.html
+browseURL(&quot;nombreArchivo.html&quot;)</code></pre>
 <p>Cuando <em>tejes</em> (“knit”), compilas o renderizas el documento, R Markdown envía el archivo .Rmd a <a href="http://yihui.name/knitr/">knitr</a>, que ejecuta todos los fragmentos de código y crea un nuevo documento de markdown (.md) que incluye el código y su salida. El archivo generado por knitr es procesado por <em>pandoc</em>, que es responsable de crear el archivo finalizado. La ventaja de este flujo de trabajo de dos pasos es que puede crear una amplia gama de formatos de salida.</p>
 <p>En principio, tendríamos que instalar Pandoc (<a href="http://pandoc.org" class="uri">http://pandoc.org</a>) por separado; afortunadamente RStudio lo lleva incluido. A continuación se debería instalar el paquete <code>rmarkdown</code> en R, si no está instalado. Los documentos de R Markdown pueden aprovechar muchas las características disponibles a través de <a href="http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html">Pandoc Markdown</a>. Estas características no tienen nada que ver con la programación en R, pero proporcionan una rica experiencia de autoría de documentos.</p>
 <p>Para crear la salida de PDF, sería necesario tener instalado una distribución de <a href="https://es.wikipedia.org/wiki/LaTeX">LaTeX</a> como <a href="https://miktex.org/">MiKTeX</a>, disponible para Windows y para Mac OS. Para quienes no hayan instalado LaTeX anteriormente, es recomendable instalar TinyTeX (<a href="https://yihui.name/tinytex/" class="uri">https://yihui.name/tinytex/</a>):</p>
+<pre class="r"><code>install.packages(&quot;tinytex&quot;)
+tinytex::install_tinytex()</code></pre>
 <p>TinyTeX es una distribución LaTeX ligera, portátil, multiplataforma y fácil de mantener. El paquete complementario R <code>tinytex</code> instala automáticamente los paquetes LaTeX que faltan al compilar documentos LaTeX o R Markdown en PDF y también asegura que se compila un documento LaTeX el número correcto de veces para resolver todas las referencias cruzadas. (Si no entiendes lo que significan estas dos cosas, probablemente deberías instalar TinyTeX.)</p>
 <p>Con el paquete <code>rmarkdown</code>, RStudio/Pandoc y LaTeX, debería poder compilar la mayoría de los documentos de R Markdown. En algunos casos, es posible que necesite otros paquetes de software.</p>
 <div id="practicando" class="section level4">
@@ -480,6 +485,7 @@ Esto es una línea normal</code></pre>
 <li><p>Escribiendo manualmente los delimitadores de fragmento <code>```{r}</code> y <code>```</code>.</p></li>
 </ol>
 <p>Los fragmentos del código de R se pueden utilizar para producir salida de R en documentos o para mostrar simplemente el código como ilustración. Aquí está un fragmento simple del código de R que resultará en el código y su salida que es incluida:</p>
+<pre class="r"><code>summary(cars)</code></pre>
 <pre><code>##      speed           dist       
 ##  Min.   : 4.0   Min.   :  2.00  
 ##  1st Qu.:12.0   1st Qu.: 26.00  
@@ -506,6 +512,7 @@ Esto es una línea normal</code></pre>
 <p>Tened en cuenta que los trozos de código R también se pueden utilizar sólo para procesar el código de R, mostrando el resultado pero no el código:</p>
 <p><img src="Pract01_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>Para mostrar el código R sin evaluarlo, especifique la opción <code>eval = FALSE</code>:</p>
+<pre class="r"><code>summary(cars)</code></pre>
 <p>Notad que sí un fragmento no se evalua, sus resultados no están disponibles para partes posteriores del documento. Es importante que si queremos cargar unos datos o una biblioteca necesarios para después o hacemos un cálculo cuyo resultado se usa posteriormente nos aseguremos de que estamos evaluando ese fragmento.</p>
 <p>Como se ha visto anteriormente, la salida de fragmentos puede personalizarse con opciones. Una lista completa de opciones de los fragmentos (argumentos suministrados en el encabezado del fragmento) está disponible <a href="http://yihui.name/knitr/options/">aquí</a>. Prestad especial atención a las opciones:</p>
 <ul>

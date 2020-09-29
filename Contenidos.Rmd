@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Datos
 
 
-* En las clases utilizaremos [este conjunto de datos](https://drive.google.com/drive/folders/1XaZsmU3VodSj6Vkcx791VhHRE02MiIO0?usp=sharing) 
+* En las clases utilizaremos [este conjunto de datos](https://drive.google.com/file/d/1_oeCFuxeu_11qFuBGgI6YhfqfYcMDT7W/view?usp=sharing) 
 
   <!-- (https://github.com/albarran/CursoBigData/tree/master/data) -->
 
