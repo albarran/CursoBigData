@@ -15,7 +15,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
   <!-- (https://github.com/albarran/CursoBigData/tree/master/data) -->
 
-  - descargadlos en un subdirectorio de vuestro directorio de trabajo para poder usarlos en el futuro
+  - descargad este fichero comprimido .zip
+  - descomprimid todo el contenido en un subdirectorio llamado **data** de vuestro directorio de trabajo para poder usarlos en el futuro
 
 ***
 
