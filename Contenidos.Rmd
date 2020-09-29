@@ -46,17 +46,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 :::
 
-::::
-
 ::: {}
 
-## Semana 3  {.columns-2}
+## Semana 3
 (28-Sept. a 2-Oct.)
 
   * [Práctica 02 - Visualización de Datos](Pract02.html)
   
  
 :::
+
+::::
+
+
+:::: {style="display: flex;"}
+
+
 
 ::: {}
 ## Semana 4
