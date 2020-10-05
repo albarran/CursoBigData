@@ -18,7 +18,7 @@ output:
 
 # Fecha y hora de entrega
 
-Como os he comentado en clase, debéis entregar un ejercicio para antes del lunes 18 de octubre a las 23:55h.
+Como os he comentado en clase, debéis entregar un ejercicio para antes del lunes 19 de octubre a las 23:55h.
 
 # Vuestro ejercicio
 
