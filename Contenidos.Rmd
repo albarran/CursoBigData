@@ -71,9 +71,9 @@ knitr::opts_chunk$set(echo = TRUE)
  
  * Ejercicios para entregar el lunes 19 de octubre:
  
-      + [Ejercicio 01 sobre R](Ejerc01.Rmd)
+      + [Ejercicio 01 sobre R](Ejerc01.html)
       
-      + [Ejercicio 02 sobre R Markdown](Ejerc02.Rmd)
+      + [Ejercicio 02 sobre R Markdown](Ejerc02.html)
 
 :::
 
