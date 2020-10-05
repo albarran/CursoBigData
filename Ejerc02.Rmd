@@ -1,0 +1,40 @@
+---
+#subtitle: "Técnicas para 'Big Data' en Economía"
+#subtitle: "Muestreo y Análisis de Datos"
+title    :  "Ejercicio 02:  Ejercicio sobre R Markdown"
+author: 
+  - "Prof.: Pedro Albarrán"
+  - "Prof.: Alberto Pérez"
+job: "Universidad de Alicante" 
+date: "Universidad de Alicante, Curso 2020/21"  
+output:
+#  ioslides_presentation: 
+#    widescreen: yes
+  html_document: default
+#  beamer_presentation: 
+#      slide_level: 2
+#widescreen: yes
+---
+
+# Fecha y hora de entrega
+
+Como os he comentado en clase, debéis entregar un ejercicio para antes del lunes 18 de octubre a las 23:55h.
+
+# Vuestro ejercicio
+
+1. Debéis escribir un fichero de R Markdown (.Rmd) que sea un informe con los resultados de vuestro análisis de los datos del Ejercicio 1. A diferencia del archivo de código .R, este archivo debería servir para comunicar a un no-experto vuestro análisis. El resultado final debe ser un documento .html, .docx o .pdf (a vuestra elección).
+
+    El documento debe tener un título apropiado y vuestro nombre como autor o autora. También debe tener una estructura mínima de secciones y fragmentos de código de R con vuestro código del Ejercicio 1 (y algún otro si lo consideráis oportuno). Debéis elegir qué queréis mostrar y que no (código, resultados) y cómo queréis hacerlo. También debéis comentar brevemente las características principales de vuestros datos y los resultados de vuestro análisis. 
+    
+    IMPORTANTE: Recordad que vuestro análisis debe ser totalmente REPRODUCIBLE: yo debo poder renderizar vuestro documento solo con cambiar el directorio de trabajo y tener las misma estructura donde se encuentran los datos (que ya tengo del Ejercicio 1).
+
+2. Rellenad este [FORMULARIO](https://docs.google.com/forms/d/e/1FAIpQLSd6fggv6EyVQsug0UM8Ma7HPQUE9BXJFCqecKCfSqe2JODqfw/viewform) con vuestros datos y subid 
+
+    * vuestro archivo de .Rmd 
+    * el archivo .html, .docx o .pdf resultado de compilarlo en RStudio. 
+
+    IMPORTANTE: los nombres de los dos archivos DEBEN EMPEZAR con vuestro número de DNI (el resto es libre): ej., 
+
+    > 12345678_P02_midoc.Rmd
+    
+    > 12345678_P02_midoc.html

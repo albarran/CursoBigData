@@ -1,0 +1,65 @@
+---
+#subtitle: "Técnicas para 'Big Data' en Economía"
+#subtitle: "Muestreo y Análisis de Datos"
+title    :  "Ejercicio 01:  Ejercicio sobre R"
+author: 
+  - "Prof.: Pedro Albarrán"
+  - "Prof.: Alberto Pérez"
+job: "Universidad de Alicante" 
+date: "Universidad de Alicante, Curso 2020/21"  
+output:
+#  ioslides_presentation: 
+#    widescreen: yes
+  html_document: default
+#  beamer_presentation: 
+#      slide_level: 2
+#widescreen: yes
+---
+
+
+# Fecha y hora de entrega
+
+Como os he comentado en clase, debéis entregar un ejercicio para antes del lunes 18 de octubre a las 23:55h.
+
+# Vuestro ejercicio
+
+1. En primer lugar, debéis entrar [AQUÍ](https://docs.google.com/spreadsheets/d/1YykUPmVmi954yw7dG1BCcfbCIG4QgOYuAmCBOo8SdE8) y, en la línea de vuestro DNI, poner los nombres de los datos que habéis elegido: 
+
+    * uno de Yahoo Finance, 
+
+    * dos de FRED, 
+
+    * dos de datos.gob.es (uno  en formato .csv y otro en .xls o .xlsx).  
+
+    En el caso de Yahoo y FRED poned los símbolos y en el caso de datos.gob.es poned el link a la web de los datos. IMPORTANTE: recordad que NO se puede elegir unos datos elegidos por otro alumno o alumna.
+
+2. Debéis escribir un fichero de código de R con los comando necesarios para 
+
+    a. cargar los datos 
+    
+    b. realizar un breve análisis descriptivo de la serie de Yahoor Finance y un grafico de velas
+    
+    c. realizar un breve análisis descriptivo de una de los dos series de FRED y un gráfico con su evolución temporal
+    
+    d. realizar un análisis gráfico (gráfico de dispersión) y numérico (correlación) de las dos series de FRED
+    
+    e. un breve análisis de descriptivo de los datos de una de las dos conjuntos de datos de datos.gob.es
+
+    No os olvidéis de incluir algunos (breves pero descriptivos) comentarios en vuestro código sobre qué hacéis y por qué.
+
+    IMPORTANTE: El objetivo del archivo .R debo ofrecer un código REPRODUCIBLE: yo debo poder ejecutar el archivo .R en mi ordenador sin problemas solo con cambiar el directorio de trabajo y tener las misma estructura donde se encuentran los datos. Notad que los nombres de archivos de datos deben corresponderse con los que entregáis y debe quedar claro donde se fija el directorio de trabajo y cuál es la estructura de directorios.
+
+3. Finalmente, rellenad este [FORMULARIO](https://docs.google.com/forms/d/e/1FAIpQLSc4WKJyZdaw6jTlF3l9Aynxr4qJuCARL1eTvHoHt0WMLj889A/viewform) con vuestros datos y subid 
+
+    * vuestro archivo de R 
+    
+    * los dos ficheros que habréis descargado de datos.gob.es. 
+    
+    IMPORTANTE: el nombre de los ficheros que subáis DEBE EMPEZAR con vuestro número de DNI. Por ejemplo,
+
+    > 12345678_P01_micodigo.R
+    
+    > 12345678_P01_datos1.csv
+    
+    > 12345678_P01_datos2.xlsx
+

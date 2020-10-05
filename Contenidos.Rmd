@@ -68,6 +68,12 @@ knitr::opts_chunk$set(echo = TRUE)
 (5-Oct. a 8-Oct.)
 
  * [Tema 03 - Manipulación de Datos](Tema03sl.html)
+ 
+ * Ejercicios para entregar el lunes 18 de octubre:
+ 
+      + [Ejercicio 01 sobre R](Ejerc01.Rmd)
+      
+      + [Ejercicio 02 sobre R Markdown](Ejerc02.Rmd)
 
 :::
 
