@@ -1,0 +1,221 @@
+---
+title: "Tema 3. Mini-práctica"
+author:
+- 'Prof.: Pedro Albarrán'
+- 'Prof.: Alberto Pérez'
+date: "Universidad de Alicante, Curso 2020/21"
+output:
+  html_document: default
+---
+
+<!--
+Reemplaza el número en `mi.DNI` por los números de tu DNI (o NIE) y ejecuta *todo* el siguiente código de una vez. Obtendrás un nombre para usar posteriormente.
+```{r echo=T, eval=FALSE}
+mi.DNI <- 1234567890   
+set.seed(mi.DNI)  
+babynames %>% 
+        group_by(name) %>% 
+        summarise(pr=sum(prop)) %>% 
+        arrange(desc(pr)) %>% 
+        head(100) %>% 
+        filter(row_number()==round(runif(1,1,100))) %>% 
+        select(name)
+```
+Escribe el código que responda a las preguntas de cada de los siguientes apartados.
+-->
+
+# Mini-Práctica
+
+Escribe un archivo .R con el código necesario para responder a las siguientes preguntas. La transformación de datos será una línea con comandos anidados.
+
+
+El nombre del archivo DEBE EMPEZAR con vuestro número de DNI (el resto es libre): ej., 
+
+> 12345678_T03.R
+
+Finalmente, rellenad este [FORMULARIO](https://docs.google.com/forms/d/e/1FAIpQLSe5A8m0SfgQzl5DXva66bk4m0wVBE1QCyDagKdL_Ko0xyiVQQ/viewform) con vuestros datos y subid
+
+
+# Preguntas
+
+1. Elige un nombre y encontrar el año en que fue usado con más frecuencia.
+
+```{r echo=F, eval=F}
+# SAMPLE SOLUTION:
+babynames %>%
+  filter(name == "Peter") %>%
+  arrange(desc(n)) %>%
+  head(1) %>% 
+  select(year)
+```
+
+<!--
+2. ¿Qué nombre fue el más popular en el año del apartado anterior?
+ 
+```{r echo=F, eval=F}
+  # SAMPLE SOLUTION:
+  babynames %>%
+  filter(year == 1957) %>%
+  arrange(desc(n)) %>%
+  head(1) %>% 
+  select(name)
+```
+-->
+
+2. ¿En qué año hubo más nacimientos y cuántos fueron?
+  
+```{r echo=F, eval=F}
+  # sample solution
+  babynames %>%
+    group_by(year) %>%
+    summarize(num_births = sum(n)) %>%
+    arrange(desc(num_births)) %>% 
+    head(1) 
+```
+
+3. Encontar los diez nombres más populares de la década de los 1990s.
+```{r echo=F, eval=F}
+# sample solution
+babynames %>%
+  filter(year >= 1990 & year < 2000) %>%
+  group_by(name) %>%
+  summarize(num_births = sum(n)) %>%
+  arrange(desc(num_births)) %>% 
+  head(10) %>% 
+  select(name)
+```
+
+<!--  
+4. Obtener un conjunto de datos (`data frame`) con tres variables: cada nombre, el primer año en que aparece y el último año en que aparece.
+
+```{r echo=F, eval=F}
+  # sample solution
+  babynames %>%
+    group_by(name) %>%
+    summarize(earliest = min(year), latest = max(year))
+```
+-->
+
+
+<!--  
+3. In which year was that name given to M and F babies most equally (i.e. closest to a 50/50 split)?
+
+```{r echo=F, eval=F}
+  
+babynames %>%
+  filter(name == "Jackie") %>%
+  group_by(year) %>%
+  summarize(
+    num_sexes = n(), 
+    total = sum(n), 
+    boys = sum(ifelse(sex == "M", n, 0)),
+    girls = total - boys,
+    girl_pct = girls / total
+  )
+```
+
+There are 15 names that have been assigned to both sexes in all 138 years. List them.
+
+```{r echo=F, eval=F}
+# sample solution
+babynames %>%
+  group_by(name) %>%
+  summarize(num_appearances = n()) %>%
+  filter(num_appearances == 276)
+
+```
+-->
+  
+<!--
+5. Considera los nombres con al menos 1% de nacimientos en un año dado. ¿Cuál es el año más reciente en que aparece?
+
+```{r echo=F, eval=F}
+# sample solution
+babynames %>%
+#  mutate(is_popular = prop >= 0.01) %>%
+#  filter(is_popular == TRUE) %>%
+  filter(prop >= 0.01) %>%
+  group_by(name) %>%
+  summarize(earliest = min(year)) %>%
+  arrange(desc(earliest))
+```
+-->  
+
+<!--  
+It seems like there is more diversity of names now than in the past. How have the number of names used changed over time? Has it been the same for boys and girls?
+
+  
+```{r echo=FALSE,eval=FALSE}
+
+```
+-->
+
+<!--
+Use ggplot2 and group_by() to create an interesting and informative data graphic. It need not be about babynames. Post your graphic and a short description of it to Slack.
+-->
+
+<!--More Practice (optional)
+
+If you are looking for some more practice, try these, using the nycflights13 package.
+-->
+
+<!--
+What was the daily average number of flights leaving each of the three NYC airports in 2013?
+
+```{r echo=F, eval=F}
+  # sample solution
+  library(nycflights13)
+flights %>%
+  group_by(origin, month, day) %>%
+  summarize(num_flights = n()) %>%
+  group_by(origin) %>%
+  summarize(num_days = n(), avg_daily = mean(num_flights))
+
+```
+-->
+
+4. Usando los datos del paquete `nycflights13`, calcular para cada compañía (`carrier`) el número total de vuelos, el retraso medio en la salida, el número de destinos únicos a los que vuela, y el número de aviones únicos utilizados.
+
+```{r echo=F, eval=F}
+# sample solution
+library(nycflights13)
+df <- flights %>%
+  group_by(carrier) %>%
+  summarize(
+    total_flights = n(), 
+    mean_delay = mean(dep_delay, na.rm = TRUE),
+    num_dests = n_distinct(dest), 
+    num_planes = n_distinct(tailnum)
+  ) %>%
+  arrange(desc(total_flights))
+```
+5. Usando el conjunto de datos obtenido en el apartado anterior, obtener los siguientes gráficos:
+
+    * Un gráfico de caja (`boxplot`) del retraso medio.
+    
+    * Un histograma del número de aviones.
+    
+    * La densidad del número total de vuelos.
+    
+```{r echo=FALSE, eval=FALSE}
+ggplot(data = df) +
+  geom_boxplot(aes(y = mean_delay))
+boxplot(df$mean_delay)
+
+ggplot(data = df) +
+  geom_histogram(aes(x = num_planes))
+hist(df$num_planes)
+
+ggplot(data = df) +
+  geom_histogram(aes(x = total_flights), stat = "density")
+plot(density(df$total_flights))
+```
+
+
+
+<!--
+Plot the distribution of average daily delay time across the entire year for each of the three airports.
+
+Challenge: Plot the average arrival delay time as a function of the distance flown to the nearest 100 miles for each of the three airports.
+-->
+

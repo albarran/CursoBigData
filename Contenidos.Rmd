@@ -77,4 +77,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 :::
 
+::: {}
+## Semana 5
+(12-Oct. a 16-Oct.)
+
+ * [Tema 03 - Mini-Práctica](PregT03.Ejerc.html)
+
+:::
+
 ::::

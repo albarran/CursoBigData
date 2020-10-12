@@ -9,13 +9,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Prof.: Pedro Albarrán" />
+<meta name="author" content="Prof.: Alberto Pérez" />
 
 
-<title>Contenidos</title>
+<title>Tema 3. Mini-práctica</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -298,72 +300,104 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Contenidos</h1>
+<h1 class="title toc-ignore">Tema 3. Mini-práctica</h1>
+<h4 class="author">Prof.: Pedro Albarrán</h4>
+<h4 class="author">Prof.: Alberto Pérez</h4>
+<h4 class="date">Universidad de Alicante, Curso 2020/21</h4>
 
 </div>
 
 
-<div id="datos" class="section level2">
-<h2>Datos</h2>
+<!--
+Reemplaza el número en `mi.DNI` por los números de tu DNI (o NIE) y ejecuta *todo* el siguiente código de una vez. Obtendrás un nombre para usar posteriormente.
+
+```r
+mi.DNI <- 1234567890   
+set.seed(mi.DNI)  
+babynames %>% 
+        group_by(name) %>% 
+        summarise(pr=sum(prop)) %>% 
+        arrange(desc(pr)) %>% 
+        head(100) %>% 
+        filter(row_number()==round(runif(1,1,100))) %>% 
+        select(name)
+```
+Escribe el código que responda a las preguntas de cada de los siguientes apartados.
+-->
+<div id="mini-práctica" class="section level1">
+<h1>Mini-Práctica</h1>
+<p>Escribe un archivo .R con el código necesario para responder a las siguientes preguntas. La transformación de datos será una línea con comandos anidados.</p>
+<p>El nombre del archivo DEBE EMPEZAR con vuestro número de DNI (el resto es libre): ej.,</p>
+<blockquote>
+<p>12345678_T03.R</p>
+</blockquote>
+<p>Finalmente, rellenad este <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5A8m0SfgQzl5DXva66bk4m0wVBE1QCyDagKdL_Ko0xyiVQQ/viewform">FORMULARIO</a> con vuestros datos y subid</p>
+</div>
+<div id="preguntas" class="section level1">
+<h1>Preguntas</h1>
+<ol style="list-style-type: decimal">
+<li>Elige un nombre y encontrar el año en que fue usado con más frecuencia.</li>
+</ol>
+<!--
+2. ¿Qué nombre fue el más popular en el año del apartado anterior?
+ 
+
+-->
+<ol start="2" style="list-style-type: decimal">
+<li><p>¿En qué año hubo más nacimientos y cuántos fueron?</p></li>
+<li><p>Encontar los diez nombres más populares de la década de los 1990s.</p></li>
+</ol>
+<!--  
+4. Obtener un conjunto de datos (`data frame`) con tres variables: cada nombre, el primer año en que aparece y el último año en que aparece.
+
+
+-->
+<!--  
+3. In which year was that name given to M and F babies most equally (i.e. closest to a 50/50 split)?
+
+
+
+There are 15 names that have been assigned to both sexes in all 138 years. List them.
+
+
+-->
+<!--
+5. Considera los nombres con al menos 1% de nacimientos en un año dado. ¿Cuál es el año más reciente en que aparece?
+
+
+-->
+<!--  
+It seems like there is more diversity of names now than in the past. How have the number of names used changed over time? Has it been the same for boys and girls?
+
+  
+
+-->
+<!--
+Use ggplot2 and group_by() to create an interesting and informative data graphic. It need not be about babynames. Post your graphic and a short description of it to Slack.
+-->
+<!--More Practice (optional)
+
+If you are looking for some more practice, try these, using the nycflights13 package.
+-->
+<!--
+What was the daily average number of flights leaving each of the three NYC airports in 2013?
+
+
+-->
+<ol start="4" style="list-style-type: decimal">
+<li><p>Usando los datos del paquete <code>nycflights13</code>, calcular para cada compañía (<code>carrier</code>) el número total de vuelos, el retraso medio en la salida, el número de destinos únicos a los que vuela, y el número de aviones únicos utilizados.</p></li>
+<li><p>Usando el conjunto de datos obtenido en el apartado anterior, obtener los siguientes gráficos:</p>
 <ul>
-<li><p>En las clases utilizaremos <a href="https://drive.google.com/file/d/1_oeCFuxeu_11qFuBGgI6YhfqfYcMDT7W/view?usp=sharing">este conjunto de datos</a></p>
-<!-- (https://github.com/albarran/CursoBigData/tree/master/data) -->
-<ul>
-<li>descargad este fichero comprimido .zip</li>
-<li>descomprimid todo el contenido en un subdirectorio llamado <strong>data</strong> de vuestro directorio de trabajo para poder usarlos en el futuro</li>
+<li><p>Un gráfico de caja (<code>boxplot</code>) del retraso medio.</p></li>
+<li><p>Un histograma del número de aviones.</p></li>
+<li><p>La densidad del número total de vuelos.</p></li>
 </ul></li>
-</ul>
-<hr />
-<div style="display: flex;">
-<div>
-<h2 id="semana-1" class="columns-2">Semana 1</h2>
-<p>(14-Sept. a 18-Sept.)</p>
-<ul>
-<li><a href="0Intro.html">Introducción</a></li>
-<li><a href="Tema01.html">Tema 01 - Introducción a R y a RStudio</a></li>
-</ul>
-</div>
-<div>
-<h2 id="semana-2">Semana 2</h2>
-<p>(21-Sept. a 25-Sept.)</p>
-<ul>
-<li><p>Certificado de completar el curso de Datacamp</p>
-<ul>
-<li>Entrega <a href="https://docs.google.com/forms/d/e/1FAIpQLScxZ3PuU3y58buOupBmtpNhoIprMKgTydX4wH_WdontaEo9Mg/viewform">aquí</a>: vie. 25-Sept. 23:55</li>
-</ul></li>
-<li><p><a href="Tema02.html">Tema 02 - Más R</a></p></li>
-<li><p><a href="Pract01.html">Práctica 01 - Introducción a RMarkdown</a></p></li>
-</ul>
-</div>
-<div>
-<h2 id="semana-3">Semana 3</h2>
-<p>(28-Sept. a 2-Oct.)</p>
-<ul>
-<li><a href="Pract02.html">Práctica 02 - Visualización de Datos</a></li>
-</ul>
-</div>
-</div>
-<div style="display: flex;">
-<div>
-<h2 id="semana-4">Semana 4</h2>
-<p>(5-Oct. a 8-Oct.)</p>
-<ul>
-<li><p><a href="Tema03sl.html">Tema 03 - Manipulación de Datos</a></p></li>
-<li><p>Ejercicios para entregar el lunes 19 de octubre:</p>
-<ul>
-<li><p><a href="Ejerc01.html">Ejercicio 01 sobre R</a></p></li>
-<li><p><a href="Ejerc02.html">Ejercicio 02 sobre R Markdown</a></p></li>
-</ul></li>
-</ul>
-</div>
-<div>
-<h2 id="semana-5">Semana 5</h2>
-<p>(12-Oct. a 16-Oct.)</p>
-<ul>
-<li><a href="PregT03.Ejerc.html">Tema 03 - Mini-Práctica</a></li>
-</ul>
-</div>
-</div>
+</ol>
+<!--
+Plot the distribution of average daily delay time across the entire year for each of the three airports.
+
+Challenge: Plot the average arrival delay time as a function of the distance flown to the nearest 100 miles for each of the three airports.
+-->
 </div>
 
 
