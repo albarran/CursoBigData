@@ -133,7 +133,7 @@ as_tibble(MASS::Boston)
 
 * Las funciones se pueden utilizar con `group_by()`: el alcance de cada función pasa de operar en todo el conjunto de datos a hacerlo grupo por grupo. 
 
-* Recordar la [chuleta de transformación de datos](https://github.com/rstudio/cheatsheets/raw/master/source/pdfs/data-transformation-cheatsheet.pdf). 
+* Entre la colección de [chuletas](https://rstudio.com/resources/cheatsheets/) existe una de [transformación de datos](https://raw.githubusercontent.com/rstudio/cheatsheets/master/translations/spanish/data-transformation_Spanish.pdf). 
 
 <!--También se pueden encontrar online esta y otras chuletas de R y RStudio [aquí](https://www.rstudio.com/resources/cheatsheets/); notad que existen versiones en castellano de algunas de ellas.
 -->
