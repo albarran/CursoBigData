@@ -82,6 +82,12 @@ knitr::opts_chunk$set(echo = TRUE)
 (12-Oct. a 16-Oct.)
 
  * [Tema 03 - Mini-Práctica](PregT03.Ejerc.html)
+ 
+ * Ejercicios para entregar el lunes 26 de octubre:
+ 
+      + [Ejercicio 03 sobre Visualización de Datos](Ejerc03.html)
+      
+ 
 
 :::
 

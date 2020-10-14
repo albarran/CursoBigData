@@ -1,0 +1,180 @@
+---
+#subtitle: "Técnicas para 'Big Data' en Economía"
+#subtitle: "Muestreo y Análisis de Datos"
+title: 'Ejercicio 03:  Visualización de datos'
+author: 
+  - "Prof.: Pedro Albarrán"
+  - "Prof.: Alberto Pérez"
+job: "Universidad de Alicante" 
+date: "Universidad de Alicante, Curso 2020/21"  
+output:
+#  ioslides_presentation: 
+#    widescreen: yes
+  html_document: default
+#  beamer_presentation: 
+#      slide_level: 2
+#widescreen: yes
+---
+
+```{r, setup, include=FALSE}
+# paquetes y opcciones adicionales para uso general aquí
+library("tidyverse")
+setwd("/home/albarran/Archivos/teaching/MAD/00.TEC")
+```
+
+
+# Vuestro Ejercicio
+
+Como os he comentado en clase, debéis entregar un ejercicio para antes del lunes 26 de octubre a las 23:55h.
+
+Para este ejercicio, debéis escribir un fichero de R Markdown (.Rmd) con un título apropiado, vuestro nombre como autor, etc. de manera que vuestro ejercicio sea un mini-informe con lo que se pide más abajo. 
+
+## Envio
+
+Cuando los halláis finalizado, rellenad este 
+[FORMULARIO](https://docs.google.com/forms/d/e/1FAIpQLSdM_MSZUJQJYJ2pUGXq5cUM5r05MBL7NSF5JxpgjFsphr1xzA/viewform) 
+ con vuestros datos y subid 
+ 
+ * vuestro archivo de .Rmd 
+ 
+ * el archivo .html (resultante de la compilación del anterior en RStudio).
+ 
+IMPORTANTE: los nombres de los dos archivos DEBEN EMPEZAR con vuestro número de DNI (el resto es libre): ej., 
+
+  > 12345678_P03_midoc.Rmd
+  
+  > 12345678_P03_midoc.html
+
+## Datos
+
+Utilizaremos los datos de Penn World Table (una famosa fuente de datos macroeconómicos), que están disponibles en la libreria "pwt9" de R. Instaladla y cargarla cuando sea necesario. Trabajaréis con la versión 9.1 (Pista: mirad la ayuda de R de pwt9.1). Como estos datos no tienen información del continente de cada país, deberéis usar cargar el fichero "continentes.Rdata" (formato nativo de R) que está en el directorio "data" comprimido y unir esa información (usando la función `right_join` de `tidyverse`) con el comando de R:
+
+
+```{r echo = TRUE, eval=FALSE}
+#install.packages("pwt9")
+library("pwt9")
+data("pwt9.1")
+load("data/continentes.Rdata")
+```
+
+
+```{r echo = TRUE, eval=FALSE}
+pwt9.1 <- right_join(pwt9.1,continentes)
+```
+
+
+Deberéis elegir DOS variables de la Penn World Table que tenga algun SENTIDO relacionar: sabéis que uno de los objetivos es replicar el gráfico visto en clase. 
+
+Entrad 
+[AQUÍ](https://docs.google.com/spreadsheets/d/1SRFmv_GtRevj-86igGX3cBOOc6TSuRbaqYdXPzWmmdE/edit?usp=sharing) 
+y, en la línea de vuestro DNI, poner los nombres de las dos variables; hacedlo en el orden en que aparecen en pwt9.1. IMPORTANTE: la combinación de dos variables ya elegida por otro alumno o alumna NO se puede repetir.
+
+# Cuestiones a resolver
+
+Vuestro documento debe abordar los siguientes puntos:
+
+1. Elegir la información de solo UNO de los años disponibles. Realizar un gráfico similar al visto en clase de "The Economist" donde se relacionaba Corrupción y Desarrollo Humano. Comentar la información que ofrece vuestro gráfico.
+
+```{r, echo=F, eval=F}
+datos <- subset(pwt9.1, year==1952)
+
+```
+
+2. Para el año elegido, mostrar un diagrama de caja de la distribución de una de vuestras dos variables para cada continente. Realizar ajustes al gráfico como dar color a los diagramas (asociacido al continente), poner título al gráfico, los ejes, etc. Comentar la información que ofrece el gráfico.
+  
+```{r, echo=F, eval=F}
+ggplot(datos) +
+  geom_boxplot(aes(x=continent, y=lifeExp, fill=continent)) 
+```
+
+3. Para el año elegido, mostrar un histograma y la distribución (densidad) de una de vuestras dos variables. Nuevamente, modificar la forma de visualización añadiento las pistas visuales, escalas y/o contextos que considere necesario. Comentar la información que ofrece el gráfico.
+
+```{r, echo=F, eval=F}
+ggplot(datos, aes(x=gdpPercap)) +
+  geom_histogram() 
+
+ggplot(datos, aes(x=gdpPercap)) +
+  geom_density() 
+```
+
+4. Usando los datos de un periodo de diez años (los que vosotros queráis), mostrar la distribución (densidad) de una de vuestras dos variables, en el periodo completo y en cada año. Nuevamente, modificar la forma de visualización añadiento las pistas visuales, escalas y/o contextos que considere necesario. Comentar la información que ofrece el gráfico.
+  
+```{r, echo=F, eval=F}
+ggplot(gapminder, aes(x=gdpPercap)) +
+  geom_density() +
+  facet_wrap(~year)
+
+ggplot(gapminder, aes(x=gdpPercap) )+
+  scale_x_log10() +
+  geom_density() +
+  facet_wrap(~year)
+```
+
+
+
+<!--
+Para responder a esta práctica, se debe crear un informe de R Markdown. Tu archivo .Rmd tendrá nombre "APELLIDO-NOMBRE-P02" (reemplaza APELLIDO-NOMBRE por tu primer apellido y nombre). El título será `Análisis de Datos, Práctica 2` y tu nombre completo debe aparecer en el campo de autor. Debes incluir secciones, listas, imágenes (pueden ser disponible a traves de una dirección de internet). Debes enviarme (por e-mail o UACloud) tanto el archivo .Rmd como el resultado final, un documento un .html.
+
+
+1. Elija uno de los gráficos de datos listados a continuación:
+
+    1. [¿Quién no paga el Impuesto sobre la Renta?](http://thefuturebuzz.com/2012/09/19/simplicity-with-data-visualization-is-still-best)
+    2. [Las 10 marcas de cigarros con mayores vental a nivel mundial, 2004-2007](http://vizwiz.blogspot.com/2009/12/simple-is-better.html)
+    3. [Anillos de los Playoff de la NBA](http://champsring.com/products/pro-basketball-2013)
+    4. [Ranking de Universidades en Reino Unido](http://static.guim.co.uk/sys-images/Guardian/Pix/maps_and_graphs/2010/9/7/1283876186403/Top-universities-graphic-001.jpg)
+    5. [Obesidad Infantil en los EE.UU.](http://www.sparkpe.org/blog/wp-content/uploads/2010/07/childhood-obesity-bmi.gif)
+    6. [Relación entre edad y madurez psicosocial](http://ars.els-cdn.com/content/image/1-s2.0-S1043276005002602-gr2.jpg)
+    7. [Localización de desechos plásticos flotantes](http://images.nationalgeographic.com/wpf/media-content/photos/000/816/81694-cb1405449966.jpg)
+
+    Conteste las siguientes preguntas. Asegúrese de indicar el gráfico seleccionado.
+
+    a. Identifique los indicadores visuales, el sistema de coordenadas y la(s) escala(s).
+    b. ¿Cuántas variables se muestran en el gráfico? Enlaza explícitamente cada variable a una clave visual que hayas enumerado anteriormente.
+    c. Critique este gráfico de datos usando la taxonomía descrita en el curso.
+
+2. En este ejercicio usaremos los datos de [Gapminder](https://www.gapminder.org/), una fundación que promueve el uso y comprensión de las estadísticas y la información "para una visión del mundo basado en hechos". En concreto usaremos, los datos disponibles en el paquete `gapminder` de R 
+```{r, echo=T, eval=F}
+#install.packages("gapminder")  # instalar si no lo estuviera
+library(gapminder)
+data("gapminder")
+str(gapminder)
+```
+
+  a. Elegir la información de solo UNO de los años disponibles (desde 1952 a 2007, en incrementos de 5 años). Realizar un gráfico similar al visto en clase de "The Economist" para la relación entre esperanza de vida y el PIB per cápita. Comentar la información que ofrece el gráfico.
+
+```{r, echo=F, eval=F}
+datos <- subset(gapminder, year==1952)
+
+```
+
+  b. Para el año elegido, mostrar un diagrama de caja de la distribución del PIB per capita para cada continente. Realizar ajustes al gráfico como dar color a los diagramas (asociacido al continente), poner título al gráfico, los ejes, etc. Comentar la información que ofrece el gráfico.
+  
+```{r, echo=F, eval=F}
+ggplot(datos) +
+  geom_boxplot(aes(x=continent, y=lifeExp, fill=continent)) 
+```
+
+  c. Para el año elegido, mostrar un histograma y la distribución (densidad) de la renta per cápita. Nuevamente, modificar la forma de visualización añadiento las pistas visuales y el contexto que considere necesario. Comentar la información que ofrece el gráfico.
+
+```{r, echo=F, eval=F}
+ggplot(datos, aes(x=gdpPercap)) +
+  geom_histogram() 
+
+ggplot(datos, aes(x=gdpPercap)) +
+  geom_density() 
+```
+
+  d. Usando los datos de todos los años, mostrar la distribución (densidad) de la renta per cápita para cada año. Nuevamente, modificar la forma de visualización añadiento las pistas visuales y el contexto que considere necesario (en particular, ¿le parecen adecuados/legibles los valores de la renta tal como se muestran por defecto). Comentar la información que ofrece el gráfico.
+  
+```{r, echo=F, eval=F}
+ggplot(gapminder, aes(x=gdpPercap)) +
+  geom_density() +
+  facet_wrap(~year)
+
+ggplot(gapminder, aes(x=gdpPercap) )+
+  scale_x_log10() +
+  geom_density() +
+  facet_wrap(~year)
+```
+
+-->
