@@ -317,7 +317,8 @@ class(ejemplo)</pre>
 10 %&gt;% log()
 
 presidential %&gt;% names()
-mypresidents %&gt;% nrows()</pre>
+presidential %&gt;% nrows()
+presidential %&gt;% head(2)</pre>
 
 <ul>
 <li><code>ggplot2</code> utiliza <code>+</code> en lugar de <code>%&gt;%</code> por haberse desarrollado antes</li>
@@ -507,7 +508,19 @@ flights %&gt;%
 flights %&gt;%
   na.omit() %&gt;%
   summarize(num_flights = n(), mean_delay_NA = mean(dep_delay), 
-            mean_delay = mean(dep_delay, na.rm = TRUE))</pre></article></slide>
+            mean_delay = mean(dep_delay, na.rm = TRUE))</pre>
+
+<pre class = 'prettyprint lang-r'>data &lt;- tribble(
+  ~x1, ~x2,
+    1,  NA,
+    2,  12,
+    3,  13,
+    4,  14,
+   NA,  NA,
+    6,  16,
+    7,  17,
+   NA,  18
+  )</pre></article></slide>
 
 
   <slide class="backdrop"></slide>

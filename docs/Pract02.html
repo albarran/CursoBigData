@@ -1121,31 +1121,38 @@ graf +
 <h3>Fuentes de información adicionales</h3>
 <p>¿Qué <code>geom</code> usarías para dibujar un gráfico lineal? ¿Un cuadro de caja? ¿Un histograma? ¿Un cuadro de área? ¿Qué estética puedes usar para cada geom?</p>
 <p>Para obtener respuestas en RStudio, Help &gt; Cheatsheets &gt; Data Visualization with ggplot2. También se pueden encontrar online esta y otras chuletas de R y RStudio (aquí)[<a href="https://www.rstudio.com/resources/cheatsheets/" class="uri">https://www.rstudio.com/resources/cheatsheets/</a>]; recordad que existen versiones en castellano de algunas de ellas.</p>
-</div>
-<div id="asociación-estética-a-columas-diferentes" class="section level3">
-<h3>Asociación estética a columas diferentes</h3>
-<p>Una pregunta muy frecuente es: <em>Tengo dos variables en mi data.frame, y me gustaría trazarlas como puntos separados, con diferente color dependiendo de qué variable sea. ¿Cómo puedo hacer eso?</em></p>
-<ul>
-<li>Incorrecto</li>
-</ul>
-<pre class="r"><code>  housing.byyear &lt;- aggregate(cbind(Home.Value, Land.Value) ~ Date, data = housing, mean)
+<!--
+### Asociación estética a columas diferentes
+
+Una pregunta muy frecuente es: *Tengo dos variables en mi data.frame, y me gustaría trazarlas como puntos separados, con diferente color dependiendo de qué variable sea. ¿Cómo puedo hacer eso?*
+
+* Incorrecto
+
+
+```r
+  housing.byyear <- aggregate(cbind(Home.Value, Land.Value) ~ Date, data = housing, mean)
   ggplot(housing.byyear,
          aes(x=Date)) +
-    geom_line(aes(y=Home.Value), color=&quot;red&quot;) +
-    geom_line(aes(y=Land.Value), color=&quot;blue&quot;)</code></pre>
-<ul>
-<li>Correcto</li>
-</ul>
-<pre class="r"><code>  library(tidyr)
-  home.land.byyear &lt;- gather(housing.byyear,
-                             value = &quot;value&quot;,
-                             key = &quot;type&quot;,
+    geom_line(aes(y=Home.Value), color="red") +
+    geom_line(aes(y=Land.Value), color="blue")
+```
+
+* Correcto
+
+
+```r
+  library(tidyr)
+  home.land.byyear <- gather(housing.byyear,
+                             value = "value",
+                             key = "type",
                              Home.Value, Land.Value)
   ggplot(home.land.byyear,
          aes(x=Date,
              y=value,
              color=type)) +
-    geom_line()</code></pre>
+    geom_line()
+```
+-->
 </div>
 <div id="poniendolo-todo-junto" class="section level3">
 <h3>Poniendolo todo junto</h3>

@@ -1061,7 +1061,7 @@ ggsave("my-plot.pdf")
 
 Para obtener respuestas en RStudio, Help > Cheatsheets > Data Visualization with ggplot2. También se pueden encontrar online esta y otras chuletas de R y RStudio (aquí)[https://www.rstudio.com/resources/cheatsheets/]; recordad que existen versiones en castellano de algunas de ellas.
 
-
+<!--
 ### Asociación estética a columas diferentes
 
 Una pregunta muy frecuente es: *Tengo dos variables en mi data.frame, y me gustaría trazarlas como puntos separados, con diferente color dependiendo de qué variable sea. ¿Cómo puedo hacer eso?*
@@ -1090,6 +1090,7 @@ Una pregunta muy frecuente es: *Tengo dos variables en mi data.frame, y me gusta
              color=type)) +
     geom_line()
 ```
+-->
 
 ### Poniendolo todo junto
 
