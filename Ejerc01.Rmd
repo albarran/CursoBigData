@@ -29,7 +29,7 @@ Como os he comentado en clase, debéis entregar un ejercicio para antes del lune
 
     * dos de FRED, 
 
-    * dos de datos.gob.es (uno  en formato .csv y otro en .xls o .xlsx).  
+    * dos (distintos) de datos.gob.es, uno  en formato .csv y otro en .xls o .xlsx.  
 
     En el caso de Yahoo y FRED poned los símbolos y en el caso de datos.gob.es poned el link a la web de los datos. IMPORTANTE: recordad que NO se puede elegir unos datos elegidos por otro alumno o alumna.
 

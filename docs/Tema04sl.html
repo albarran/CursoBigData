@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tema 04 - Manipulación de datos relacionales con dplyr</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Tema 04 - Manipulación de datos relacionales con <code>dplyr</code>',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                        favIcon: 'Tema04sl_files/logo.svg',
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Prof.: Pedro Albarrán' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            {
+        name:  'Prof.: Alberto Pérez' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+  <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    code.sourceCode { white-space: pre-wrap; }
+    code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+        
+    slides > slide:not(.nobackground):before {
+      font-size: 12pt;
+      content: "";
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      background: url(Tema04sl_files/logo.svg) no-repeat 0 50%;
+      -webkit-background-size: 30px 30px;
+      -moz-background-size: 30px 30px;
+      -o-background-size: 30px 30px;
+      background-size: 30px 30px;
+      padding-left: 40px;
+      height: 30px;
+      line-height: 1.9;
+    }
+  </style>
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+        <aside class="gdbar"><img src="Tema04sl_files/logo.svg"></aside>
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Universidad de Alicante, Curso 2020/21</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>Múltiples tablas de datos</h2></hgroup><article  id="múltiples-tablas-de-datos">
+
+<ul>
+<li><p>Una tabla (conjunto de datos) recuerda a una hoja de cálculo bien organizada</p></li>
+<li><p>Igual que existen libros de hojas de cálculo, el análisis de datos raramente implica una única tabla</p></li>
+<li><p>¿Por qué múltiples tablas? Es más eficiente almacenar y buscar &ldquo;elementos similares&rdquo; dentro de una tabla&quot; y diferentes entre ellas.</p></li>
+<li><p><strong>Datos relacionales</strong>: múltiples tablas de datos con relaciones entre cada par de tablas</p></li>
+<li><p>Las tablas se organizan/relacionan mendiante identificadores únicos llamados <strong>claves</strong> en un sistema de gestión de base de datos relacional</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Introducción con los datos <code>nycflights13</code></h2></hgroup><article  id="introducción-con-los-datos-nycflights13">
+
+<pre class = 'prettyprint lang-r'>library(&quot;tidyverse&quot;)
+library(&quot;nycflights13&quot;)</pre>
+
+<ul>
+<li>Varios conjuntos de datos sobre los vuelos (NY 2013); p.e., en la parte de vuelos <code>flights</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>flights %&gt;% 
+  select(dep_time,arr_time,carrier:dest) %&gt;% 
+  head(10)</pre>
+
+<ul>
+<li>Algunas variables están &ldquo;codificadas&rdquo;: p.e., el nombre completo de la compañia se encuentra en <code>airlines</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>airlines %&gt;% head()</pre>
+
+<ul>
+<li>Ambas tablas contienen un identificador único <strong>clave</strong> (&ldquo;key&rdquo;): <code>carrier</code></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Relaciones entre tablas</h2></hgroup><article  id="relaciones-entre-tablas">
+
+<img src='pic/relational-nycflights.png' title=''/>
+
+<!--
+
+* `flights` se conecta con `airlines` a través de `carrier`.
+
+* `flights` conecta con `planes` a través de `tailnum`.
+
+* `flights` se conecta a los `airports` de dos maneras: `origin` y `dest`.
+
+* `flights` se conecta a `weather` a través de `origin` (el lugar) y  `year`, `month`, `day` y `hour` (el tiempo).
+-->
+
+</article></slide><slide class=""><hgroup><h2>Tipos de Claves</h2></hgroup><article  id="tipos-de-claves">
+
+<ul>
+<li><p><strong>Clave primaria</strong>: identifican de forma única cada observación en una tabla</p>
+
+<ul>
+<li><p>En <code>planes</code>, <em>una sola variable</em> es suficiente <code>tailnumber</code></p></li>
+<li><p>En <code>weather</code>, se necesitan <em>múltiples variables</em>: año, mes, día, hora y origen.</p></li>
+</ul></li>
+</ul>
+
+<!--
+    * Es conveniente verificar que las claves primarias realmente identifican de manera única cada observación. -->
+
+<pre class = 'prettyprint lang-r'>planes %&gt;% count(tailnum) %&gt;% filter(n &gt; 1)</pre>
+
+<ul>
+<li><p><strong>Clave externa</strong>: señala la clave primaria de otra tabla. <!-- Asegura la integridad referencial. --></p>
+
+<ul>
+<li><p><code>tailnumber</code> es clave externa en <code>flights</code></p></li>
+<li><p>una variable puede ser clave primaria y externa: <code>origin</code> en <code>weather</code> y <code>airports</code></p></li>
+</ul></li>
+<li><p><strong>Clave subrogada</strong>: la tabla carece de identificación única y se crea por número de fila</p></li>
+</ul>
+
+<!--
+* A veces una tabla no tiene una clave de intenficación única:
+
+```r
+flights %>% 
+  count(year, month, day, flight) %>% 
+  filter(n > 1)
+```
+Si una tabla carece de clave primaria, a veces es útil añadir una con `mutate()` y `row_number()`. 
+-->
+
+</article></slide><slide class=""><hgroup><h2>Tipos de relaciones entre tablas</h2></hgroup><article  id="tipos-de-relaciones-entre-tablas">
+
+<ul>
+<li><p>Una clave primaria y la correspondiente clave externa en otra tabla forman una <strong>relación</strong>.</p></li>
+<li><p>Pueden ser de cuatro tipos:</p>
+
+<ol>
+<li><p>de-uno-a-muchos. Es el caso más frecuentes.</p>
+
+<ul>
+<li>Ej., cada vuelo tiene un avión, pero cada avión tiene muchos vuelos.</li>
+</ul></li>
+<li><p>de-uno-a-uno. Puede verse como un caso especial de uno a muchos.</p></li>
+<li><p>de-muchos-a-muchos.</p>
+
+<ul>
+<li>Ej., entre aerolíneas y aeropuertos: cada aerolínea vuela a muchos aeropuertos; cada aeropuerto alberga muchas aerolíneas.</li>
+</ul></li>
+<li><p>de-muchos-a-uno</p></li>
+</ol></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Operaciones con dos tablas</h2></hgroup><article  id="operaciones-con-dos-tablas">
+
+<ul>
+<li><p><strong>Uniones de mutación</strong> (&ldquo;Mutating joins&rdquo;): añade nuevas variables a una tabla desde filas coincidentes en otra.</p></li>
+<li><p><strong>Uniones de filtrado</strong> (&ldquo;Filtering joins&rdquo;): filtra las observaciones de una tabla basándose en si coinciden o no con una observación de la otra tabla.</p></li>
+<li><p><strong>Operaciones de conjunto</strong> (&ldquo;Set operations&rdquo;): combinan las observaciones en los conjuntos de datos como si fueran elementos de un conjunto.</p></li>
+<li><p>Esta discusión asume que tenemos datos ordenados (<em>tidy</em>):</p>
+
+<ul>
+<li>las filas son observaciones</li>
+<li>las columnas son variables</li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2><em>Mutating joins</em></h2></hgroup><article  id="mutating-joins">
+
+<ul>
+<li><p>Los verbos de unión tiene dos argumentos obligatorios: las tablas que se unen</p></li>
+<li><p>Una unión para añadir los nombres de las compañías a los datos de vuelo:</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>library(&quot;nycflights13&quot;)
+flights2 &lt;- flights %&gt;% 
+  select(year:day, hour, origin, dest, tailnum, carrier)
+left_join(flights2, airlines)</pre>
+
+<ul>
+<li>Con tuberías:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>flights2 %&gt;% 
+  left_join(airlines)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Argumento <code>by</code>: cómo se emparejan las tablas</h2></hgroup><article  id="argumento-by-cómo-se-emparejan-las-tablas">
+
+<!--
+* Las uniones tiene un argumento adicional, `by`: controla qué variables se usa para hacer coincidir las observaciones
+-->
+
+<ul>
+<li>Por defecto se usan todas las variables que aparezcan en ambas tablas <!--(unión natural). --></li>
+</ul>
+
+<!--    + P.e., vuelos y meteorología coinciden en año, mes, día, hora y origen.-->
+
+<pre class = 'prettyprint lang-r'>flights2 %&gt;% left_join(weather)</pre>
+
+<ul>
+<li><code>by = &quot;a&quot;</code> para usar sólo algunas de las variables comunes.
+
+<ul>
+<li>P.e., <code>flights</code> y <code>planes</code> tienen año, pero significan cosas diferentes; unimos solo por <code>tailnum</code></li>
+</ul></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>flights2 %&gt;% left_join(planes, by = &quot;tailnum&quot;)</pre>
+
+<!-- Nótese que las columnas de año en la salida se desambigúan con un sufijo. -->
+
+<ul>
+<li><code>by = c (&quot;b&quot; = &quot;d&quot;)</code> para emparejar la variable <code>b</code> en la primera tabla <code>x</code> con la variable <code>d</code> en la segunda <code>y</code>. <!--Las variables usadas para la unión también se utilizarán en la tabla de salida.-->
+
+<ul>
+<li>P.e., el vuelo tiene un aeropuerto de origen y destino, ¿a cuál lo unimos?</li>
+</ul></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>flights2 %&gt;% left_join(airports, c(&quot;dest&quot; = &quot;faa&quot;))
+flights2 %&gt;% left_join(airports, c(&quot;origin&quot; = &quot;faa&quot;))</pre>
+
+</article></slide><slide class=""><hgroup><h2>Tipos de unión de mutuación</h2></hgroup><article  id="tipos-de-unión-de-mutuación">
+
+<pre class = 'prettyprint lang-r'>df1 &lt;- tibble(clave = c(1:3), val_x = c(&quot;x1&quot;, &quot;x2&quot;, &quot;x3&quot;))
+df2 &lt;- tibble(clave = c(1:2, 4), val_y = c(&quot;y1&quot;,&quot;y2&quot;,&quot;y3&quot;))</pre>
+
+<ul>
+<li><code>inner_join(x, y)</code> sólo incluye observaciones que coincidan en <code>x</code> y <code>y</code>.</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>df1 %&gt;% inner_join(df2)</pre>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px; ">
+<div>
+<img width="102%" src='pic/join-inner.png' title=''/></div>
+
+<div>
+<center>
+
+<img src='pic/inner-join.gif' title=''/>
+
+</center></div></div>
+
+<ul>
+<li>Uniendo dos series temporales con periodos diferentes: <a href='https://fred.stlouisfed.org/series/GDPC1' title=''>PIB</a> y <a href='https://fred.stlouisfed.org/series/MEHOINUSA672N' title=''>consumo</a></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Tipos de unión de mutuación: uniones externas</h2></hgroup><article  id="tipos-de-unión-de-mutuación-uniones-externas">
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px; ">
+<div>
+<ul>
+<li><p><code>left_join(x, y)</code></p></li>
+<li><p><code>right_join(x, y)</code></p></li>
+<li><p><code>full_join(x, y)</code></p></li>
+<li><p>Cuando una fila no coincide en una unión externa, las nuevas variables se rellenan como valores ausente con NA.</p></li>
+</ul></div>
+
+<div>
+<center>
+
+<img width="80%" src='pic/join-outer.png' title=''/>
+
+</center></div></div>
+
+</article></slide><slide class=""><hgroup><h2>Tipos de unión de mutuación: <code>left_join()</code></h2></hgroup><article  id="tipos-de-unión-de-mutuación-left_join">
+
+<ul>
+<li><code>left_join(x, y)</code> incluye todas las observaciones en <code>x</code>, coinciden o no con la de <code>y</code>.</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>df1 %&gt;% left_join(df2)</pre>
+
+<ul>
+<li>Usada habitualmente porque asegura que no pierda observaciones de su tabla primaria.</li>
+</ul>
+
+<img src='pic/left-join.gif' title=''/>
+
+</article></slide><slide class=""><hgroup><h2>Tipos de unión de mutuación: <code>right_join()</code></h2></hgroup><article  id="tipos-de-unión-de-mutuación-right_join">
+
+<ul>
+<li><p><code>right_join(x, y)</code> incluye todas las observaciones en <code>y</code>.</p></li>
+<li><p>Equivalente a <code>left_join (y, x)</code> pero las columnas se ordenan de forma diferente.</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>df1 %&gt;% right_join(df2)
+df2 %&gt;% left_join(df1)</pre>
+
+<img src='pic/right-join.gif' title=''/>
+
+</article></slide><slide class=""><hgroup><h2>Tipos de unión de mutuación: <code>full_join()</code></h2></hgroup><article  id="tipos-de-unión-de-mutuación-full_join">
+
+<ul>
+<li><code>full_join()</code> incluye todas las observaciones de <code>x</code> e <code>y</code>.</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>df1 %&gt;% full_join(df2)</pre>
+
+<img src='pic/full-join.gif' title=''/>
+
+</article></slide><slide class=""><hgroup><h2>Uniones de mutuación como conjuntos</h2></hgroup><article  id="uniones-de-mutuación-como-conjuntos">
+
+<img width="95%" src='pic/join-venn.png' title=''/>
+
+<ul>
+<li>PERO un diagrama de Venn no puede mostrar lo que sucede cuando las claves no identifican una observación de manera única.</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Claves duplicadas</h2></hgroup><article  id="claves-duplicadas">
+
+<!--
+* Las uniones de mutación también pueden generar nuevas observaciones. 
+-->
+
+<!--
+* Si una coincidencia no es única (claves duplicadas), una unión añade nuevas observaciones
+-->
+
+<ul>
+<li><p>Si una coincidencia no es única, se generan todas las combinaciones posibles (producto cartesiano) de las observaciones coincidentes</p></li>
+<li><p><strong>Solo una tabla</strong> tiene claves duplicadas.</p>
+
+<ul>
+<li>añade información adicional en una relación de uno a muchos.</li>
+</ul></li>
+</ul>
+
+<img width="52%" src='pic/join-one-to-many.png' title=''/>
+
+<pre class = 'prettyprint lang-r'>df1dup &lt;- tibble(clave = c(1, 2, 2, 1), val_x = c(&quot;x1&quot;, &quot;x2&quot;, &quot;x3&quot;, &quot;x4&quot;))
+df2dup &lt;- tibble(clave = c(1, 2), val_y = c(&quot;y1&quot;, &quot;y2&quot;))
+df1dup %&gt;% left_join(df2dup)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Claves duplicadas (cont.)</h2></hgroup><article  id="claves-duplicadas-cont.">
+
+<ul>
+<li><p><strong>Ambas tablas</strong> tienen claves duplicadas.</p>
+
+<ul>
+<li>puede ser un error: las claves no identifican únicamente una observación en ninguna de las dos tablas</li>
+<li>igualmente, se obtienen todas las combinaciones posibles</li>
+</ul></li>
+</ul>
+
+<img width="45%" src='pic/join-many-to-many.png' title=''/>
+
+<pre class = 'prettyprint lang-r'>df1dup2 &lt;- tibble(clave = c(1, 2, 2, 3), val_x = c(&quot;x1&quot;, &quot;x2&quot;, &quot;x3&quot;, &quot;x4&quot;))
+df2dup2 &lt;- tibble(clave = c(1, 2, 2, 3), val_y = c(&quot;y1&quot;, &quot;y2&quot;, &quot;y3&quot;, &quot;y4&quot;))
+df1dup2 %&gt;% left_join(df2dup2)</pre>
+
+<!--
+#### Observación
+
+La función `base::merge()`  puede realizar los cuatro tipos de unión de mutación (usando las opciones `all.x = ` y `all.y = `, ver ayuda). Las ventajas de los verbos específicos de `dplyr` es que expresan más claramente la intención del código: la diferencia entre las uniones es realmente importante pero está oculta en los argumentos de `merge()`. Las uniones de dplyr son considerablemente más rápidas y no alteran el orden de las filas.
+-->
+
+</article></slide><slide class=""><hgroup><h2><em>Filtering joins</em>: <code>semi_join()</code></h2></hgroup><article  id="filtering-joins-semi_join">
+
+<ul>
+<li><p>Las uniones de filtrado emparejan observaciones pero <strong>afectan a las observaciones</strong>, no a las variables</p></li>
+<li><p><code>semi_join(x, y)</code> mantiene todas las observaciones en <code>x</code> que coinciden en <code>y</code>.</p></li>
+</ul>
+
+<img src='pic/join-semi.png' title=''/>
+
+<pre class = 'prettyprint lang-r'>df1 %&gt;% semi_join(df2)</pre>
+
+</article></slide><slide class=""><hgroup><h2><em>Filtering joins</em>: <code>anti_join()</code></h2></hgroup><article  id="filtering-joins-anti_join">
+
+<ul>
+<li><code>anti_join(x, y)</code> elimina todas las observaciones en <code>x</code> que coinciden en <code>y</code>.</li>
+</ul>
+
+<img src='pic/join-anti.png' title=''/>
+
+<pre class = 'prettyprint lang-r'>df1 %&gt;% anti_join(df2)</pre>
+
+</article></slide><slide class=""><hgroup><h2><em>Filtering joins</em>: claves duplicadas</h2></hgroup><article  id="filtering-joins-claves-duplicadas">
+
+<ul>
+<li><p>En las uniones de filtrado sólo importa la existencia de una coincidencia, NO qué observación coincida.</p></li>
+<li><p>Por tanto, NUNCA duplica filas</p></li>
+</ul>
+
+<img src='pic/join-semi-many.png' title=''/>
+
+<pre class = 'prettyprint lang-r'>df1dup2 %&gt;% semi_join(df2dup2)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Aplicaciones de <code>anti_join()</code> y <code>semi_join()</code></h2></hgroup><article  id="aplicaciones-de-anti_join-y-semi_join">
+
+<ul>
+<li><p><code>anti_join()</code> es útil para diagnosticar desajustes de uniones.</p></li>
+<li><p>Muchos vuelos en <code>nycflights13</code> no tienen <code>tailnum</code></p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>library(&quot;nycflights13&quot;)
+flights %&gt;% 
+  anti_join(planes, by = &quot;tailnum&quot;) %&gt;% 
+  count(tailnum, sort = TRUE)</pre>
+
+<ul>
+<li>Si nos preocupa qué observaciones serán emparejadas, se debe empezar por un <code>semi_join()</code> o <code>anti_join()</code> porque nunca duplican (solo eliminan) <!-- observaciones)--></li>
+</ul>
+
+<!--
+
+```r
+df1dup3 <- tibble(clave = c(1, 1, 3, 4), val_x = c("x1", "x2", "x3", "x4"))
+df2dup3 <- tibble(clave = c(1, 1, 2), val_y = c("y1", "y2", "y1"))
+
+# Cuatro filas para empezar:
+df1dup3 %>% nrow()
+# Y tenemos cuatro filas después de la unión
+df1dup3 %>% inner_join(df2dup3, by = "clave") %>% nrow()
+df1dup3 %>% inner_join(df2dup3, by = "clave")
+# Pero sólo dos filas en realidad coinciden
+df1dup3 %>% semi_join(df2dup3, by = "clave") %>% nrow()
+df1dup3 %>% semi_join(df2dup3, by = "clave")
+```
+-->
+
+</article></slide><slide class=""><hgroup><h2>Operaciones de conjunto</h2></hgroup><article  id="operaciones-de-conjunto">
+
+<ul>
+<li><p>Esperan que las entradas <code>x</code> e <code>y</code> tengan las <strong>mismas variables</strong>, y tratan las observaciones como conjuntos.</p></li>
+<li><p><code>intersect(x, y)</code>: devuelve solo las observaciones (filas) tanto en <code>x</code> como en <code>y</code><br/></p></li>
+<li><p><code>union(x, y)</code>: devuelte las observaciones únicas en ambas tablas <code>x</code> e <code>y</code><br/></p></li>
+<li><p><code>setdiff(x, y)</code>: devuelte las observaciones en <code>x</code>, pero no en <code>y</code>.</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Operaciones de conjunto (cont.)</h2></hgroup><article  id="operaciones-de-conjunto-cont.">
+
+<pre class = 'prettyprint lang-r'>df1 &lt;- tibble(x = 1:2, y = c(1, 1))
+df2 &lt;- tibble(x = c(1,1), y = 1:2)</pre>
+
+<ul>
+<li>Las cuatro posibilidades son:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>intersect(df1, df2)   # inner_join(df1,df2)
+union(df1, df2)       # full_join(df1,df2)   # Notad que tenemos 3 filas, no 4
+setdiff(df1, df2)     # anti_join(df1,df2)
+setdiff(df2, df1)     # anti_join(df2, df1)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Equivalencia con bases de datos SQL</h2></hgroup><article  id="equivalencia-con-bases-de-datos-sql">
+
+<table class=" lightable-paper lightable-hover" style='font-size: 22px; font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'>
+
+<thead>
+
+<tr>
+
+<th style="text-align:left;">
+
+dplyr
+
+</th>
+
+<th style="text-align:left;">
+
+SQL
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td style="text-align:left;">
+
+inner_join()
+
+</td>
+
+<td style="text-align:left;">
+
+SELECT * FROM x JOIN y ON x.a = y.a
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+left_join()
+
+</td>
+
+<td style="text-align:left;">
+
+SELECT * FROM x LEFT JOIN y ON x.a = y.a
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+right_join()
+
+</td>
+
+<td style="text-align:left;">
+
+SELECT * FROM x RIGHT JOIN y ON x.a = y.a
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+full_join()
+
+</td>
+
+<td style="text-align:left;">
+
+SELECT * FROM x FULL JOIN y ON x.a = y.a
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+semi_join()
+
+</td>
+
+<td style="text-align:left;">
+
+SELECT * FROM x WHERE EXISTS (SELECT 1 FROM y WHERE x.a = y.a)
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+anti_join()
+
+</td>
+
+<td style="text-align:left;">
+
+SELECT * FROM x WHERE NOT EXISTS (SELECT 1 FROM y WHERE x.a = y.a)
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+intersect(x, y)
+
+</td>
+
+<td style="text-align:left;">
+
+SELECT * FROM x INTERSECT SELECT * FROM y
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+union(x, y)
+
+</td>
+
+<td style="text-align:left;">
+
+SELECT * FROM x UNION SELECT * FROM y
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+setdiff(x, y)
+
+</td>
+
+<td style="text-align:left;">
+
+SELECT * FROM x EXCEPT SELECT * FROM y
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<!--
+
+* `inner_join()`:   `SELECT * FROM x JOIN y ON x.a = y.a`  
+* `left_join()` :   `SELECT * FROM x LEFT JOIN y ON x.a = y.a`  
+* `right_join()`:   `SELECT * FROM x RIGHT JOIN y ON x.a = y.a`  
+* `full_join()` :   `SELECT * FROM x FULL JOIN y ON x.a = y.a`  
+* `semi_join()` :   `SELECT * FROM x WHERE EXISTS (SELECT 1 FROM y WHERE x.a = y.a)`  
+* `anti_join()` :   `SELECT * FROM x WHERE NOT EXISTS (SELECT 1 FROM y WHERE x.a = y.a)`  
+* `intersect(x, y)`:    `SELECT * FROM x INTERSECT SELECT * FROM y`  
+* `union(x, y)`    :    `SELECT * FROM x UNION SELECT * FROM y`  
+* `setdiff(x, y)`  : `SELECT * FROM x EXCEPT SELECT * FROM y`  
+-->
+
+<ul>
+<li>SQL soporta más tipos de unión y puede trabajar con más de dos tablas.</li>
+</ul>
+
+<!--
+Como sugiere esta sintaxis, SQL soporta un rango más amplio de tipos de unión que `dplyr` porque se pueden conectar las tablas usando restricciones diferentes a la igualdad (algunas veces llamadas no-equijoins).
+
+`x` and `y` no tienen que ser tablas en la misma base de datos. Si especifica `copy = TRUE`, `dplyr` copiará la tabla `y` en el mismo lugar que `x`. 
+
+[//]: # (originalmente era
+en el mismo lugar que la variable `x`. Esto es útil si ha descargado un conjunto de datos resumido y ha determinado un subconjunto para el que desea obtener los datos completos.
+)
+
+Hay que revisar las reglas de coerción. Por ejemplo, los factores se conservan sólo si los niveles coinciden exactamente; pero si sus niveles son diferentes, los factores se "coaccionan" (se fuerza su conversión) a tipo de carácter.
+
+En este momento, `dplyr` no proporciona ninguna función para trabajar con tres o más tablas.
+
+--></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

@@ -298,13 +298,25 @@ table(wage)
 * ¿Cómo obtendríamos la moda? Tu respuesta [aquí](https://docs.google.com/forms/d/e/1FAIpQLSc2dYxHSuTLF-aGuVkusM3UevEKkCu6Iky2HC7aL6wkcP3r0g/viewform)
 
 ```{r eval=FALSE, echo=F}
+# Pensamiento algoritmico
+# 2. moda(x) = valor más frecuente de la distribución de x
+# 3-4. 
+# a calcular la distribcion
 # tabla <- table(wage); tabla
+# b. calcular el máximo
 # ma <- max(tabla); ma
-# moda <- tabla[tabla==ma]; str(moda); moda
-#### # moda <- which(tabla==ma); str(moda); moda
-# names(moda); as. numeric(moda)
+# c. seleccionar valor cuya freq es igual a maxima
+# m <- tabla[tabla==ma]; str(m); m
+# m <- which(tabla==ma); str(m); m
+# alternativa:
+# b'. ordenar freq descendientes
+# tabla.ord <- sort(tabla, decreasing = T)
+# c'. seleccionar primer elemento
+# m2 <- tabla.ord[1]
 #
-# tabla[tabla==max(tabla)]
+# moda <- as. numeric(names(m)); moda
+#
+# 6. tabla[tabla==max(tabla)]
 
 ```
 ```{r eval=FALSE, echo=F}
@@ -897,7 +909,44 @@ dim(inf)
 dim(gdp)
 cor(inf[1:56,], gdp[1:56,]) 
 
+plot(as.numeric(inf), as.numeric(gdp))
+```
+
+```{r eval=FALSE, echo=F}
+
+
+# tidyquant: https://github.com/business-science/tidyquant  ver video.
+
+getSymbols("GDP", src = "FRED")
+getSymbols("MEHOINUSA672N", src = "FRED")
+
+
+gdp <- tq_get("GDP")   # esto es una acciónr
+gdp <- tq_get("GDP", get = "economic.data")
+
+
+plot(as.numeric(inf), as.numeric(gdp))
+
+#data <- as.data.frame(cbind(inf,gdp))
+data <- tibble(x = x, y = y) 
+data <- cbind(x,y) %>% as_tibble()
+plot(x = data[1:56,1], y = data[1:56,2])
+
+#data <- as_data_frame(bind_cols(inf,gdp))
+#plot(data[1:56,"...1"], data[1:56,"...2"])
+
+#ggplot(data = data) +
+#  geom_point(aes(y = ...1, x = ...2))
 
 # https://datos.gob.es/es
+```
+
+```{r eval=F, echo=F}
+cor(inf[1:10], gdp[1:10]) 
+
+cor(inf[1:10], gdp[2:11]) # misma dimension, 
+                          # cuidado porque es correlación retardos
+
+
 ```
 

@@ -91,4 +91,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 :::
 
+::: {}
+## Semana 6
+(19-Oct. a 24-Oct.)
+
+ * [Tema 04 - Manipulación de Datos Relaciones](Tema04sl.html)
+
+:::
+
+
 ::::

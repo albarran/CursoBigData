@@ -538,8 +538,8 @@ base_plot +
   geom_text_repel(
     data=subset(hp2001Q1,State %in% c("NY","NJ","KY")),
     mapping=aes(label=State), size = 3)
-
 ```
+
 
 ``` {r, echo=T, eval=FALSE}
 base_plot + 
