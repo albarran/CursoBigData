@@ -37,12 +37,17 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Semana 2
 (21-Sept. a 25-Sept.)
 
-  * Certificado de completar el curso de Datacamp
-    - Entrega [aquí](https://docs.google.com/forms/d/e/1FAIpQLScxZ3PuU3y58buOupBmtpNhoIprMKgTydX4wH_WdontaEo9Mg/viewform): vie. 25-Sept. 23:55
 
   * [Tema 02 - Más R](Tema02.html) 
 
   * [Práctica 01 - Introducción a RMarkdown](Pract01.html)
+
+  * Certificado de completar el curso de Datacamp
+    - Entrega [aquí](https://docs.google.com/forms/d/e/1FAIpQLScxZ3PuU3y58buOupBmtpNhoIprMKgTydX4wH_WdontaEo9Mg/viewform): vie. 25-Sept. 23:55
+    
+  * 
+
+
 
 :::
 
