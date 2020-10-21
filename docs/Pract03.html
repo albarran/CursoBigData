@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Práctica 03 - Análisis Exploratorio de Datos (AED)</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Práctica 03 - Análisis Exploratorio de Datos (AED)',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                        favIcon: 'Pract03_files/logo.svg',
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Prof.: Pedro Albarrán' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            {
+        name:  'Prof.: Alberto Pérez' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+  <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    code.sourceCode { white-space: pre-wrap; }
+    code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+        
+    slides > slide:not(.nobackground):before {
+      font-size: 12pt;
+      content: "";
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      background: url(Pract03_files/logo.svg) no-repeat 0 50%;
+      -webkit-background-size: 30px 30px;
+      -moz-background-size: 30px 30px;
+      -o-background-size: 30px 30px;
+      background-size: 30px 30px;
+      padding-left: 40px;
+      height: 30px;
+      line-height: 1.9;
+    }
+  </style>
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+        <aside class="gdbar"><img src="Pract03_files/logo.svg"></aside>
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Universidad de Alicante, Curso 2020/21</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>De los datos en bruto a la información</h2></hgroup><article  id="de-los-datos-en-bruto-a-la-información">
+
+<!--
+* Objetivo: convertir datos en bruto en información<!--, conocimientos y valor-->
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px; ">
+<div>
+<ul>
+<li><p>AED es una fase inicial importante:</p>
+
+<ul>
+<li><strong>conocer nuestros datos</strong></li>
+<li>diagnosticar su calidad</li>
+<li>encontrar escenarios de análisis <!--    + derivar nuevas variables --></li>
+</ul></li>
+</ul></div>
+
+<div>
+<center>
+
+<img width="95%" src='pic/data_science_workflow.png' title=''/>
+
+</center></div></div>
+
+<ul>
+<li><p>NO es proceso formal con un conjunto estricto de reglas: <strong>NO hay una &ldquo;receta&rdquo;</strong></p>
+
+<ul>
+<li>distintos datos u objetivos requieren diferentes tratamientos</li>
+</ul></li>
+</ul>
+
+<!--  
+    + distintos datos requieren diferentes tratamientos y análisis
+    
+    + con los mismos datos, el proceso es diferente según el objetivo final
+-->
+
+<ul>
+<li><p>Es un proceso &ldquo;creativo&rdquo; e <strong>iterativo</strong> para descubrir información (útil por sí misma o para posteriormente modelizar)</p>
+
+<ul>
+<li>generar <strong>preguntas</strong> sobre los datos</li>
+<li>buscar respuestas visualizando, transformando y modelando los datos.</li>
+<li>usar lo aprendido para refinar las preguntas y/o generar nuevas</li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Puntos a cubrir en un EDA</h2></hgroup><article  id="puntos-a-cubrir-en-un-eda">
+
+<ul>
+<li><p>Primer acercamiento a los datos</p>
+
+<ul>
+<li><p>¿Qué variables tenemos?</p></li>
+<li><p>¿Qué tipo de información tienen las variables?</p>
+
+<ul>
+<li><strong>Numérica</strong></li>
+<li><strong>Categórica</strong></li>
+<li>Otra</li>
+</ul></li>
+<li><p>¿De qué tipo son las variables en nuestros datos?</p></li>
+<li><p>¿Hay valores ausentes?</p></li>
+</ul></li>
+<li><p>Preguntas sobre los datos: cada nueva pregunta expondrá un nuevo aspecto y aumenta las posibilidades descubrir algo.</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Preguntas sobre los datos</h2></hgroup><article  id="preguntas-sobre-los-datos">
+
+<ul>
+<li><p>NO hay reglas sobre qué preguntas hacer <!-- para guiar la investigación.--></p></li>
+<li><p>PERO dos <em>tipos</em> de preguntas siempre serán útiles <!-- para hacer descubrimientos dentro de sus datos--></p>
+
+<ul>
+<li><p>¿Qué tipo de variación tiene cada variable? (análisis univariante)</p></li>
+<li><p>¿Qué tipo de relaciones se produce entre las variables (covariación)? (análisis multivariante)</p></li>
+</ul></li>
+<li><p>Responder a este tipo de preguntas suele implicar analizar las distribuciones (numérica y/o gráficamenente)</p>
+
+<ul>
+<li>OJO: el análisis es diferente si las variables son numéricas o categóricas</li>
+</ul></li>
+<li><p>En el proceso, también se descubren otras características relevantes</p>
+
+<ul>
+<li><p>asimetrías</p></li>
+<li><p>valores atípicos</p></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Herramientas en R para AED</h2></hgroup><article  id="herramientas-en-r-para-aed">
+
+<ul>
+<li><p>Ya disponimos de las principales herramientas para explorar nuestros datos: R base, <code>tidyverse</code>, <code>ggplot2</code></p></li>
+<li><p>NO se aconseja el uso de bibliotecas adicionales, como norma general</p></li>
+<li><p><em>Algunas</em> de las siguientes pueden ser interesantes</p>
+
+<ul>
+<li><code>skimr</code> <!--: más estadísticos que `summary()`, de forma separada para variables numéricas y categóricas --></li>
+<li><code>dlookr</code></li>
+<li><code>DataExplorer</code></li>
+<li><code>janitor</code> <!--    + `funModelling` --></li>
+</ul></li>
+<li><p>CUIDADO: no todas se llevan bien entre ellas y con <code>tidyverse</code></p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Primer acercamiento a los datos</h2></hgroup><article  id="primer-acercamiento-a-los-datos">
+
+<ul>
+<li><p>Trabajaremos con los datos <code>Carseats</code> del paquete <code>ISLR</code></p></li>
+<li><p>Debemos tener información sobre cada variable: en este caso de la ayuda <!--nos informa (nombre e información de cada variables, unidades en que se mide, etc.)--></p></li>
+<li><p>Una vez cargados los datos, queremos conocer las características de los datos</p>
+
+<ul>
+<li>Número de observaciones y de variables</li>
+<li>Tipo de cada variable</li>
+</ul></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>glimpse(Carseats)  # de tidyverse
+str(Carseats)      # de R base</pre>
+
+<ul>
+<li>¿Tienen las variables el tipo de datos correcto o transformamos alguna?</li>
+<li>¿Son todas las variables necesarias o seleccionamos un subconjunto?</li>
+<li>¿Podemos/queremos usar variables de tipo carácter?</li>
+<li>…</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Primer acercamiento a los datos (cont.)</h2></hgroup><article  id="primer-acercamiento-a-los-datos-cont.">
+
+<ul>
+<li>¿Aprendemos algo viendo los datos en bruto?</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>View(Carseats)
+Carseats
+head(Carseats)</pre>
+
+<ul>
+<li><p>¿Es razonable incluirlos en un documento?</p></li>
+<li><p>En todo el proceso de AED haremos muchas más cosas de las que queremos incluir en un documento para comunicar</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Tratamiento de los valores ausentes</h2></hgroup><article  id="tratamiento-de-los-valores-ausentes">
+
+<!--
+* Es importante tener información sobre los valores ausentes `NA` de nuestras variables
+-->
+
+<ul>
+<li><code>Carseats</code> no tiene así que vamos a crearlos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>Carseats[1:20 , &quot;Sales&quot;]  &lt;- NA               ; Carseats[330:340, &quot;Urban&quot;] &lt;- NA 
+Carseats[c(18:28, 325:335), &quot;Income&quot;] &lt;- NA  </pre>
+
+<ul>
+<li>¿Cuántos valores ausentes tenemos?</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>Carseats %&gt;%  is.na() %&gt;% summary()</pre>
+
+<ul>
+<li>¿Quitamos todas las observaciones con <code>NA</code> en alguna variable?</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>Carseats %&gt;%  na.omit()  %&gt;%  is.na() %&gt;% summary()</pre>
+
+<ul>
+<li>¿Solo quitamos observaciones con <code>NA</code> en alguna(s) variable(s)?</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>Carseats %&gt;%  filter(!is.na(Sales))  %&gt;%  is.na() %&gt;% summary()</pre>
+
+</article></slide><slide class=""><hgroup><h2>Tratamiento de los valores ausentes (cont.)</h2></hgroup><article  id="tratamiento-de-los-valores-ausentes-cont.">
+
+<ul>
+<li><p>En general, NO queremos <code>NA</code> en algunas variable principales: podemos quitarloss o cambiar ese valor</p></li>
+<li><p>¿Por qué mantener observaciones con <code>NA</code>s en alguna(s) variable(s)?</p>
+
+<ul>
+<li><p>pueden ser variables que quizás utilicemos o quizás no</p></li>
+<li><p>queremos entender qué características tienen las observaciones <code>NA</code></p></li>
+<li><p>AED es un proceso iterativo!</p></li>
+</ul></li>
+<li><p>Siempre pensad cuidadosamente <strong>qué queremos presentar</strong>: cuidado si se tienen muchas columnas con</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>Carseats %&gt;%  is.na() %&gt;% summary()</pre>
+
+<ul>
+<li>Además ¿queremos presentarlo tal como sale?</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Variación (análisis univariante)</h2></hgroup><article  id="variación-análisis-univariante">
+
+<ul>
+<li><p>Siempre estamos interesados en descubrir las características principales de una variable</p></li>
+<li><p>&ldquo;Variación&rdquo; es la tendencia de los valores de una variable a cambiar entre &ldquo;medida&rdquo; y &ldquo;medida&rdquo;</p>
+
+<ul>
+<li>p.e., el nivel educativo de dos personas (variable cualitativa) o las ventas de dos empresas (continua)</li>
+</ul></li>
+<li><p>Cada variable tiene su propio patrón de variación, que puede revelar información relevante</p></li>
+<li><p>Podemos entender ese patrón analizando numérica o visualmente la distribución de valores</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Características principales de una variable</h2></hgroup><article  id="características-principales-de-una-variable">
+
+<ul>
+<li>Una primera aproximación numérica a los valores de las variables es</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>Carseats %&gt;% summary()</pre>
+
+<ul>
+<li><p>Cuidado con este comando en bruto para un documento final: puede ser conveniente describir las variables por bloques (eg, categóricas y numéricas)</p></li>
+<li><p>Podemos querer calcular otros estadísticos descriptivos:</p>
+
+<ul>
+<li><p>varianza o desviación típica</p></li>
+<li><p>percentiles</p></li>
+<li><p>asimetría y kurtosis</p></li>
+<li><p>tabulaciones de frecuenta (variable categórica)</p></li>
+<li><p>etc.</p></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Visualizando distribuciones: Variable Categórica</h2></hgroup><article  id="visualizando-distribuciones-variable-categórica">
+
+<ul>
+<li>Usar un gráfico de barras:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>ggplot(data = Carseats) +
+  geom_bar(mapping = aes(x = ShelveLoc))</pre>
+
+<ul>
+<li>La tabulación de frecuencias se puede obtener con <code>table()</code>, pero con <code>dplyr::count()</code> lo tenemos en un <code>data frame</code>:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>Carseats %&gt;% count(ShelveLoc) %&gt;% 
+  kableExtra::kbl() %&gt;% kableExtra::kable_paper(&quot;hover&quot;)</pre>
+
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+
+<thead>
+
+<tr>
+
+<th style="text-align:left;">
+
+ShelveLoc
+
+</th>
+
+<th style="text-align:right;">
+
+n
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td style="text-align:left;">
+
+Bad
+
+</td>
+
+<td style="text-align:right;">
+
+96
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+Good
+
+</td>
+
+<td style="text-align:right;">
+
+85
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+Medium
+
+</td>
+
+<td style="text-align:right;">
+
+219
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</article></slide><slide class=""><hgroup><h2>Visualizando distribuciones: Variable continua</h2></hgroup><article  id="visualizando-distribuciones-variable-continua">
+
+<ul>
+<li>Usar un histograma o densidad</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>ggplot(data = Carseats) +
+  geom_histogram(mapping = aes(x = Price), binwidth = 5)</pre>
+
+<ul>
+<li><p>La tabla del histograma <code>Carseats %&gt;% count(cut_width(Price, 5))</code></p></li>
+<li><p>Debemos explorar una variedad de anchos del intervalo</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>g0 &lt;- ggplot(data = Carseats) 
+g1 &lt;- g0 + geom_histogram(mapping = aes(x = Price), binwidth = 1)
+g2 &lt;- g0 + geom_histogram(mapping = aes(x = Price), binwidth = 2)
+g3 &lt;- g0 + geom_histogram(mapping = aes(x = Price), binwidth = 5)
+g4 &lt;- g0 + geom_histogram(mapping = aes(x = Price), binwidth = 10)</pre>
+
+<ul>
+<li>Pueden revelar diferentes patrones (ej. <code>Sales</code>)</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Visualizando distribuciones continuas</h2></hgroup><article  id="visualizando-distribuciones-continuas">
+
+<ul>
+<li>Los gráficos de caja también aportan información útil sobre la distribución</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>ggplot(data = Carseats) + 
+  geom_boxplot(mapping = aes(y = Price))</pre>
+
+<img width="80%" src='pic/eda-boxplot.png' title=''/>
+
+</article></slide><slide class=""><hgroup><h2>Aspectos a prestar atención</h2></hgroup><article  id="aspectos-a-prestar-atención">
+
+<ul>
+<li><p>¿Qué valores son los más comunes? ¿Por qué?</p></li>
+<li><p>¿Hay concentración en valores concretos (p.e., ceros, números &ldquo;redondos&rdquo;, etc)</p>
+
+<ul>
+<li>acumulación de precios a la izquierda de 100, 150</li>
+</ul></li>
+<li><p>¿Qué valores son raros? ¿Por qué? ¿Eran &ldquo;esperables&rdquo;?</p>
+
+<ul>
+<li>unos pocos casos de precios muy bajos</li>
+</ul></li>
+<li><p>¿Hay algún patrón inusual? ¿Qué podría explicarlo?</p></li>
+<li><p>¿Hay agrupamientos que sugieran subgrupos en los datos?</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>ggplot(faithful, aes(x = eruptions)) +  geom_histogram()</pre>
+
+<ul>
+<li><p>¿Cómo son las observaciones similares entre ellas y distintas entre grupos?</p></li>
+<li><p>¿Cómo se pueden explicar los cúmulos? ¿Pueden ser engañosos?</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Aspectos a prestar atención (cont.)</h2></hgroup><article  id="aspectos-a-prestar-atención-cont.">
+
+<ul>
+<li>Identificar las variables con &ldquo;desequilibrio&rdquo; o con alta varianza</li>
+</ul>
+
+<!--
+* En este punto y en el resto del AED debemos pensar si los datos necesitan alguna limpieza o transformación
+-->
+
+<ul>
+<li><p>¿Existen variables redundantes?</p>
+
+<ul>
+<li>Ej. temperatura media, máx. y mín. tienen distribución similar en los datos</li>
+</ul></li>
+<li><p>¿Tienen sentido las categorías de las variables cualitativas?</p>
+
+<ul>
+<li>agrupar valores con pocas observaciones</li>
+<li>crear categorías más &ldquo;finas&rdquo;o más agregadas (ej. de países a continentes)</li>
+<li>homogeneizar valores (ej., algunos valores son años, otros año-mes)</li>
+</ul></li>
+<li><p>Variables continuas con distribución asimétrica: puede necesitar transformación (logs) para algunos modelos</p></li>
+<li><p>¿Es la distribución de las variables continuas normal? (no muy revelante)</p></li>
+<li><p>¿Sería preferible discretizar alguna variable continua?</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Tratamiento de valores atípicos (&ldquo;outliers&rdquo;)</h2></hgroup><article  id="tratamiento-de-valores-atípicos-outliers">
+
+<ul>
+<li><p>Valores atípicos son los que no encajan en el patrón general de una variable</p></li>
+<li><p>En nuestro caso, valores muy bajos de <code>Price</code> (suele haber situaciones de atípicos mucho más extremos)</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>Carseats %&gt;% select(Price) %&gt;% summary()</pre>
+
+<ul>
+<li><p>Se pueden eliminar: no recomendable porque otras variables pueden contener información útil</p></li>
+<li><p>Los reemplazarmos por <code>NA</code></p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>carseats2 &lt;- Carseats %&gt;% mutate(price = if_else(Price &lt; 50, as.numeric(NA), Price))
+ggplot(carseats2, aes(x = price)) +  geom_histogram(na.rm = TRUE)
+ggplot(carseats2, aes(x = price)) + geom_histogram(aes(y=..density..))+ geom_density() </pre>
+
+<ul>
+<li><code>ggplot</code> se adhiere a la filosofía de que los <code>NA</code> ruidosos</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Algunas funciones alternativas</h2></hgroup><article  id="algunas-funciones-alternativas">
+
+<ul>
+<li><p>Varias funciones ofrecen directamente</p>
+
+<ul>
+<li>más estadísticos descriptivos</li>
+<li>porcentaje de ceros y <code>NA</code>s</li>
+<li>valores únicos de las variables categóricas.</li>
+</ul></li>
+<li><p><code>skimr::skim</code>:</p>
+
+<ul>
+<li>desglosa estadístico por tipo de datos</li>
+<li>Visualización rápida de distribuciones</li>
+</ul></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>skimr::skim(Carseats)</pre>
+
+<ul>
+<li>¿Queremos esto tal cual en un informe?</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Algunas funciones alternativas: <code>DataExplorer</code></h2></hgroup><article  id="algunas-funciones-alternativas-dataexplorer">
+
+<ul>
+<li><code>DataExplorer::plot_missing()</code>: gráficos del porcentaje de <code>NA</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>DataExplorer::plot_missing(Carseats)</pre>
+
+<ul>
+<li><code>DataExplorer::plot_bar()</code> y <code>DataExplorer::plot_histogram()</code>: histogramas de todas las variables categóricas y numéricas de una vez</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>library(DataExplorer)
+Carseats %&gt;% 
+  plot_bar(ncol = 2, nrow = 4)
+
+Carseats %&gt;% 
+  plot_histogram(ncol = 3, nrow = 3)</pre>
+
+<ul>
+<li>¿De verdad queremos esto tal cual en un informe?</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Algunas funciones alternativas: <code>dlookr</code></h2></hgroup><article  id="algunas-funciones-alternativas-dlookr">
+
+<ul>
+<li><code>dlookr::describe()</code>: ofrece más estadísticos descriptivos, creando un <code>data frame</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>library(dlookr)
+describe(Carseats, Sales:Income)
+
+Carseats %&gt;%
+  describe() %&gt;%
+  select(variable, skewness, mean, p25, p50, p75) %&gt;% 
+  filter(!is.na(skewness)) %&gt;% 
+  arrange(desc(abs(skewness)))
+
+Carseats %&gt;%
+  group_by(US) %&gt;% 
+  describe(Sales, Income) </pre>
+
+</article></slide><slide class=""><hgroup><h2>Algunas funciones alternativas: <code>dlookr</code> (cont.)</h2></hgroup><article  id="algunas-funciones-alternativas-dlookr-cont.">
+
+<pre class = 'prettyprint lang-r'>normality(Carseats, Sales:Advertising)
+
+Carseats %&gt;%
+  normality() %&gt;%
+  filter(p_value &lt;= 0.01) %&gt;% 
+  arrange(abs(p_value))
+  
+Carseats %&gt;%
+  filter(ShelveLoc == &quot;Good&quot;) %&gt;%
+  group_by(US) %&gt;%
+  plot_normality(Advertising)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Covariación: análisis multivariante</h2></hgroup><article  id="covariación-análisis-multivariante">
+
+<ul>
+<li><p>La variación describe el comportamiento <em>dentro</em> de una variable</p></li>
+<li><p>La <strong>covariación</strong> describe el comportamiento entre variables: tendencia a que los valores de dos o más variables cambien juntos de forma relacionada.</p></li>
+<li><p>Detectamos covariación visualizando la relación entre variables, PERO la forma depende del tipo de variables</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Una variable continua y una categórica</h2></hgroup><article  id="una-variable-continua-y-una-categórica">
+
+<ul>
+<li>Explorar la distribución de una variable continua desglosada por una variable categórica
+
+<ul>
+<li>si un grupo es mucho más pequeño que los otros, es difícil ver las diferencias</li>
+</ul></li>
+<li>Mediante el histograma o densidad (en el mismo gráfico o diferentes)</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>g0 &lt;- ggplot(Carseats %&gt;% na.omit(), aes(x = Price)) 
+
+g0 + geom_density(mapping = aes(colour = Urban))
+g0 + geom_density() + facet_wrap(~Urban)</pre>
+
+<ul>
+<li>Mediante gráficos de caja: menos información pero más fácil de comparar</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>ggplot(Carseats %&gt;% na.omit(), aes(y = Price, x = Urban)) + 
+  geom_boxplot()</pre>
+
+<ul>
+<li>¿Existen diferencias en las distribuciones por categorías? ¿Qué implica?</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Una variable continua y una categórica (cont.)</h2></hgroup><article  id="una-variable-continua-y-una-categórica-cont.">
+
+<ul>
+<li>Algunos factores no están ordenados</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>ggplot(Carseats %&gt;% na.omit(), aes(y = Price, x = ShelveLoc)) + 
+  geom_boxplot()</pre>
+
+<ul>
+<li>Conviene reordenarlos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>ggplot(Carseats %&gt;% na.omit(), aes(y = Price, x = reorder(ShelveLoc, Price, FUN=median))) + 
+  geom_boxplot() </pre>
+
+<ul>
+<li>Tambien rotar los ejes</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>ggplot(Carseats %&gt;% na.omit(), aes(y = Price, x = reorder(ShelveLoc, Price, FUN=median))) + 
+  geom_boxplot()  + coord_flip()</pre>
+
+</article></slide><slide class=""><hgroup><h2>&ldquo;Correlación&rdquo; entre una variable continua y una categórica</h2></hgroup><article  id="correlación-entre-una-variable-continua-y-una-categórica">
+
+<ul>
+<li>Un modelo de regresión simple también describe la relación</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>summary(lm(data = Carseats %&gt;% na.omit(), Price ~ ShelveLoc))</pre>
+
+<ul>
+<li>Esto es básicamente calcular la media de la variable continua por grupos definidos por la categórica</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>Carseats %&gt;% group_by(ShelveLoc) %&gt;% summarise(media = mean(Price, na.rm = TRUE))</pre>
+
+<ul>
+<li>O mediante la correlación …</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>cor(Carseats$Price, Carseats$ShelveLoc, use = &quot;complete.obs&quot;)</pre>
+
+<ul>
+<li>La correlación NO tiene sentido cuando una variable es categórica</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Dos variables categóricas</h2></hgroup><article  id="dos-variables-categóricas">
+
+<ul>
+<li><p>Para visualizar la covariación entre variables categóricas, se puede contar el número de observaciones para cada combinación</p></li>
+<li><p>Una forma de hacerlo es <code>geom_count()</code></p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>ggplot(Carseats %&gt;% na.omit(), aes(x=ShelveLoc, y=Urban)) + geom_count()</pre>
+
+<ul>
+<li>O usar <code>count()</code> y visualiza con <code>geom_tile()</code> y la estética de relleno:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>Carseats %&gt;% na.omit() %&gt;%  count(ShelveLoc, Urban) %&gt;% 
+  ggplot(aes(x=ShelveLoc, y=Urban)) +
+    geom_tile(aes(fill = n))</pre>
+
+<ul>
+<li>También se pueden visualizar sus histogramas</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>g0 &lt;- Carseats %&gt;% na.omit() %&gt;%  ggplot(aes(x=ShelveLoc))
+g0 + geom_bar(aes(color=Urban))
+g0 + geom_bar() + facet_wrap(~Urban)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Dos variables continuas</h2></hgroup><article  id="dos-variables-continuas">
+
+<ul>
+<li><p>La forma obvia de visualizar relaciones entre variables continuas es un gráfico de dispersión con <code>geom_point()</code></p>
+
+<ul>
+<li>apreciaremos un patrón en los puntos</li>
+</ul></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>g0 &lt;- Carseats %&gt;% na.omit() %&gt;%  ggplot(aes(y=Sales, x=Advertising))
+g0 + geom_point()</pre>
+
+<ul>
+<li><p>También sabemos añadir <code>smoothers</code> para detectar posibles patrones</p></li>
+<li><p>Se puede cambiar el ancho de los &ldquo;intervalos&rdquo; en dos dimensiones o hexagonales para poder apreciar mejor patrones</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>g0 + geom_bin2d()
+g0 + geom_hex()  #install.packages(&quot;hexbin&quot;)</pre>
+
+<ul>
+<li>Otra opción categorizar una variable continua y usar las técnicas anteriores</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>g0 + geom_boxplot(aes(group=cut_width(Advertising, 5)))
+g0 + geom_boxplot(aes(group=cut_width(Advertising, 10)))</pre>
+
+</article></slide><slide class=""><hgroup><h2>Correlación entre variables continuas</h2></hgroup><article  id="correlación-entre-variables-continuas">
+
+<ul>
+<li>Obviamente podemos calcular modelos de regresión con dos variables continuas</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>summary(lm(data = Carseats, Sales ~ Advertising))</pre>
+
+<ul>
+<li>Y también correlaciones</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>cor(Carseats$Sales, Carseats$Advertising, use = &quot;complete.obs&quot;)
+Carseats %&gt;% select(Sales, Advertising) %&gt;%  dlookr::correlate()</pre>
+
+<ul>
+<li>Se pueden calcular múltiples correlaciones y visualizarlos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>Carseats %&gt;%  dlookr::correlate()
+Carseats %&gt;%  dlookr::plot_correlate()</pre>
+
+<!--
+correlate(carseats, Sales:Income)
+
+carseats %>%
+  correlate(Sales:Income) %>%
+  filter(as.integer(var1) > as.integer(var2))
+  
+  carseats %>%
+  filter(ShelveLoc == "Good") %>%
+  group_by(Urban, US) %>%
+  correlate(Sales) %>%
+  filter(abs(coef_corr) > 0.5)
+  
+  
+plot_correlate(carseats)
+
+carseats %>%
+  filter(ShelveLoc == "Good") %>%
+  group_by(Urban, US) %>%
+  plot_correlate(Sales)
+  
+categ <- target_by(carseats, US)
+
+EDA when target variable is categorical variable
+
+Cases where predictors are numeric variable
+cat_num <- relate(categ, Sales)
+cat_num
+plot(cat_num)
+
+Cases where predictors are categorical variable
+cat_cat <- relate(categ, ShelveLoc)
+cat_cat
+plot(cat_cat)
+
+EDA when target variable is numerical variable
+num <- target_by(carseats, Sales)
+
+Cases where predictors are numeric variable
+num_num <- relate(num, Price)
+num_num  |hace regresion
+summary(num_num)
+plot(num_num)    # linea ajustada + predichos vs observados
+
+Cases where predictors are categorical variable
+num_cat <- relate(num, ShelveLoc)
+num_cat
+plot(num_cat)   # boxplot
+
+
+carseats %>%
+  eda_report(target = Sales, output_format = "html", output_file = "EDA.html")
+
+-->
+
+<!--
+
+
+* `funModelling::status`
+
+
+```r
+status(Carseats)
+```
+
+plot_num(): grafica todas las numericas
+profiling_num(): estadisticas de todas las numericas
+-->
+
+<!--
+
+Guide to EDA: https://www.r-bloggers.com/2020/07/exploratory-data-analysis-guide/
+https://r4ds.had.co.nz/introduction.html
+
+https://blog.datascienceheroes.com/exploratory-data-analysis-in-r-intro/
+https://bookdown.org/rdpeng/exdata/exploratory-data-analysis-checklist.html
+
+
+https://www.r-bloggers.com/2020/09/how-to-explore-data-dataexplorer-package/
+
+https://cran.r-project.org/web/packages/dlookr/vignettes/EDA.html    
+ 
+--></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

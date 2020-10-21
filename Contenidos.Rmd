@@ -101,7 +101,7 @@ knitr::opts_chunk$set(echo = TRUE)
 (19-Oct. a 24-Oct.)
 
  * [Tema 04 - Manipulación de Datos Relaciones](Tema04sl.html)
-
+ * [Práctica 03 - Análisis Exploratorio de Datos](Pract03.html)
 :::
 
 
