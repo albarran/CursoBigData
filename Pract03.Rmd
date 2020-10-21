@@ -10,7 +10,7 @@ date: "Universidad de Alicante, Curso 2020/21"
 output:
   ioslides_presentation: 
     widescreen: yes
-    logo: https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-sa.eu.svg
+    logo: pic/by-nc-sa.eu.svg
 ---
 
 ```{r setup, include=FALSE}
