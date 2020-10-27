@@ -102,14 +102,12 @@ knitr::opts_chunk$set(echo = TRUE)
  * [Práctica 03 - Análisis Exploratorio de Datos](Pract03.html)
 :::
 
-
 ::::
 
 
 :::: {style="display: flex;"}
 
 ::: {}
-
 ## Semana 7
 (26-Oct. a 31-Oct.)
 
@@ -125,7 +123,5 @@ knitr::opts_chunk$set(echo = TRUE)
 ::: {}
 
 ::: 
-
-::: {}
 
 ::::
