@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Prof.: Pedro Albarrán" />
+
+
+<title>Datos ordenados con tidyr</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+      </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Big Data (UA)</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Introducción</a>
+</li>
+<li>
+  <a href="Contenidos.html">Contenidos</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Datos ordenados con <code>tidyr</code></h1>
+<h3 class="subtitle">Técnicas para ‘Big Data’ en Economía</h3>
+<h4 class="author">Prof.: Pedro Albarrán</h4>
+<h4 class="date">Universidad de Alicante, Curso 2019/20</h4>
+
+</div>
+
+
+<div id="qué-son-datos-ordenados-tidy-data" class="section level2">
+<h2>¿Qué son datos ordenados (‘tidy data’)?</h2>
+<p>Los datos pueden ser tan simples como una columna de números en una hoja de cálculo o tan complejos como los registros de todos los departamentos de una empresa (almacen, logística, ventas, recursos humanos, contabilidad, gestión, etc.). Necesitamos operar con un pequeño conjunto de herramientas estándar, para preparar los datos (limpieza, organización) y así facilitar su análisis.</p>
+<p>Un conjunto de datos ordenado es una colección de valores, generalmente o bien números (si son cuantitativos) o bien caractéres/factores (si son cualitativos). Los valores se organizan de dos maneras. Cada valor pertenece a:</p>
+<ul>
+<li><p>Una <strong>variable</strong>, que contiene todos los valores que miden el mismo <em>atributo</em> subyacente (como la altura, la temperatura o la duración) entre las unidades;</p></li>
+<li><p>Una <strong>observación (caso)</strong>, que contiene todos los valores medidos en la misma <em>unidad</em> (como una persona, día o recinto) a través de atributos.</p></li>
+</ul>
+<p><img src="pic/tidy-1.png" /></p>
+<p>Conseguir que los datos lleguen a estar en un formato adecuado requiere un trabajo inicial, pero merece la pena a largo plazo. Una vez que los datos estén bien ordenados y organizados con las herramientas de <code>tidyr</code>, se puede dedicar más tiempo al análisis de los datos en lugar de adaptarlos a las necesidades de cada representación o modelo.</p>
+</div>
+<div id="datos-no-ordenados" class="section level2">
+<h2>Datos no ordenados</h2>
+<p>Hay muchas estructuras de datos útiles y bien fundadas que no son datos ordenados. Existen dos razones principales para utilizar otras estructuras de datos:</p>
+<ul>
+<li><p>Las representaciones alternativas pueden tener ventajas sustanciales en cuanto a rendimiento o espacio.</p></li>
+<li><p>Algunos campos especializados han desarrollado sus propias convenciones para almacenar datos que pueden ser muy diferentes a las convenciones de los datos ordenados.</p></li>
+</ul>
+<p>Cualquiera de estas razones significa que se necesita algo más que un <em>data frame</em>. Si nuestros datos encajan de forma natural en una estructura rectangular compuesta por observaciones y variables, los datos ordenados deberían ser la opción predeterminada. Pero hay buenas razones para usar otras estructuras; los datos ordenados no son la única manera.</p>
+<div id="ejemplos" class="section level3">
+<h3>Ejemplos</h3>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<p>¿Están ordenados los siguientes ejemplos?</p>
+<div id="resultados-de-la-elección-de-la-alcaldía-de-minneapolis." class="section level4">
+<h4>1. Resultados de la elección de la alcaldía de Minneapolis.</h4>
+<p><img src="pic/table53.jpeg" /></p>
+<p>No está en un formato ordenado, aunque la visualización sea atractiva y elegante. Esta tabla viola la primera regla para los datos ordenados.</p>
+<ul>
+<li><p>Regla 1: Las filas, llamadas casos, deben representar cada una el mismo atributo subyacente, es decir, el mismo tipo de cosa.</p></li>
+<li><p>Regla 2: Cada columna es una variable que contiene el mismo tipo de valor para cada caso.</p></li>
+</ul>
+<p>La regla 1 se incumple porque, aunque las filas representan un solo distrito (‘precint’) en la mayor parte de la tabla, otras filas dan totales de barrio (‘ward’) o ciudad. Las dos primeras filas son leyendas que describen los datos, no casos. Para que los datos estén ordenados, es necesario eliminar ciertas filas de la hoja de cálculo.</p>
+</div>
+<div id="datos-de-ucbadmissions" class="section level4">
+<h4>2. Datos de <code>UCBAdmissions</code></h4>
+<p><code>UCBAdmissions</code> contiene datos agregados sobre los solicitantes a la escuela de postgrado de Berkeley para los seis departamentos más grandes en 1973 clasificados por admisión y sexo. Los datos están bien organizados, pero es una tabla tridimensional (array), no un <em>dataframe</em>.</p>
+<pre class="r"><code>data(&quot;UCBAdmissions&quot;)
+UCBAdmissions[,,1:2]</code></pre>
+<p>¿Mejor de esta manera?</p>
+<pre class="r"><code>(narrow_tbl &lt;- as_tibble(UCBAdmissions))</code></pre>
+<p>Compare las primeras cuatro líneas de <code>narrow_tbl</code> (arriba), con la siguiente tabla en el conjunto de datos original.</p>
+<pre class="r"><code>(wide_tbl &lt;- UCBAdmissions[,,1])</code></pre>
+<p>Se puede pensar que <code>wide_tbl</code> es mejor para verlo. ¿Pero está ordenado? ¿Es <code>narrow_tbl</code> ordenado?</p>
+</div>
+<div id="rendimiento-de-los-corredores-en-una-carrera-de-10-millas-a-lo-largo-del-tiempo" class="section level4">
+<h4>3. Rendimiento de los corredores en una carrera de 10 millas, a lo largo del tiempo</h4>
+<p><img src="pic/table56.jpeg" /></p>
+<p>¿Está ordenado el conjunto de datos? La respuesta depende del análisis que se tenga en mente. En muchos casos, se necesitaría separar en dos partes la información de la primera columna.</p>
+<p>¿Qué significa un caso aquí? Es tentador pensar que un caso es una persona. Después de todo, son las personas las que corren carreras de carretera. Pero note que los individuos aparecen más de una vez… Esto sugiere que un caso es un corredor en una carrera de un año, que se identifica por una combinación de <code>name.yob</code> y <code>year</code>.</p>
+<p>Incluso así, la información de la tabla es <strong>redundante</strong>. Existe información de dos tipos: información de la carrera e información personal de los corredores. Probablemente lo mejor sea dividir este conjunto de datos en dos tablas: una de la carrera (año, ganador, tiempo) y otra de los corredores (nombre, año de nacimiento, sexo, edad).</p>
+<!--
+
+## Problemas comunes
+
+### 1. Las cabeceras de columna son valores, no nombres de variables
+
+Un tipo común de conjunto de datos desordenado son los datos tabulares diseñados para su presentación, donde las variables forman tanto las filas como las columnas, y las cabeceras de columna son valores, no nombres de variables. También ofrece almacenamiento eficiente para algunos diseños de datos.
+
+Por ejemplo, este conjunto de datos 
+![](pic/messy1.png)
+
+tiene realmente tres variables: religión, ingreso (la variable que aparece por columnas) y frecuencia. La forma ordenada sería:
+![](pic/messy1-tidy.png)
+
+Este problema suele aparecer con frecuencia con información en el tiempo: se tienen varias columnas para el valor de una variable (ej., ventas) en distintos años (ventas2000, ventas2001, etc.)
+
+### 2. Múltiples variables almacenadas en una columna
+
+A veces, para ahorrar espacion de almacenamiento, una misma columna tiene información sobre varias variables (atributos), como en la tabla de la izquierda. La variable `column` mezcla sexo y rango de edad.
+
+![](pic/messy2.png)
+
+-->
+</div>
+</div>
+</div>
+<div id="consejos-para-datos-ordenados" class="section level2">
+<h2>Consejos para datos ordenados</h2>
+<ol style="list-style-type: decimal">
+<li><p>Guardar las cosas similares juntas (“Cada oveja con su pareja.”)</p></li>
+<li><p>Ninguna información redundante</p></li>
+</ol>
+<p>Por tanto, las tablas de datos tienden a ser:</p>
+<ul>
+<li><p>largas (con muchas filas)</p></li>
+<li><p>estrechas (con pocas columnas)</p></li>
+<li><p>eficiente en términos de velocidad de almacenamiento y recuperación</p></li>
+</ul>
+<p>El “problema” de este concepto está en que no es tan útil si no sabes cómo hacer uniones (!).</p>
+</div>
+<div id="ordenando-datos-con-tidyr" class="section level2">
+<h2>Ordenando datos con <code>tidyr</code></h2>
+<p>El paquete <code>dplyr</code> incluye <code>tidyr</code>, cuyo objetivo es ayudarnos a crear <em>datos ordenados</em> (‘tidy data’). Los datos ordenados son datos donde:</p>
+<ol style="list-style-type: decimal">
+<li><p>Cada variable está en una columna.</p></li>
+<li><p>Cada observación es una fila.</p></li>
+<li><p>Cada valor es una celda.</p></li>
+</ol>
+<p>Los datos ordenados describen una forma estándar de almacenar los datos que se utiliza siempre que es posible en todo el <code>tidyverse</code>. Si nos aseguramos de que los datos estén ordenados, gastaremos menos tiempo luchando con las herramientas y más tiempo trabajando en su análisis.</p>
+<p>Comparemos tres conjuntos de datos:</p>
+<pre class="r"><code># tormentas
+storms &lt;- read.csv(&quot;data/storms.csv&quot;)
+storms
+
+# casos de tuberculosis
+cases &lt;- read.csv(&quot;data/cases.csv&quot;)
+names(cases) &lt;- c(&quot;country&quot;,&quot;2011&quot;,&quot;2012&quot;,&quot;2013&quot;)
+cases
+
+#contaminación
+pollution &lt;- read.csv(&quot;data/pollution.csv&quot;)
+pollution</code></pre>
+<p>Mientras que en <code>storms</code> se cumplen las condiciones de datos ordenados en los otros dos conjuntos de datos, tenemos distintos problemas.</p>
+<ul>
+<li><p>En <code>cases</code> los nombres de columna nombres de columna <code>2011</code>, <code>2012</code> y <code>2013</code> representan valores de la variable del año, y cada fila representa tres observaciones, no una.</p></li>
+<li><p>En <code>pollution</code>, una observación se dispersa en múltiples filas.</p></li>
+</ul>
+<p><img src="pic/tidyvsmessy.png" /></p>
+<p>En <code>storms</code> podemos acceder de forma fácil a los casos (observaciones) de cada atributo (variable)</p>
+<pre class="r"><code>storms$storm
+storms$wind
+storms$pressure
+storms$date</code></pre>
+<p>Sin embargo, para conocer las variables del conjunto de datos y sus observaciones tendríamos que hacer algo tan complicado como lo siguiente en cada caso:</p>
+<pre class="r"><code>cases$country
+names(cases)[-1]
+unlist(cases[1:3, 2:4])
+ 
+pollution$city[c(1,3,5)]
+pollution$amount[c(1,3,5)]
+pollution$amount[c(2,4,6)]</code></pre>
+<p>En <code>storms</code> es trivial calcular una nueva variable como la ratio de presión atmosférica y velocidad del viento. En las otras dos no es fácil mostrar la tasa de crecimiento de los casos de tuberculosis o la ratio de concentración de contaminación por partículas grandes o pequeñas.</p>
+</div>
+<div id="cambiar-la-forma-de-una-tabla-dataframe" class="section level2">
+<h2>Cambiar la forma de una tabla (“dataframe”)</h2>
+<p>Los mismos datos se pueden almacenar en un rectángulo ancho (“wide”) o en un rectángulo largo (“long”").</p>
+<p><img src="pic/original-dfs-tidy.png" /></p>
+<p>Aunque la misma información se puede almacenar en ambas representaciones, estas difieren en su utilidad para ciertos tipos de operaciones o en la facilidad con que se pueden utilizar en un análisis estadístico. También vale la pena señalar que hay más que sólo representaciones largas o amplias de los datos. El formato largo es similar al formato ordenado que defiende <code>tidyverse</code>.</p>
+<p>El cambio de forma (“reshaping”) de una tabla entre formato largo y formato ancho es una de las tareas diarias del analista de datos. Cambiar entre representación larga y ancha se conoce como pivotar (o girar).</p>
+<p>La siguiente animación muestra la idea general de cómo las celdas en un formato se reordenan en el otro formato, con los metadatos relevantes que no se reordenan siendo extendidos o reducidos según sea necesario para que no perdamos ninguna información.</p>
+<p><img src="pic/tidyr-longer-wider.gif" /></p>
+</div>
+<div id="verbos-principales-en-tidyr" class="section level2">
+<h2>Verbos principales en <code>tidyr</code></h2>
+<p>Hay dos verbos fundamentales para ordenar los datos: <!--
+  * `gather()` toma múltiples columnas, y las reúne en pares clave-valor. Cambia la forma de los datos de "anchos" a "largos" (*wide-to-long*).
+
+![](pic/gather.png)
+
+  * `spread()` toma dos columnas (clave y valor) y las extiende en múltiples columnas. Cambia la forma de los datos "largos" a formato "ancho" (*long-to-wide*).
+![](pic/spread-gather.png)
+--></p>
+<ul>
+<li><p><code>pivot_longer()</code> cambia la forma de los datos de “anchos” a “largos” (<em>wide-to-long</em>), aumentando el número de filas y disminuyendo el número de columnas. Se usa para ordenar los datos originales en bruto, organizados para facilitar la recogida de información, en lugar de facilitar el análisis.</p></li>
+<li><p><code>pivot_wider()</code> cambia la forma de los datos “largos” a formato “ancho” (<em>long-to-wide</em>), aumentando el número de columnas y disminuyendo el número de filas. Es raro necesitarlo para conseguir datos ordenados, pero es útil para crear tablas de resumen, o datos en un formato que necesitan otras herramientas.</p></li>
+</ul>
+<p><img src="pic/spread-gather2.png" /></p>
+<p>La longitud es un término relativo, y sólo se puede decir (por ejemplo) que el conjunto de datos A es más largo que el conjunto de datos B.</p>
+<p>El paquete <code>tidyr</code> también proporciona otros dos verbos importantes:</p>
+<ul>
+<li><p><code>separate()</code>, que facilita separar una columna que representa múltiples variables <img src="pic/separate.png" /></p></li>
+<li><p><code>unite()</code>, que es el complemento/inverso de <code>separate()</code> (une varias columnas) <img src="pic/unite.png" /></p></li>
+</ul>
+</div>
+<div id="de-ancho-a-largo" class="section level2">
+<h2>De ancho a largo</h2>
+<p>Como hemos visto en <code>cases</code>, un problema común es un conjunto de datos en el que algunos de los nombres de columna no son nombres de variables, sino valores de una variable. Queremos obtener un conjunto de datos ordenados donde aparezcan claramente las tres variables / atributos que hemos identificado: país, año y número de casos.</p>
+<p>Para ordenar un conjunto de datos como este, necesitamos reunir esas columnas en un nuevo par de variables. Para describir esa operación necesitamos tres parámetros:</p>
+<ul>
+<li><p>Conjunto de columnas que representan valores, no variables. En este ejemplo, esas son las columnas 2011, 2012 y 2013.</p></li>
+<li><p>El nombre de la variable cuyos valores forman los nombres de columna. Se denomina, clave (<em>key</em>), y aquí es el año.</p></li>
+<li><p>El nombre de la variable cuyos valores se distribuyen por las celdas. Se denomina valor, y aquí es el número de casos.</p></li>
+</ul>
+<p><img src="pic/result.gif" /> En el resultado final, una nueva columna con la clave (nombre de las antiguas columnas) <img src="pic/gather-key.png" /></p>
+<p>y otra nueva columna con el valor (antiguas celdas)</p>
+<p><img src="pic/gather-value.png" /></p>
+<p>Los argumentos del verbo <code>pivot_longer()</code> por tanto son:</p>
+<ol style="list-style-type: decimal">
+<li><p>el <em>data frame</em> a cambiar de forma</p></li>
+<li><p>nombre de la nueva columna de la clave (cadena de caracteres)</p></li>
+<li><p>nombre de la nueva columna de valor (cadena de caracteres)</p></li>
+<li><p>nombres o índice numerico de las columnas a colapsar</p></li>
+</ol>
+<pre class="r"><code>pivot_longer(cases, 2:4,&quot;year&quot;,&quot;numero&quot;)
+
+cases %&gt;% pivot_longer(cols = c(&quot;2011&quot;,&quot;2012&quot;,&quot;2013&quot;), names_to = &quot;year&quot;, values_to=&quot;numero&quot;)
+
+cases %&gt;% pivot_longer(&quot;2011&quot;:&quot;2013&quot;, names_to = &quot;year&quot;, values_to = &quot;numero&quot;)
+
+cases %&gt;% pivot_longer(names_to = &quot;year&quot;, values_to = &quot;numero&quot;, -country)</code></pre>
+<div id="por-qué-ordenar-los-datos" class="section level3">
+<h3>¿Por qué ordenar los datos?</h3>
+<p>Además de las razones antes discutidas, notad que en el formato original no podíamos realizar un simple gráfico de la evoluación temporal del número de casos por países. Con los datos ordenados, esto resulta trivial:</p>
+<pre class="r"><code>cases_ordenado &lt;- cases %&gt;% pivot_longer(names_to = &quot;year&quot;, values_to = &quot;numero&quot;, cols =-country)
+
+ggplot(data = cases_ordenado, aes(x = year, y=numero, color = country) ) +
+  geom_point() </code></pre>
+</div>
+<div id="datos-de-caracteres-en-los-nombres-de-las-columnas" class="section level3">
+<h3>Datos de caracteres en los nombres de las columnas</h3>
+<p>Habitualmente las columnas de los datos originales a convertir en formato largo serán de forma natural una variable de tipo caracter. Por ejemplo, los datos <code>relig_income</code> contiene tres variables:</p>
+<ul>
+<li><p>religión, en las filas,</p></li>
+<li><p>renta, repartidata entre los nombres de las columnas, y</p></li>
+<li><p>valores de las celdas</p></li>
+</ul>
+<p>Ordenamos los datos de la siguiente manera</p>
+<pre class="r"><code>relig_income 
+
+relig_income %&gt;% 
+  pivot_longer(-religion, names_to = &quot;income&quot;, values_to = &quot;count&quot;)</code></pre>
+</div>
+<div id="datos-numéricos-en-los-nombres-de-las-columnas" class="section level3">
+<h3>Datos numéricos en los nombres de las columnas</h3>
+<p>Los datos de <code>billboard' contiene el rankin de canciones en el año 2000, semana a semana. Los datos codificados en los nombres de las columnas son realmente un número, no caracteres. Los nombres se convertirán en una variable llamada</code>week<code>, y que los valores se conviertan en una variable llamada</code>ranking<code>. También se utiliza</code>values_drop_na` para eliminar filas con valores faltantes, dado que no todas las canciones permanecen en las listas de éxitos durante 76 semanas.</p>
+<pre class="r"><code>billboard
+billboard %&gt;% 
+  pivot_longer(
+    cols = starts_with(&quot;wk&quot;), 
+    names_to = &quot;week&quot;, 
+    values_to = &quot;rank&quot;,
+    values_drop_na = TRUE)</code></pre>
+<p>Necesitarimos que <code>week</code> fuera una variable numérica (entero) para hacer cálculos como el numero de semanas que una canción estuvo enla ista de éxitos. Podemos usar dos argumentos adicionales: <code>names_prefix</code> para eliminar el prefijo <code>wk</code> y <code>names_ptypes</code> para especificar el tipo de variable:</p>
+<pre class="r"><code>billboard %&gt;% 
+  pivot_longer(
+    cols = starts_with(&quot;wk&quot;), 
+    names_to = &quot;week&quot;, 
+    names_prefix = &quot;wk&quot;,
+    names_ptypes = list(week = integer()),
+    values_to = &quot;rank&quot;,
+    values_drop_na = TRUE,
+  )</code></pre>
+</div>
+</div>
+<div id="de-largo-a-ancho" class="section level2">
+<h2>De largo a ancho</h2>
+<p>Extender de largo a ancho (<em>pivot_wider()</em>) es lo opuesto a recoger de ancho a largo (<em>pivot_longer()</em>). Se usa cuando una observación se dispersa en varias filas. Por ejemplo, en <code>pollution</code> una observación es la contaminación de una ciudad, pero cada observación se distribuye en dos filas según el tipo de partícula contaminante. Queremos obtener un conjunto de datos ordenados donde aparezcan claramente las tres variables / atributos que hemos identificado: ciudad, contaminación por partículas grandes y contaminación por partículas pequeñas.</p>
+<p>Para ordenar esto, primero analizamos la representación de manera similar a <code>pivot_longer()</code>. Esta vez, sin embargo, sólo necesitamos dos parámetros:</p>
+<ul>
+<li>La columna que contiene nombres de variables, la columna clave. Aquí, tamaño (<em>size</em>).</li>
+</ul>
+<p><img src="pic/spread-clave.png" /></p>
+<ul>
+<li>La columna que contiene valores de las múltiples variables nuevas, la columna de valores. Aquí, la cantidad (<em>size</em>).</li>
+</ul>
+<p><img src="pic/spread-valor.png" /></p>
+<p>Así podemos expandir el conjunto orignal de datos:</p>
+<p><img src="pic/result2.gif" /></p>
+<p>Los argumentos del verbo <code>pivot_wider()</code> por tanto son:</p>
+<ol style="list-style-type: decimal">
+<li><p>el <em>data frame</em> a cambiar de forma</p></li>
+<li><p>nombre de la columna a usar para las clave, de cuyos valores saldran los nuevos nombres de columnas</p></li>
+<li><p>nombre a usar para los valores, para las celdas de las nuevas columnas</p></li>
+</ol>
+<pre class="r"><code>pivot_wider(pollution, names_from =  size, values_from = amount)
+
+pollution %&gt;% 
+  pivot_wider(names_from = size, values_from = amount )</code></pre>
+</div>
+<div id="separar-y-unir" class="section level2">
+<h2>Separar y unir</h2>
+<div id="separate" class="section level3">
+<h3><code>separate()</code></h3>
+<p>En algunas ocasisiones, una columna del conjunto de daots contiene dos variables. Por ejemplo, la variable de fecha en <code>storms</code> tiene tres variables “ocultas”: año, mes y día.</p>
+<p>El verbo <code>separate()</code> separa una columna en varias columnas, dividiéndola donde quiera que aparezca un carácter separador. Por tanto, los argumentos de <code>separate()</code> son el <em>date frame</em>, la variable a separar, los nombres de las nuevas variables y el carácter separador (estrictamente, hablando una expresión regular):</p>
+<pre class="r"><code>storms2 &lt;- separate(storms, date, c(&quot;year&quot;, &quot;month&quot;, &quot;day&quot;), sep = &quot;-&quot;)
+storms2
+
+storms %&gt;% 
+  separate(date, into = c(&quot;year&quot;, &quot;month&quot;, &quot;day&quot;), sep = &quot;-&quot;)</code></pre>
+<p>Si observamos cuidadosamente los tipos de columnas: notaremos que el año, mes y día son columnas de caracteres. Este es el comportamiento por defecto en <code>separate()</code>: deja el tipo de columna tal como está. Aquí, sin embargo, no es muy útil, ya que realmente son números. Podemos pedir a <code>separate()</code> que trate de convertir a mejores tipos usando <code>convert = TRUE</code>:</p>
+<pre class="r"><code>storms %&gt;% 
+  separate(date, into = c(&quot;year&quot;, &quot;month&quot;, &quot;day&quot;), sep = &quot;-&quot;, 
+           convert = TRUE)</code></pre>
+<p>También puede pasar un vector de números enteros al argumento <code>sep</code> para que <code>separate()</code> interprete los números enteros como posiciones en las que dividirse. Los valores positivos comienzan en 1 en el extremo izquierdo de la cadena de caracteres; los valores negativos comienzan en -1 en el extremo derecho. Cuando se utilizan números enteros para separar cadenas, la longitud de <code>sep</code> debe ser uno menos que el número de nombres del argumento <code>into</code>.</p>
+<p>Puede utilizar este arreglo para separar los dos últimos dígitos de cada año. Esto hace que estos datos sean menos ordenados, pero es útil en otros casos.</p>
+<pre class="r"><code>storms %&gt;% 
+  separate(date, into = c(&quot;year&quot;, &quot;month&quot;, &quot;day&quot;), sep = &quot;-&quot;) %&gt;% 
+  separate(year, into = c(&quot;siglo&quot;, &quot;decada&quot;), sep = 2)  </code></pre>
+</div>
+<div id="unite" class="section level3">
+<h3><code>unite()</code></h3>
+<p>El verbo <code>unite()</code> es el inverso de <code>separate()</code>: combina múltiples columnas en una sola columna. Se necesita con mucha menos frecuencia que en el caso de <code>separate()</code>, pero sigue siendo una herramienta útil. Toma como argumentos un <em>data frame</em>, el nombre de la nueva variable a crear y un conjunto de columnas a combinar.</p>
+<pre class="r"><code>unite(storms2, &quot;date&quot;, year, month, day)</code></pre>
+<p>También existe un argumento opcional, <code>sep</code>. El valor por defecto colocará un subrayado (_) entre los valores de diferentes columnas. Podemos cambiarlo especificando explícitamente el valor que deseamos.</p>
+<pre class="r"><code>unite(storms2, &quot;date&quot;, year, month, day, sep = &quot;-&quot;)</code></pre>
+<p>Si no deseamos ninguna separación, debemos indicar <code>sep=""</code>.</p>
+</div>
+</div>
+<div id="comentario-sobre-valores-ausentes" class="section level2">
+<h2>Comentario sobre valores ausentes</h2>
+<p>Cambiar la representación de un conjunto de datos trae consigo una sutileza importante de los valores ausentes. Sorprendentemente, un valor puede faltar en una de dos formas posibles:</p>
+<ul>
+<li><p>Explícitamente, es decir, marcado con <code>NA</code>.</p></li>
+<li><p>Implícitamente, es decir, simplemente no está presente en los datos.</p></li>
+</ul>
+<p>Ilustremos esta idea con un conjunto de datos muy sencillo:</p>
+<pre class="r"><code>stocks &lt;- tibble(
+  year   = c(2015, 2015, 2015, 2015, 2016, 2016, 2016),
+  qtr    = c(   1,    2,    3,    4,    2,    3,    4),
+  return = c(1.88, 0.59, 0.35,   NA, 0.92, 0.17, 2.66)
+)</code></pre>
+<p>Hay dos valores ausentes en este conjunto de datos:</p>
+<ul>
+<li><p>Falta explícitamente la rentabilidad para el cuarto trimestre de 2015, porque la celda donde debería estar su valor contiene <code>NA</code>.</p></li>
+<li><p>La rentabilidad para el primer trimestre de 2016 está implícitamente ausente, porque simplemente no aparece en el conjunto de datos.</p></li>
+</ul>
+<p>La forma en que se representa un conjunto de datos puede hacer explícitos los valores implícitos. Por ejemplo, podemos hacer explícito el valor que falta implícito poniendo años en las columnas:</p>
+<pre class="r"><code>stocks %&gt;% 
+  pivot_wider(names_from = year, values_from = return)</code></pre>
+<p>Debido a que estos valores ausentes explícitos pueden no ser importantes en otras representaciones de los datos, se puede establecer <code>values_drop_na = TRUE</code> en <code>pivot_longer()</code> para convertir implícitamente los valores explícitos que faltan:</p>
+<pre class="r"><code>stocks %&gt;% 
+  pivot_wider(names_from = year, values_from = return) %&gt;% 
+  pivot_longer(cols = c(&quot;2015&quot;,&quot;2016&quot;), names_to = &quot;year&quot;, values_to = &quot;return&quot;, values_drop_na = TRUE)</code></pre>
+<p>Otra herramienta importante para hacer explícitos los valores que faltan en los datos ordenados es <code>complete()</code>:</p>
+<pre class="r"><code>stocks %&gt;% 
+  complete(year, qtr)</code></pre>
+<p>Toma un conjunto de columnas y encuentra todas las combinaciones únicas. Luego se asegura de que el conjunto de datos original contiene todos esos valores, rellenando <code>NA</code> explícitos cuando sea necesario.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -533,7 +533,10 @@ Medium
   geom_histogram(mapping = aes(x = Price), binwidth = 5)</pre>
 
 <ul>
-<li><p>La tabla del histograma <code>Carseats %&gt;% count(cut_width(Price, 5))</code></p></li>
+<li><p>La tabla del histograma <code>Carseats %&gt;% count(cut_width(Price, 5))</code> <!--
+Carseats %>% mutate(PriceD=cut_width(Price, 5)) %>%
+count(PriceD) %>% ggplot(aes(x = PriceD, y = n)) + geom_bar(stat="identity")
+--></p></li>
 <li><p>Debemos explorar una variedad de anchos del intervalo</p></li>
 </ul>
 

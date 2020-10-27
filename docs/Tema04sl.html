@@ -263,7 +263,8 @@ library(&quot;nycflights13&quot;)</pre>
 <!--
     * Es conveniente verificar que las claves primarias realmente identifican de manera única cada observación. -->
 
-<pre class = 'prettyprint lang-r'>planes %&gt;% count(tailnum) %&gt;% filter(n &gt; 1)</pre>
+<pre class = 'prettyprint lang-r'>planes %&gt;% count(tailnum) %&gt;% filter(n &gt; 1)
+#table(planes$tailnum)</pre>
 
 <ul>
 <li><p><strong>Clave externa</strong>: señala la clave primaria de otra tabla. <!-- Asegura la integridad referencial. --></p>

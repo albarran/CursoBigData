@@ -41,6 +41,8 @@ Finalmente, rellenad este [FORMULARIO](https://docs.google.com/forms/d/e/1FAIpQL
 1. Elige un nombre y encontrar el año en que fue usado con más frecuencia.
 
 ```{r echo=F, eval=F}
+library(babynames)
+library(tidyverse)
 # SAMPLE SOLUTION:
 babynames %>%
   filter(name == "Peter") %>%

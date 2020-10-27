@@ -279,6 +279,10 @@ ggplot(data = Carseats) +
   geom_histogram(mapping = aes(x = Price), binwidth = 5)
 ```
 * La tabla del histograma `Carseats %>% count(cut_width(Price, 5))`
+<!--
+Carseats %>% mutate(PriceD=cut_width(Price, 5)) %>%
+count(PriceD) %>% ggplot(aes(x = PriceD, y = n)) + geom_bar(stat="identity")
+-->
 
 * Debemos explorar una variedad de anchos del intervalo
 ```{r, echo=TRUE, eval=FALSE, messages=FALSE, warning=FALSE}

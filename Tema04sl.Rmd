@@ -91,6 +91,7 @@ airlines %>% head()
 
 ```{r, message = FALSE, echo = TRUE, eval = FALSE}
 planes %>% count(tailnum) %>% filter(n > 1)
+#table(planes$tailnum)
 ```
 
 * **Clave externa**: señala la clave primaria de otra tabla. 

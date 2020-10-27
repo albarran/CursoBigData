@@ -374,11 +374,11 @@ output:
 
 1. Iniciar un nuevo documento de R Markdown desde el menú Archivo. Añade un encabezado con, al menos, título y tu nombre como autor o autora. Mantén los dos fragmentos de código, pero elimina el texto incluido por defecto y cambialo por un título y un par de secciones propias en castellano (no importan lo que diga, puede ser copia-pega de cualquier sitio)<!-- o un [lorem ipsum](https://es.wikipedia.org/wiki/Lorem_ipsum), p.e., generado [aquí](https://loremipsum.io/generator/) )-->. Renderiza el documento y experimenta con el ajuste YAML para el ancho de figura, observando cómo cambia.
 
-2. Añade al texto
+2. Añade al documento
 
     * un par de secciones y/o sub-secciones adicionales
   
-    * algún párrafo o línea de texto adicional
+    * algún párrafo o línea de texto adicional con texto en negrita y cursiva.
   
     * un par de listas
   

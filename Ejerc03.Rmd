@@ -84,20 +84,35 @@ datos <- subset(pwt9.1, year==1952)
   
 ```{r, echo=F, eval=F}
 ggplot(datos) +
-  geom_boxplot(aes(x=continent, y=lifeExp, fill=continent)) 
+  geom_boxplot(aes(x=continent, y=rgdpe, fill=continent)) 
 ```
 
-3. Para el año elegido, mostrar un histograma y la distribución (densidad) de una de vuestras dos variables. Nuevamente, modificar la forma de visualización añadiento las pistas visuales, escalas y/o contextos que considere necesario. Comentar la información que ofrece el gráfico.
+3. Para el año elegido, mostrar en un mismo gráfico el histograma y la densidad de una de vuestras dos variables. Nuevamente, modificar la forma de visualización añadiento las pistas visuales, escalas y/o contextos que considere necesario.<!-- En concreto, comprobar cómo cambia el gráfico dependiendo de si se usa escala logaritmica o no y de si se usa o no la opción de estética `y=..density..` en el histograma; es decir, son cuatro gráficos en total.--> Comentar la información que ofrece el gráfico.
 
 ```{r, echo=F, eval=F}
-ggplot(datos, aes(x=gdpPercap)) +
+ggplot(datos, aes(x=rgdpe)) +
+  geom_histogram() +
+  geom_density() 
+
+
+ggplot(datos, aes(x=rgdpe)) +
+  geom_histogram(aes(y=..density..)) +
+  geom_density() 
+
+ggplot(datos, aes(x=rgdpe)) +
+  geom_density() +
+  scale_x_log10()+
   geom_histogram() 
 
-ggplot(datos, aes(x=gdpPercap)) +
-  geom_density() 
+ggplot(datos, aes(x=rgdpe)) +
+  geom_density() +
+  scale_x_log10()+
+  geom_histogram(aes(y=..density..)) 
+
+
 ```
 
-4. Usando los datos de un periodo de diez años (los que vosotros queráis), mostrar la distribución (densidad) de una de vuestras dos variables, en el periodo completo y en cada año. Nuevamente, modificar la forma de visualización añadiento las pistas visuales, escalas y/o contextos que considere necesario. Comentar la información que ofrece el gráfico.
+4. Elegid los datos para un periodo de diez años (los que vosotros queráis). Mostrar en un gráfico la distribución (densidad) de una de vuestras dos variables, en el periodo completo; mostrar en otro gráfico la densidad para cada año. Nuevamente, modificar la forma de visualización añadiento las pistas visuales, escalas y/o contextos que considere necesario. Comentar la información que ofrece el gráfico.
   
 ```{r, echo=F, eval=F}
 ggplot(gapminder, aes(x=gdpPercap)) +
