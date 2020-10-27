@@ -111,7 +111,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Semana 7
 (26-Oct. a 31-Oct.)
 
-  * [Práctoca 04 - Web scraping](Pract04.html)
+  * [Práctica 04 - Web scraping](Pract04.html)
+      + Entrega (apartado 2): 9 de Noviembre (Economía)
+      / 16 de Noviembre (ADE)
 
 ::: 
 
