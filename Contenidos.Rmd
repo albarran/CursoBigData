@@ -111,12 +111,18 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Semana 7
 (26-Oct. a 31-Oct.)
 
-  * [Tema 05 - Datos Ordenados](Tema05sl.html)
+  * [Práctoca 04 - Web scraping](Pract04.html)
 
 ::: 
 
 
 ::: {}
+
+## Semana 8
+(2-Nov. a 6-Nov.)
+
+  * [Tema 05 - Datos Ordenados](Tema05sl.html)
+
 
 ::: 
 
