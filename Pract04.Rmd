@@ -1,0 +1,213 @@
+---
+#subtitle: "Técnicas para 'Big Data' en Economía"
+#subtitle: "Muestreo y Análisis de Datos"
+title    :  "Practica 04 - 'Web Scraping' con `rvest`"
+author: 
+  - "Prof.: Pedro Albarrán"
+  - "Prof.: Alberto Pérez"
+job: "Universidad de Alicante" 
+date: "Universidad de Alicante, Curso 2020/21"  
+output:
+  html_document:
+    toc: true
+    toc_float: true
+  ioslides_presentation: 
+    widescreen: yes
+    logo: pic/by-nc-sa. eu.svg
+#  html_document: default
+#  beamer_presentation: 
+#      slide_level: 2
+#widescreen: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+#setwd("~/Archivos/teaching/MAD/0Slides/stat1291")
+#setwd("C:/Users/pedro/Dropbox/MAD/0Slides/stat1291")
+library(rmarkdown)
+#render("filename.Rmd")     
+#browseURL("filename.html")
+#[//]: # (Comment: rintro.r)
+#
+# states.data <- readRDS("data/states.rds") 
+# load("data/SAT_2010.rda") 
+# SAT <- left_join(SAT_2010, states.data)
+```
+
+
+
+## *Scraping* con `rvest`
+
+Internet es un gran lugar para obtener datos. Podemos usar `rvest` para extraer (en inglés, *scrap* significa literalmente raspar o rascar una superficie) los datos en tablas HTML de la web, pero a menudo requerirá una limpieza extensa antes de que se puedan usar adecuadamente.
+
+Considerar la siguiente lista de los fines de semana de apertura de taquillas más grandes:
+
+(http://www.boxofficemojo.com/alltime/weekends/)
+
+Usando `rvest` podemos traer esta tabla a R.
+
+```{r, eval=FALSE, echo=TRUE}
+library(rvest)
+url <- "http://www.boxofficemojo.com/alltime/weekends/"
+```
+
+Primero, necesitaremos leer el contenido de la página en HTML. La función `read_html()` proporcionada por `rvest` procesa el HTML:
+```{r, eval=FALSE, echo=TRUE}
+html_bom <- read_html(url)
+class(html_bom)
+html_bom
+```
+
+Desafortunadamente, esto no es muy legible. Lo que queremos es extraer los datos que están incrustados en las tablas HTML. Empecemos por tomar esas tablas que están dentro de los elementos del html llamados "table". Para ello podemos utilizar `html_nodes()`:
+```{r, eval=FALSE, echo=TRUE}
+tables <- html_bom %>%
+  html_nodes("table")
+tables
+```
+
+<!--
+En este caso, había 6 elementos de tabla en esa página (la mayoría de ellos usados para crear los bordes). Sólo nos interesa el grande con todos los datos. Este es el quinto elemento de la lista (nota: averiguadpo por prueba y error).
+```{r, eval=FALSE, echo=TRUE}
+tables[[5]]
+```
+-->
+
+En este caso, solo hay 1 elementos de tabla en esa página .
+```{r, eval=FALSE, echo=TRUE}
+tables[[1]]
+```
+
+
+La función `html_table()` extraerá los datos de esta tabla y los convertirá en un *data frame*. La opción `header = TRUE` indica a R que queremos usar la primera fila como nuestros nombres de variable.
+```{r, eval=FALSE, echo=TRUE}
+movies <- tables[[1]] %>%
+  html_table(header = TRUE)
+glimpse(movies)
+```
+En algunas ocasiones, existen más de una table en una página web. Si son pocas se puede determinar cuál nos interesa mediante prueba y error. En particular, en esta caso sabemos que los datos tienen 200 observaciones y 9 columnas; si lo que leemos tiene una dimensiones (obtenidas con `glimpse()` o `str()`) muy diferentes no debe ser la tabla que buscamos. En cualquier caso, con muchas tablas en la página web, necesitaremos nuevas herramientas de programación que veremos en breve.
+
+<!--
+En este caso sólo teníamos 6 tablas, así que no fue demasiado difícil usar prueba y error para averiguar cuál era la que queríamos. Pero también podríamos ser un poco más sistemáticos.
+
+Usemos `lapply()` para extraer las 6 tablas, en un objeto de tipo lista con una longitud de 6:
+```{r, eval=FALSE, echo=TRUE}
+list_of_tables <- lapply(tables, html_table, fill = TRUE)
+class(list_of_tables)
+length(list_of_tables)
+str(list_of_tables)
+```
+
+Puesto que `html_table()` asigna las tablas HTML a *data frames* en R, cada uno de los seis elementos de la lista list_of_tables es un *data frame*. Sin embargo, algunas de las tablas son más grandes que otras.
+
+```{r, eval=FALSE, echo=TRUE}
+lapply(list_of_tables, class)
+lapply(list_of_tables, dim)
+```
+
+Es obvio desde la propia página web que la tabla que queremos tiene 9 variables y 214 filas. Sólo (el quinto elemento)[http://www.imdb.com/title/tt0119116/] de nuestra lista cumple con ese criterio.
+-->
+
+## Limpieza de datos
+
+Si bien ahora tenemos los datos, podemos ver que son muy confusos:
+
+  * los nombres de las variables contienen caracteres especiales, como asteriscos, paréntesis y espacios. Esto puede causar problemas, así que queremos cambiarlos.
+  
+  * la mayoría de las columnas se almacenan como vectores de caracteres, aunque contienen información cuantitativa. En particular, hay columnas para dólares, porcentajes y fechas que están en el formato equivocado.
+
+Debido a este desajuste, si intentamos dibujar los datos, esto no funcionará como se esperaba.
+
+```{r, eval=FALSE, echo=TRUE}
+ggplot(
+  data = movies, 
+  aes(x = Date, y = Opening)
+) + 
+  geom_point(aes(size = `% of Total`))
+```
+
+Nota que cuando los nombres de la variables tienen caracteres "raros" se debe utilizar \` para marcar el inicio y el final del nombre. Esto incluye cualquier caracter no alfanumerico en cualquier posición del nombre de la variable y también los números al comienzo del nombre de una variable. Aquí esto sucede tanto por símbolo \% como por el espacio. Otros caracteres no alfanumericos son cualquier simbolo de puntuación, barras o letras como la ñ. 
+
+
+
+La función `parse_number()` del paquete `readr` es extremadamente útil para limpiar signos de dólar, comas y signos de porcentaje en los valores (Ojo, esto es diferente de los caracteres raros en el nombre mencionado antes). Usaremos esto en conjunción con el verbo `mutate()` para renombrar las columnas al mismo tiempo.
+```{r, eval=FALSE, echo=TRUE}
+library(readr)
+movies <- movies %>%
+  mutate(opening = parse_number(Opening),
+         percent_total = parse_number(`% of Total`)/100)
+glimpse(movies)
+```
+
+Ahora, cuando dibujamos los datos cuantitativos, obtenemos algo que tiene más sentido.
+
+```{r, eval=FALSE, echo=TRUE}
+ggplot(data = movies, aes(x = Date, y = opening)) + 
+  geom_point(aes(size = percent_total))
+```
+
+### Ejercicio
+
+
+También crear una nueva variable llamada `num_theaters` que almacena el número de teatros como un entero, y otras dos más con el promedio y el total recaudado. Responde [aquí](https://docs.google.com/forms/d/e/1FAIpQLScJhX5F219jttLOAReSpiT5Mg7aO7-clheg2170DFsprTTp5A/viewform)
+```{r, eval=FALSE, echo=FALSE}
+movies <- movies %>%
+  mutate(num_theaters = as.integer(parse_number(Theaters)))
+movies <- movies %>%
+  mutate(avg_gross = parse_number(Average),
+         total_gross = parse_number(`Total Gross`))
+```
+
+Notad que es conveniente usar el tipo de datos enteros cuando estamos seguro de que la variable contiene ese tipo de valores porque se ahorra espacion de almacenamiento. Sin embargo, hay ciertos "límites" a los valores que se pueden representar como enteros: ver `help(integer)`.
+
+## Fechas con `lubridate`
+
+Desafortunadamente, las fechas siguen siendo un problema. Echemos un vistazo a esas fechas:
+```{r, eval=FALSE, echo=TRUE}
+movies %>%
+  select(Date) %>%
+  glimpse()
+```
+
+Vemos que las fechas están en formato mes/día/año. Ya hemos visto anterioreme el paquete `lubridate` que proporciona funcionalidad para trabajar con fechas. Podemos utilizar la función `mdy()` para convertir el vector de caracteres en una clase de fecha.
+```{r, eval=FALSE, echo=TRUE}
+library(lubridate)
+movies <- movies %>%
+  mutate(release_date = mdy(Date))
+glimpse(movies)
+```
+
+```{r, eval=FALSE, echo=TRUE}
+ggplot(data = movies, aes(x = release_date, y = opening)) + 
+  #queremos un gráfico de dispersión, y usaremos tanto el color como el tamaño para mostrar porcentaje total
+  geom_point(aes(color = percent_total, size = percent_total)) +
+  # truco para combinar color y tamaño en una sola leyenda 
+  guides(color = guide_legend("Porcentaje Total"), 
+         size = guide_legend("Porcentaje Total")) +
+  # Formatear el eje y para mostrar la cantidad en $.
+  scale_y_continuous(name = "Recaudación en el Día de Apertura", labels = scales::dollar) +
+  # etiquetamos tambien el ejer de las x (podemos omitir el argumento `name`)
+  scale_x_date("Fecha de estreno")
+```
+
+### Mini-Práctica
+
+1. Repetir el ejercicio con la siguiente fuente de información: [http://www.the-numbers.com/movie/records/Biggest-Opening-Weekend-at-the-Box-Office](http://www.the-numbers.com/movie/records/Biggest-Opening-Weekend-at-the-Box-Office). Es decir, debéis extraer los datos relevantes de la web, limpiarlos y dejarlos preparados para trabajar; también realizar un gráfico (a vuestra elección) similar al anterior.
+
+    Debéis enviar un archivo de guión .R respondiendo a [este formulario](https://docs.google.com/forms/d/e/1FAIpQLSfl1vrJhI_fXjbkLv_OJxgJezCycNC_PF-tiUMfnuAepx_NGA/viewform). Como es habitual, el nombre del archivo debe empezar con vuestro número de DNI (el resto es libre): ej., 12345678_P04.R.
+
+<!--
+    a. Extraer los datos relevantes de la web, limpiar/transformar los datos en brutos y dejarlos "cargados" para su posterior análisis. Este es un ejemplo "simple" de lo que se conoce como [ETL](https://es.wikipedia.org/wiki/Extract,_transform_and_load). 
+    b. Realizar un gráfico (a vuestra elección) similar al anterior.\newline\newline
+    
+    Debéis enviar un archivo de guión .R respondiendo a [este formulario](https://docs.google.com/forms/d/e/1FAIpQLSfl1vrJhI_fXjbkLv_OJxgJezCycNC_PF-tiUMfnuAepx_NGA/viewform). Como es habitual, el nombre del archivo debe empezar con vuestro número de DNI (el resto es libre): ej., 12345678_P04.R.
+-->
+  
+2. Partiendo de la tabla de datos obtenida en el apartado 1, realizar un BREVE análisis exploratorio de los datos siguiendo las pautas generales[^1] vistas en la Práctica 03 de la asignatura. 
+
+    Debéis enviar un archivo de R Markdown y el resultado de renderizarlo (en .html, .docx o .pdf, a vuestra elección) respondiendo a [este formulario](https://docs.google.com/forms/d/e/1FAIpQLSfcYTZtomecawRE2lt1Dclm_r4zIoBwG0Gxn0C1uKhsf3NA-g/viewform). Como es habitual, los nombres de los archivos debe empezar con vuestro número de DNI (el resto es libre): ej., 12345678_P04.Rmd y 12345678_P04.html.
+  
+    NOTA: no os compliquéis mucho: hay pocas variables (podéis querer generar alguna) y no hay mucha información para extraer "grandes" conclusiones. Centraros en practicar lo que se discutió en la práctica, describiendo la variación de (algunas) las variables y de las posibles relaciones entre ellas que consideréis más relevantes. 
+  
+[^1]: Recordad no existe un conjunto cerrado y sistemático de pasos para el análisis exploratorio de datos.
+
