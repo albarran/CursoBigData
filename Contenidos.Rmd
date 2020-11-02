@@ -124,6 +124,8 @@ knitr::opts_chunk$set(echo = TRUE)
 (2-Nov. a 6-Nov.)
 
   * [Tema 05 - Datos Ordenados](Tema05sl.html)
+  
+  * [Ejercicio del Tema 05](EjercT5.01.html)
 
 
 ::: 

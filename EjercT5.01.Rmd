@@ -1,0 +1,103 @@
+---
+#subtitle: "Técnicas para 'Big Data' en Economía"
+#subtitle: "Muestreo y Análisis de Datos"
+title    :  "Ejercicio 5.01. Datos Ordenados"
+author: 
+  - "Prof.: Pedro Albarrán"
+  - "Prof.: Alberto Pérez"
+job: "Universidad de Alicante" 
+date: "Universidad de Alicante, Curso 2020/21"  
+output:
+#  ioslides_presentation: 
+#    widescreen: yes
+  html_document: default
+#  beamer_presentation: 
+#      slide_level: 2
+#widescreen: yes
+---
+
+
+## Datos de nacimientos
+
+En el paquete `babynames` tenemos dos fuentes de datos de nacimientos: de la Seguridad Social en el conjunto de datos `babaynames` y del Censo en `births`. Los podemos combinar para comprobar si existen discrepancias
+
+```{r ejemplo.1, warnings=FALSE, message=FALSE, echo=TRUE, eval=TRUE}
+library(tidyverse)
+library(babynames)
+nac.segsoc <- babynames %>%
+                  group_by(year) %>%
+                  summarize(segsoc = sum(n))
+
+nacimientos <- births %>% 
+                  left_join(nac.segsoc, by = "year") %>% 
+                  rename(censo = births)
+
+```
+
+### Apartado a). 
+
+  Explicar BREVEMENTE por qué `nacimientos` no son datos ordenados
+
+### Visualizando los datos no ordenados
+
+```{r visual-no.ordenados}
+ggplot(data = nacimientos, aes(x = year, y = censo)) +
+  geom_line() + 
+  geom_line(aes(y = segsoc))
+
+```
+
+Problemas:
+
+  * nos vemos forzados a usar una segunda estética `y` en lugar de hacer una asociación directa
+  
+  * no tenemos leyenda, ni colores
+
+### Ordenando los datos y visualizandolos
+
+```{r nac.limpio}
+
+nac.limpio <- nacimientos %>% pivot_longer(-year, names_to = "fuente", values_to = "nacimientos")
+
+ggplot(data = nac.limpio, aes(x = year, y = nacimientos)) +
+  geom_line(aes(color = fuente)) 
+```
+
+## Datos de `gapminder`
+
+
+### Apartado b)
+
+* Elegir un conjunto de datos de la web Gapminder, [aquí](http://www.gapminder.org/data/).
+
+* Descargar los datos en formato .csv y leerlos en R.
+
+### Apartado c)
+
+* Transformar el conjunto de datos a una tabla de datos ordenados con tres variables: país, año y valor de la variable que habéis elegido.
+
+* Probablemente la variable de año tendrá tipo de caracter; usar `mutate()` y `parse_number()` para arregarlo.
+
+### Apartado d)
+
+* Representar la evolución temporal de la variable con `ggplot`, usando el color para distinguir entre países. Podéis representar solo unos pocos países para evitar que el gráfico este saturado.
+
+## Entrega del ejercicio
+
+<!--
+Como os he comentado en clase, debéis entregar un ejercicio para antes del lunes 19 de octubre a las 23:55h.
+# Vuestro ejercicio
+
+3. Finalmente, rellenad -->
+
+Rellenad este [FORMULARIO](https://docs.google.com/forms/d/e/1FAIpQLSfZiGawrACEJsNKO_utcPUzip7N2EhEqYcouTjWDECazANvSw/viewform) con vuestros datos y subid 
+
+  * vuestro archivo de R 
+    
+  * el fichero .csv que utilizáis.. 
+    
+IMPORTANTE: el nombre de los ficheros que subáis DEBE EMPEZAR con vuestro número de DNI. Por ejemplo,
+
+  * 12345678_ET05_micodigo.R
+    
+  * 12345678_ET05_datos.csv
