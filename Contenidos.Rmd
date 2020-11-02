@@ -39,15 +39,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
   * [Tema 02 - Más R](Tema02.html) 
-
   * [Práctica 01 - Introducción a RMarkdown](Pract01.html)
-
-  * Certificado de completar el curso de Datacamp
-    - Entrega [aquí](https://docs.google.com/forms/d/e/1FAIpQLScxZ3PuU3y58buOupBmtpNhoIprMKgTydX4wH_WdontaEo9Mg/viewform): vie. 25-Sept. 23:55
-    
-  * 
-
-
+  * Entregar [aquí](https://docs.google.com/forms/d/e/1FAIpQLScxZ3PuU3y58buOupBmtpNhoIprMKgTydX4wH_WdontaEo9Mg/viewform) certificado del curso de Datacamp
+    - Fecha:  vie. 25-Sept. 23:55
 
 :::
 
@@ -71,12 +65,11 @@ knitr::opts_chunk$set(echo = TRUE)
 (5-Oct. a 8-Oct.)
 
  * [Tema 03 - Manipulación de Datos](Tema03sl.html)
+ * [Ejercicio 01 sobre R](Ejerc01.html)
+ * [Ejercicio 02 sobre R Markdown](Ejerc02.html)
  
- * Ejercicios para entregar el lunes 19 de octubre:
- 
-      + [Ejercicio 01 sobre R](Ejerc01.html)
-      
-      + [Ejercicio 02 sobre R Markdown](Ejerc02.html)
+ * Los ejercicios se deben entregar el lunes 19 de octubre
+
 
 :::
 
@@ -85,12 +78,8 @@ knitr::opts_chunk$set(echo = TRUE)
 (12-Oct. a 16-Oct.)
 
  * [Tema 03 - Mini-Práctica](PregT03.Ejerc.html)
- 
- * Ejercicios para entregar el lunes 26 de octubre (Economía) / 3 de noviembre (ADE)
- 
-      + [Ejercicio 03 sobre Visualización de Datos](Ejerc03.html)
-      
- 
+ * [Ejercicio 03 sobre Visualización de Datos](Ejerc03.html)
+      + Entregar el lunes 26 de octubre (Economía) / 3 de noviembre (ADE)
 
 :::
 
@@ -100,6 +89,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
  * [Tema 04 - Manipulación de Datos Relaciones](Tema04sl.html)
  * [Práctica 03 - Análisis Exploratorio de Datos](Pract03.html)
+
 :::
 
 ::::
@@ -124,9 +114,7 @@ knitr::opts_chunk$set(echo = TRUE)
 (2-Nov. a 6-Nov.)
 
   * [Tema 05 - Datos Ordenados](Tema05sl.html)
-  
   * [Ejercicio del Tema 05](EjercT5.01.html)
-
 
 ::: 
 
