@@ -329,7 +329,7 @@ nacimientos &lt;- births %&gt;%
 <pre class="r"><code>ggplot(data = nacimientos, aes(x = year, y = censo)) +
   geom_line() + 
   geom_line(aes(y = segsoc))</code></pre>
-<p><img src="EjercT5.01_files/figure-html/visual-no.ordenados-1.png" width="672" /></p>
+<p><img src="EjercT05_files/figure-html/visual-no.ordenados-1.png" width="672" /></p>
 <p>Problemas:</p>
 <ul>
 <li><p>nos vemos forzados a usar una segunda estética <code>y</code> en lugar de hacer una asociación directa</p></li>
@@ -342,7 +342,7 @@ nacimientos &lt;- births %&gt;%
 
 ggplot(data = nac.limpio, aes(x = year, y = nacimientos)) +
   geom_line(aes(color = fuente)) </code></pre>
-<p><img src="EjercT5.01_files/figure-html/nac.limpio-1.png" width="672" /></p>
+<p><img src="EjercT05_files/figure-html/nac.limpio-1.png" width="672" /></p>
 </div>
 </div>
 <div id="datos-de-gapminder" class="section level2">

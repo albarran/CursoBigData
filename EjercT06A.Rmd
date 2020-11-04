@@ -11,9 +11,10 @@ output:
   html_document:
     toc: true
     toc_float: true
-  ioslides_presentation: 
-    widescreen: yes
     logo: pic/by-nc-sa.eu.svg
+#  ioslides_presentation: 
+#    widescreen: yes
+#    logo: pic/by-nc-sa.eu.svg
 #  html_document: default
 #  beamer_presentation: 
 #      slide_level: 2
@@ -177,41 +178,11 @@ Estos ejercicios utilizan el paquete de datos `nycflights13`.
 
 1. Escribir una función que, para un determinado identificador de aerolínea (por ejemplo, DL), recupere los cinco destinos aeroportuarios más comunes de la ciudad de Nueva York en 2013, y la frecuencia con que la aerolínea voló allí.
 
-```{r echo=FALSE, eval=FALSE}
-library(nycflights13)
-top_dests <- function(carrier_arg) {
-  flights %>%
-    filter(carrier == carrier_arg) %>%
-    group_by(dest) %>%
-    summarize(num_flights = n()) %>%
-    arrange(desc(num_flights)) %>%
-    head(5)
-}
-```
-
 2. Utilizar la función anterior para encontrar los cinco principales destinos de Delta Airlines (DL) y los de American Airlines (AA). ¿Cuántos de estos destinos son compartidos con Delta?
-
-```{r echo=FALSE, eval=FALSE}
-top_dests("DL")
-top_dests("AA")
-semi_join(top_dests("DL"), top_dests("AA"))
-```
 
 
 3. Escribir una función que, para un código de aeropuerto determinado (por ejemplo, SFO), recupere las cinco compañías aéreas más comunes que prestan servicio en ese aeropuerto desde la ciudad de Nueva York en 2013, y cuál fue su tiempo medio de retraso en la llegada.
 
-```{r echo=FALSE, eval=FALSE}
-common_carriers <- function(faa) {
-  flights %>%
-    filter(dest == faa) %>%
-    group_by(carrier) %>%
-    summarize(num_flights = n()) %>%
-    arrange(desc(num_flights)) %>%
-    head(5)
-}
-
-common_carriers("SFO")
-```
 
 
 * Rellenad este [FORMULARIO](https://docs.google.com/forms/d/e/1FAIpQLSclnTNp6PoMcTLDuB5dPyoykFKQNZsK1h7f8-z3GsVu_SmL1Q/viewform) con vuestros datos y subid vuestro archivo de R para responder a estas preguntas.

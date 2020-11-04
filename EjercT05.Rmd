@@ -37,6 +37,7 @@ nacimientos <- births %>%
 ### Apartado a). 
 
   Explicar BREVEMENTE por qué `nacimientos` no son datos ordenados
+  
 
 ### Visualizando los datos no ordenados
 
@@ -72,15 +73,19 @@ ggplot(data = nac.limpio, aes(x = year, y = nacimientos)) +
 
 * Descargar los datos en formato .csv y leerlos en R.
 
+
 ### Apartado c)
 
 * Transformar el conjunto de datos a una tabla de datos ordenados con tres variables: país, año y valor de la variable que habéis elegido.
 
 * Probablemente la variable de año tendrá tipo de caracter; usar `mutate()` y `parse_number()` para arregarlo.
 
+
+
 ### Apartado d)
 
 * Representar la evolución temporal de la variable con `ggplot`, usando el color para distinguir entre países. Podéis representar solo unos pocos países para evitar que el gráfico este saturado.
+
 
 ## Entrega del ejercicio
 
@@ -101,3 +106,5 @@ IMPORTANTE: el nombre de los ficheros que subáis DEBE EMPEZAR con vuestro núme
   * 12345678_ET05_micodigo.R
     
   * 12345678_ET05_datos.csv
+
+
