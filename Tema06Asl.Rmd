@@ -1,0 +1,227 @@
+---
+#subtitle: "Técnicas para 'Big Data' en Economía"
+#subtitle: "Muestreo y Análisis de Datos"
+title    :  "Tema 06A - Programación con funciones"
+author: 
+  - "Prof.: Pedro Albarrán"
+  - "Prof.: Alberto Pérez"
+job: "Universidad de Alicante" 
+date: "Universidad de Alicante, Curso 2020/21"  
+output:
+#  html_document:
+#    toc: true
+#    toc_float: true
+  ioslides_presentation: 
+    widescreen: yes
+    logo: pic/by-nc-sa.eu.svg
+#  html_document: default
+#  beamer_presentation: 
+#      slide_level: 2
+#widescreen: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, eval = TRUE, echo = TRUE)
+
+library(tidyverse)
+```
+
+
+## Automatización de tareas 
+
+* Podemos ahorrar mucho tiempo automatizando ciertas operaciones
+
+* Los ordenadores buenas para hacer las cosas repetidamente
+
+* PERO no son buenas 
+
+    + para saber QUÉ hacer
+    
+    + poco para interpretar resultados (el POR QUÉ)
+    
+* Nuestro trabajo es decirle al ordenador qué hacer e interpretar resultados
+
+
+## Funciones definidas por el usuario
+
+* Si un bloque de código se repite más de dos veces, escribe una función
+
+```{r, eval=FALSE}
+datos1 %>% ggplot(aes(x=x1)) + geom_boxplot()
+datos2 %>% ggplot(aes(x=mm)) + geom_boxplot()
+datos3 %>% ggplot(aes(x=zh)) + geom_boxplot()
+```
+
+<!--
+* Las funciones permiten **automatizar tareas**, sin los problemas de copiar-pegar: el código se modifica en un solo lugar
+-->
+
+* A diferencia de copiar-pegar, el código se modifica en un solo lugar
+
+* Las funciones son "verbos", sus argumentos "nombres"
+
+    + nombres descriptivos, no demasiados cortos
+
+    + notación *consistente*: siempre "mostar_grafico" o "mostrarGrafico"
+
+* USAR COMENTARIOS, añadiendo "-" o "=" hasta el final de línea para delimitar partes de código
+
+## Definir una función
+
+```{r, eval=FALSE}
+nombre_de_función <- function(arg1, arg2 = "valor") {
+...
+<código de R>
+...
+return(x)
+}
+```
+
+
+* Argumentos de entrada: 
+
+    + obligatorio: `arg1`
+    + opcional: `arg2` (con valor por defecto "valor")
+
+* Por defecto el resultado es el objeto mostrado en la última línea
+
+    + aquí, explícitamente el objeto `x`
+
+
+
+## Argumentos de una función
+
+* Los argumentos obligatorios (típicamente, datos) suelen ir al principio
+
+* Es *opcional* utilizar los nombres para pasar un argumento
+
+* Si se omite el nombre, el orden importa
+
+* Se pueden cambiar los valores de los argumentos opcionales 
+
+
+* `...` es un argumento "especial": otros argumentos no especificados
+    + típicamente, se pasarán a otra función
+
+<!--
+```{r eval=FALSE}
+library(tidyverse)
+
+data(cars)
+cars
+
+haz_grafico <- function(datos, variable) {
+    ggplot(data=datos, aes(x=variable)) + geom_boxplot()
+}
+
+haz_grafico(datos = cars, variable = dist)
+```
+
+-->
+
+
+<!--  r4ds: If you just want to capture the values of the ..., use list(...). -->
+
+* La función `formals()` muestra los argumentos que toma una función
+
+## Resultado de la función
+
+```{r, eval = FALSE}
+mimedia <- function(x) {
+  s <- sum(x)               
+  s / length(x)          # Resultado: última línea imprimida
+}
+```
+
+```{r, eval = FALSE}
+misuma <- function(x) {
+  s <- sum(x)               
+  s / length(x)
+  return(s)              # Resultado dado por return()
+}
+```
+
+* RECORDAD: una asignación NO imprime nada
+
+```{r, eval = FALSE}
+mimedia <- function(x) {
+  s <- sum(x)               
+  res <- s / length(x) 
+}
+```
+
+
+## Ámbito/Alcance de las variables ("Scoping")
+
+* Los argumentos, variables y objetos definidos en una función tienen un ámbito LOCAL: NO se recuerdan fuera de ella. 
+    + La función tiene su propio "entorno"
+    + Es preferible evitar el mismo nombre en el entorno global de R y en el alcance local de una función.
+    
+<!--(Se podría usar `<<-` para asignación global, pero es peligroso porque puede sobre-escribir objetos internos de R.) -->
+```{r, eval = FALSE}
+datos <- 1:5
+mimedia(datos)
+s                 # no se encuentra el objeto 's'
+```
+
+* La función buscará objetos en el entorno global de R si no puede encontrarlos localmente.
+
+
+## Usando funciones
+
+* Las funciones deben ejecutarse antes de usarse: pasan a formar parte del entorno global de R 
+
+
+* Es habitual definir todas las funciones de un proyecto en un fichero aparte: esto es una biblioteca (`library`)
+
+* El código de un fichero externo se "incluye/ejecuta" en R con la función `source()`
+
+```{r, eval=FALSE}
+source('/mi/direccion/misfunciones.R')
+```
+
+## Ejecución condicional (`if`)
+
+* Una declaración `if` permite ejecutar un código según se cumpla una condición lógica
+
+<!-- * Las condiciones lógicas se plantean de la forma habitual
+-->
+
+```{r eval=FALSE}
+if (condición) {
+  # código ejecutado cuando al condición es cierta (TRUE)
+} else {
+  # código ejecutado cuando al condición es falsa (FALSE)
+}
+```
+
+* También se pueden encadenar múltiples condiciones
+
+```{r eval=FALSE}
+if (condición1) {
+  # haz esto
+} else if (condición alternativa) {
+  # haz otra cosa
+} else {
+  # hacer en el caso residual
+}
+```
+
+## Ejecución condicional (cont.)
+
+* Un uso habitual de `if`: comprobar que los argumentos de una función se especifican bien
+
+  + Con `stop()` se detiene y devuelve un mensaje de error
+
+* Notad la diferencia con dos funciones relacionadas `base::ifelse()` y `dplyr::if_else()`
+
+  + Devuelven un objeto de la forma que la condición
+
+  + Útiles para crear nuevas variables (p.e., "dummies" o categóricas)
+
+
+```{r eval=FALSE}
+x <- c(6:-4)
+ifelse(x >= 0, sqrt(x), NA)
+```
+

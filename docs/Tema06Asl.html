@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tema 06A - Programación con funciones</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Tema 06A - Programación con funciones',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                        favIcon: 'Tema06Asl_files/logo.svg',
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Prof.: Pedro Albarrán' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            {
+        name:  'Prof.: Alberto Pérez' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    code.sourceCode { white-space: pre-wrap; }
+    code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+        
+    slides > slide:not(.nobackground):before {
+      font-size: 12pt;
+      content: "";
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      background: url(Tema06Asl_files/logo.svg) no-repeat 0 50%;
+      -webkit-background-size: 30px 30px;
+      -moz-background-size: 30px 30px;
+      -o-background-size: 30px 30px;
+      background-size: 30px 30px;
+      padding-left: 40px;
+      height: 30px;
+      line-height: 1.9;
+    }
+  </style>
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+        <aside class="gdbar"><img src="Tema06Asl_files/logo.svg"></aside>
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Universidad de Alicante, Curso 2020/21</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>Automatización de tareas</h2></hgroup><article  id="automatización-de-tareas">
+
+<ul>
+<li><p>Podemos ahorrar mucho tiempo automatizando ciertas operaciones</p></li>
+<li><p>Los ordenadores buenas para hacer las cosas repetidamente</p></li>
+<li><p>PERO no son buenas</p>
+
+<ul>
+<li><p>para saber QUÉ hacer</p></li>
+<li><p>poco para interpretar resultados (el POR QUÉ)</p></li>
+</ul></li>
+<li><p>Nuestro trabajo es decirle al ordenador qué hacer e interpretar resultados</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Funciones definidas por el usuario</h2></hgroup><article  id="funciones-definidas-por-el-usuario">
+
+<ul>
+<li>Si un bloque de código se repite más de dos veces, escribe una función</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>datos1 %&gt;% ggplot(aes(x=x1)) + geom_boxplot()
+datos2 %&gt;% ggplot(aes(x=mm)) + geom_boxplot()
+datos3 %&gt;% ggplot(aes(x=zh)) + geom_boxplot()</pre>
+
+<!--
+* Las funciones permiten **automatizar tareas**, sin los problemas de copiar-pegar: el código se modifica en un solo lugar
+-->
+
+<ul>
+<li><p>A diferencia de copiar-pegar, el código se modifica en un solo lugar</p></li>
+<li><p>Las funciones son &ldquo;verbos&rdquo;, sus argumentos &ldquo;nombres&rdquo;</p>
+
+<ul>
+<li><p>nombres descriptivos, no demasiados cortos</p></li>
+<li><p>notación <em>consistente</em>: siempre &ldquo;mostar_grafico&rdquo; o &ldquo;mostrarGrafico&rdquo;</p></li>
+</ul></li>
+<li><p>USAR COMENTARIOS, añadiendo &ldquo;-&rdquo; o &ldquo;=&rdquo; hasta el final de línea para delimitar partes de código</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Definir una función</h2></hgroup><article  id="definir-una-función">
+
+<pre class = 'prettyprint lang-r'>nombre_de_función &lt;- function(arg1, arg2 = &quot;valor&quot;) {
+...
+&lt;código de R&gt;
+...
+return(x)
+}</pre>
+
+<ul>
+<li><p>Argumentos de entrada:</p>
+
+<ul>
+<li>obligatorio: <code>arg1</code></li>
+<li>opcional: <code>arg2</code> (con valor por defecto &ldquo;valor&rdquo;)</li>
+</ul></li>
+<li><p>Por defecto el resultado es el objeto mostrado en la última línea</p>
+
+<ul>
+<li>aquí, explícitamente el objeto <code>x</code></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Argumentos de una función</h2></hgroup><article  id="argumentos-de-una-función">
+
+<ul>
+<li><p>Los argumentos obligatorios (típicamente, datos) suelen ir al principio</p></li>
+<li><p>Es <em>opcional</em> utilizar los nombres para pasar un argumento</p></li>
+<li><p>Si se omite el nombre, el orden importa</p></li>
+<li><p>Se pueden cambiar los valores de los argumentos opcionales</p></li>
+<li><p><code>...</code> es un argumento &ldquo;especial&rdquo;: otros argumentos no especificados</p>
+
+<ul>
+<li>típicamente, se pasarán a otra función</li>
+</ul></li>
+</ul>
+
+<!--
+
+```r
+library(tidyverse)
+
+data(cars)
+cars
+
+haz_grafico <- function(datos, variable) {
+    ggplot(data=datos, aes(x=variable)) + geom_boxplot()
+}
+
+haz_grafico(datos = cars, variable = dist)
+```
+
+-->
+
+<!--  r4ds: If you just want to capture the values of the ..., use list(...). -->
+
+<ul>
+<li>La función <code>formals()</code> muestra los argumentos que toma una función</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Resultado de la función</h2></hgroup><article  id="resultado-de-la-función">
+
+<pre class = 'prettyprint lang-r'>mimedia &lt;- function(x) {
+  s &lt;- sum(x)               
+  s / length(x)          # Resultado: última línea imprimida
+}</pre>
+
+<pre class = 'prettyprint lang-r'>misuma &lt;- function(x) {
+  s &lt;- sum(x)               
+  s / length(x)
+  return(s)              # Resultado dado por return()
+}</pre>
+
+<ul>
+<li>RECORDAD: una asignación NO imprime nada</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>mimedia &lt;- function(x) {
+  s &lt;- sum(x)               
+  res &lt;- s / length(x) 
+}</pre>
+
+</article></slide><slide class=""><hgroup><h2>Ámbito/Alcance de las variables (&ldquo;Scoping&rdquo;)</h2></hgroup><article  id="ámbitoalcance-de-las-variables-scoping">
+
+<ul>
+<li>Los argumentos, variables y objetos definidos en una función tienen un ámbito LOCAL: NO se recuerdan fuera de ella.
+
+<ul>
+<li>La función tiene su propio &ldquo;entorno&rdquo;</li>
+<li>Es preferible evitar el mismo nombre en el entorno global de R y en el alcance local de una función.</li>
+</ul></li>
+</ul>
+
+<!--(Se podría usar `<<-` para asignación global, pero es peligroso porque puede sobre-escribir objetos internos de R.) -->
+
+<pre class = 'prettyprint lang-r'>datos &lt;- 1:5
+mimedia(datos)
+s                 # no se encuentra el objeto &#39;s&#39;</pre>
+
+<ul>
+<li>La función buscará objetos en el entorno global de R si no puede encontrarlos localmente.</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Usando funciones</h2></hgroup><article  id="usando-funciones">
+
+<ul>
+<li><p>Las funciones deben ejecutarse antes de usarse: pasan a formar parte del entorno global de R</p></li>
+<li><p>Es habitual definir todas las funciones de un proyecto en un fichero aparte: esto es una biblioteca (<code>library</code>)</p></li>
+<li><p>El código de un fichero externo se &ldquo;incluye/ejecuta&rdquo; en R con la función <code>source()</code></p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>source(&#39;/mi/direccion/misfunciones.R&#39;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Ejecución condicional (<code>if</code>)</h2></hgroup><article  id="ejecución-condicional-if">
+
+<ul>
+<li>Una declaración <code>if</code> permite ejecutar un código según se cumpla una condición lógica</li>
+</ul>
+
+<!-- * Las condiciones lógicas se plantean de la forma habitual
+-->
+
+<pre class = 'prettyprint lang-r'>if (condición) {
+  # código ejecutado cuando al condición es cierta (TRUE)
+} else {
+  # código ejecutado cuando al condición es falsa (FALSE)
+}</pre>
+
+<ul>
+<li>También se pueden encadenar múltiples condiciones</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>if (condición1) {
+  # haz esto
+} else if (condición alternativa) {
+  # haz otra cosa
+} else {
+  # hacer en el caso residual
+}</pre>
+
+</article></slide><slide class=""><hgroup><h2>Ejecución condicional (cont.)</h2></hgroup><article  id="ejecución-condicional-cont.">
+
+<ul>
+<li><p>Un uso habitual de <code>if</code>: comprobar que los argumentos de una función se especifican bien</p>
+
+<ul>
+<li>Con <code>stop()</code> se detiene y devuelve un mensaje de error</li>
+</ul></li>
+<li><p>Notad la diferencia con dos funciones relacionadas <code>base::ifelse()</code> y <code>dplyr::if_else()</code></p>
+
+<ul>
+<li><p>Devuelven un objeto de la forma que la condición</p></li>
+<li><p>Útiles para crear nuevas variables (p.e., &ldquo;dummies&rdquo; o categóricas)</p></li>
+</ul></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- c(6:-4)
+ifelse(x &gt;= 0, sqrt(x), NA)</pre></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

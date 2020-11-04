@@ -1,0 +1,221 @@
+---
+#subtitle: "Técnicas para 'Big Data' en Economía"
+#subtitle: "Muestreo y Análisis de Datos"
+title    :  "Ejercicio Tema 06A - Funciones"
+author: 
+  - "Prof.: Pedro Albarrán"
+  - "Prof.: Alberto Pérez"
+job: "Universidad de Alicante" 
+date: "Universidad de Alicante, Curso 2020/21"  
+output:
+  html_document:
+    toc: true
+    toc_float: true
+  ioslides_presentation: 
+    widescreen: yes
+    logo: pic/by-nc-sa.eu.svg
+#  html_document: default
+#  beamer_presentation: 
+#      slide_level: 2
+#widescreen: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rmarkdown)
+```
+
+## Introducción
+
+Ya sabemos cómo filtrar un nombre en particular:
+
+
+```{r, eval = FALSE}
+library(tidyverse)
+library(babynames)
+babynames %>%
+  filter(name == "Benjamin")
+```
+
+Supongamos que queremos encontrar el año en el que ese nombre fue más popular. Para hacer esto necesitamos una tubería de varios verbos encadenados.
+```{r, eval = FALSE}
+babynames %>%
+  filter(name == "Benjamin") %>%
+  group_by(year) %>%
+  summarize(total = sum(prop)) %>%
+  arrange(desc(total)) %>%
+  head(1) %>%
+  select(year)
+```
+
+Pero podríamos querer hacer esto para muchos nombres, y sería tedioso tener que volver a escribir - o incluso volver a ejecutar - el mismo código una y otra vez. Una solución elegante es escribir una función. Las funciones son objetos (de primera clase) de R y se crean con el comando `function`.
+
+Aquí escribimos una función llamada `anno_mas_popular()` que devolverá el año en el que un nombre específico fue más popular.
+
+```{r, eval = FALSE}
+anno_mas_popular <- function(name_arg) {
+  babynames %>%
+    filter(name == name_arg) %>%
+    group_by(year) %>%
+    summarize(total = sum(prop)) %>%
+    arrange(desc(total)) %>%
+    head(1) %>%
+    select(year)
+}
+```
+
+
+Ahora podemos ejecutar nuestra función con varios nombres diferentes sin tener que volver a escribir todo ese código. 
+
+```{r, eval = FALSE}
+anno_mas_popular(name_arg = "Emma")
+anno_mas_popular(name_arg = "Viola")
+anno_mas_popular(name_arg = "Casey")
+anno_mas_popular(name_arg = "Mahershala")
+```
+
+
+## Tipos de los argumentos y el resultado
+
+Mostramos los argumentos que toma una función dada usando la función `formals()'.
+```{r, eval = FALSE}
+formals(anno_mas_popular)
+```
+
+En este caso, la función `anno_mas_popular()` toma un solo argumento llamado `name_arg`, que debería ser un vector de caracteres, y devuelve un `tbl_df`. 
+
+
+De la forma en que hemos definido `anno_mas_popular()`, no hay un valor por defecto para `name_arg`. Así, si llamamos a la función sin argumentos, dará un error y se parará la ejecución.
+
+```{r, eval = FALSE}
+anno_mas_popular()
+```
+
+
+En este caso, este es probablemente el comportamiento deseado, ya que no tiene sentido llamar a esta función sin especificar un nombre. Sin embargo, podríamos haberla definido con un valor por defecto, digamos "Benjamin". Al llamar a la función sin especificar el argumento, ahora obtendremos los resultados de "Benjamin".
+
+```{r, eval = FALSE}
+anno_mas_popular_ben <- function(name_arg= "Benjamin") {
+  babynames %>%
+    filter(name == name_arg) %>%
+    group_by(year) %>%
+    summarize(total = sum(prop)) %>%
+    arrange(desc(total)) %>%
+    head(1) %>%
+    select(year)
+}
+
+anno_mas_popular_ben()
+```
+
+Por supuesto, todavía podemos anular el valor por defecto de `name_arg`:
+```{r, eval = FALSE}
+anno_mas_popular_ben(name_arg = "Jordan")
+anno_mas_popular_ben( "Jordan")
+```
+
+## Ámbito de las variables
+
+¿Cómo supo nuestra función donde encontrar `babynames`? R buscará un "dataframe" llamado `babynames` en el entorno global. Si eliminamos el paquete `babynames`, quitando así la tabla de `babynames` del entorno, nuestra función ya no funciona.
+
+```{r, eval = FALSE}
+detach("package:babynames", unload = TRUE)
+anno_mas_popular("Benjamin")
+
+library(babynames)  #lo seguimos necesitando
+```
+
+Para ser más explícitos, podríamos pasar la tabla de datos en que queremos buscar a la función. Reescribimos la función para que tome un argumento de datos:
+
+```{r, eval = FALSE}
+anno_mas_popular2 <- function(data, name_arg) {
+  data %>%
+    filter(name == name_arg) %>%
+    group_by(year) %>%
+    summarize(total = sum(prop)) %>%
+    arrange(desc(total)) %>%
+    head(1) %>%
+    select(year)
+}
+# error: un argumento, sin valor por defecto, no esta asignado.
+anno_mas_popular2(name_arg = "Casey")
+
+anno_mas_popular2(data = babynames, name_arg = "Casey")
+```
+
+Esto también nos permite aplicar nuestra función a subconjuntos de los datos originales. Así que podemos buscar el año más popular para Casey entre niños y niñas por separado.
+
+```{r, eval = FALSE}
+babynames %>%
+  filter(sex == "F") %>%
+  anno_mas_popular2(name_arg = "Casey")
+babynames %>%
+  filter(sex == "M") %>%
+  anno_mas_popular2(name_arg = "Casey")
+```
+
+## Orden de los argumentos
+
+Recordad que el orden de los argumentos sólo importa si no se nombran.
+
+
+```{r, eval = FALSE}
+anno_mas_popular2(babynames, "Emma")
+anno_mas_popular2("Emma", babynames)
+anno_mas_popular2("Emma", data = babynames)
+```
+
+
+Para estar seguro (y ser claro y explícito), todos los argumentos deberían nombrarse. A menos que haya una buena razón para no hacerlo.
+
+
+## Vuestro ejercicio
+
+Estos ejercicios utilizan el paquete de datos `nycflights13`.
+
+
+1. Escribir una función que, para un determinado identificador de aerolínea (por ejemplo, DL), recupere los cinco destinos aeroportuarios más comunes de la ciudad de Nueva York en 2013, y la frecuencia con que la aerolínea voló allí.
+
+```{r echo=FALSE, eval=FALSE}
+library(nycflights13)
+top_dests <- function(carrier_arg) {
+  flights %>%
+    filter(carrier == carrier_arg) %>%
+    group_by(dest) %>%
+    summarize(num_flights = n()) %>%
+    arrange(desc(num_flights)) %>%
+    head(5)
+}
+```
+
+2. Utilizar la función anterior para encontrar los cinco principales destinos de Delta Airlines (DL) y los de American Airlines (AA). ¿Cuántos de estos destinos son compartidos con Delta?
+
+```{r echo=FALSE, eval=FALSE}
+top_dests("DL")
+top_dests("AA")
+semi_join(top_dests("DL"), top_dests("AA"))
+```
+
+
+3. Escribir una función que, para un código de aeropuerto determinado (por ejemplo, SFO), recupere las cinco compañías aéreas más comunes que prestan servicio en ese aeropuerto desde la ciudad de Nueva York en 2013, y cuál fue su tiempo medio de retraso en la llegada.
+
+```{r echo=FALSE, eval=FALSE}
+common_carriers <- function(faa) {
+  flights %>%
+    filter(dest == faa) %>%
+    group_by(carrier) %>%
+    summarize(num_flights = n()) %>%
+    arrange(desc(num_flights)) %>%
+    head(5)
+}
+
+common_carriers("SFO")
+```
+
+
+* Rellenad este [FORMULARIO](https://docs.google.com/forms/d/e/1FAIpQLSclnTNp6PoMcTLDuB5dPyoykFKQNZsK1h7f8-z3GsVu_SmL1Q/viewform) con vuestros datos y subid vuestro archivo de R para responder a estas preguntas.
+    
+IMPORTANTE: el nombre de los ficheros que subáis DEBE EMPEZAR con vuestro número de DNI. Por ejemplo,
+
+  * 12345678_ET05_micodigo.R

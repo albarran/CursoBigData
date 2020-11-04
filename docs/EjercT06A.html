@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ejercicio Tema 06A - Funciones</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Ejercicio Tema 06A - Funciones',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                        favIcon: 'EjercT06A_files/logo.svg',
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Prof.: Pedro Albarrán' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            {
+        name:  'Prof.: Alberto Pérez' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    code.sourceCode { white-space: pre-wrap; }
+    code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+        
+    slides > slide:not(.nobackground):before {
+      font-size: 12pt;
+      content: "";
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      background: url(EjercT06A_files/logo.svg) no-repeat 0 50%;
+      -webkit-background-size: 30px 30px;
+      -moz-background-size: 30px 30px;
+      -o-background-size: 30px 30px;
+      background-size: 30px 30px;
+      padding-left: 40px;
+      height: 30px;
+      line-height: 1.9;
+    }
+  </style>
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+        <aside class="gdbar"><img src="EjercT06A_files/logo.svg"></aside>
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Universidad de Alicante, Curso 2020/21</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>Introducción</h2></hgroup><article  id="introducción">
+
+<p>Ya sabemos cómo filtrar un nombre en particular:</p>
+
+<pre class = 'prettyprint lang-r'>library(tidyverse)
+library(babynames)
+babynames %&gt;%
+  filter(name == &quot;Benjamin&quot;)</pre>
+
+<p>Supongamos que queremos encontrar el año en el que ese nombre fue más popular. Para hacer esto necesitamos una tubería de varios verbos encadenados.</p>
+
+<pre class = 'prettyprint lang-r'>babynames %&gt;%
+  filter(name == &quot;Benjamin&quot;) %&gt;%
+  group_by(year) %&gt;%
+  summarize(total = sum(prop)) %&gt;%
+  arrange(desc(total)) %&gt;%
+  head(1) %&gt;%
+  select(year)</pre>
+
+<p>Pero podríamos querer hacer esto para muchos nombres, y sería tedioso tener que volver a escribir - o incluso volver a ejecutar - el mismo código una y otra vez. Una solución elegante es escribir una función. Las funciones son objetos (de primera clase) de R y se crean con el comando <code>function</code>.</p>
+
+<p>Aquí escribimos una función llamada <code>anno_mas_popular()</code> que devolverá el año en el que un nombre específico fue más popular.</p>
+
+<pre class = 'prettyprint lang-r'>anno_mas_popular &lt;- function(name_arg) {
+  babynames %&gt;%
+    filter(name == name_arg) %&gt;%
+    group_by(year) %&gt;%
+    summarize(total = sum(prop)) %&gt;%
+    arrange(desc(total)) %&gt;%
+    head(1) %&gt;%
+    select(year)
+}</pre>
+
+<p>Ahora podemos ejecutar nuestra función con varios nombres diferentes sin tener que volver a escribir todo ese código.</p>
+
+<pre class = 'prettyprint lang-r'>anno_mas_popular(name_arg = &quot;Emma&quot;)
+anno_mas_popular(name_arg = &quot;Viola&quot;)
+anno_mas_popular(name_arg = &quot;Casey&quot;)
+anno_mas_popular(name_arg = &quot;Mahershala&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Tipos de los argumentos y el resultado</h2></hgroup><article  id="tipos-de-los-argumentos-y-el-resultado">
+
+<p>Mostramos los argumentos que toma una función dada usando la función `formals()’.</p>
+
+<pre class = 'prettyprint lang-r'>formals(anno_mas_popular)</pre>
+
+<p>En este caso, la función <code>anno_mas_popular()</code> toma un solo argumento llamado <code>name_arg</code>, que debería ser un vector de caracteres, y devuelve un <code>tbl_df</code>.</p>
+
+<p>De la forma en que hemos definido <code>anno_mas_popular()</code>, no hay un valor por defecto para <code>name_arg</code>. Así, si llamamos a la función sin argumentos, dará un error y se parará la ejecución.</p>
+
+<pre class = 'prettyprint lang-r'>anno_mas_popular()</pre>
+
+<p>En este caso, este es probablemente el comportamiento deseado, ya que no tiene sentido llamar a esta función sin especificar un nombre. Sin embargo, podríamos haberla definido con un valor por defecto, digamos &ldquo;Benjamin&rdquo;. Al llamar a la función sin especificar el argumento, ahora obtendremos los resultados de &ldquo;Benjamin&rdquo;.</p>
+
+<pre class = 'prettyprint lang-r'>anno_mas_popular_ben &lt;- function(name_arg= &quot;Benjamin&quot;) {
+  babynames %&gt;%
+    filter(name == name_arg) %&gt;%
+    group_by(year) %&gt;%
+    summarize(total = sum(prop)) %&gt;%
+    arrange(desc(total)) %&gt;%
+    head(1) %&gt;%
+    select(year)
+}
+
+anno_mas_popular_ben()</pre>
+
+<p>Por supuesto, todavía podemos anular el valor por defecto de <code>name_arg</code>:</p>
+
+<pre class = 'prettyprint lang-r'>anno_mas_popular_ben(name_arg = &quot;Jordan&quot;)
+anno_mas_popular_ben( &quot;Jordan&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Ámbito de las variables</h2></hgroup><article  id="ámbito-de-las-variables">
+
+<p>¿Cómo supo nuestra función donde encontrar <code>babynames</code>? R buscará un &ldquo;dataframe&rdquo; llamado <code>babynames</code> en el entorno global. Si eliminamos el paquete <code>babynames</code>, quitando así la tabla de <code>babynames</code> del entorno, nuestra función ya no funciona.</p>
+
+<pre class = 'prettyprint lang-r'>detach(&quot;package:babynames&quot;, unload = TRUE)
+anno_mas_popular(&quot;Benjamin&quot;)
+
+library(babynames)  #lo seguimos necesitando</pre>
+
+<p>Para ser más explícitos, podríamos pasar la tabla de datos en que queremos buscar a la función. Reescribimos la función para que tome un argumento de datos:</p>
+
+<pre class = 'prettyprint lang-r'>anno_mas_popular2 &lt;- function(data, name_arg) {
+  data %&gt;%
+    filter(name == name_arg) %&gt;%
+    group_by(year) %&gt;%
+    summarize(total = sum(prop)) %&gt;%
+    arrange(desc(total)) %&gt;%
+    head(1) %&gt;%
+    select(year)
+}
+# error: un argumento, sin valor por defecto, no esta asignado.
+anno_mas_popular2(name_arg = &quot;Casey&quot;)
+
+anno_mas_popular2(data = babynames, name_arg = &quot;Casey&quot;)</pre>
+
+<p>Esto también nos permite aplicar nuestra función a subconjuntos de los datos originales. Así que podemos buscar el año más popular para Casey entre niños y niñas por separado.</p>
+
+<pre class = 'prettyprint lang-r'>babynames %&gt;%
+  filter(sex == &quot;F&quot;) %&gt;%
+  anno_mas_popular2(name_arg = &quot;Casey&quot;)
+babynames %&gt;%
+  filter(sex == &quot;M&quot;) %&gt;%
+  anno_mas_popular2(name_arg = &quot;Casey&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Orden de los argumentos</h2></hgroup><article  id="orden-de-los-argumentos">
+
+<p>Recordad que el orden de los argumentos sólo importa si no se nombran.</p>
+
+<pre class = 'prettyprint lang-r'>anno_mas_popular2(babynames, &quot;Emma&quot;)
+anno_mas_popular2(&quot;Emma&quot;, babynames)
+anno_mas_popular2(&quot;Emma&quot;, data = babynames)</pre>
+
+<p>Para estar seguro (y ser claro y explícito), todos los argumentos deberían nombrarse. A menos que haya una buena razón para no hacerlo.</p>
+
+</article></slide><slide class=""><hgroup><h2>Vuestro ejercicio</h2></hgroup><article  id="vuestro-ejercicio">
+
+<p>Estos ejercicios utilizan el paquete de datos <code>nycflights13</code>.</p>
+
+<ol>
+<li><p>Escribir una función que, para un determinado identificador de aerolínea (por ejemplo, DL), recupere los cinco destinos aeroportuarios más comunes de la ciudad de Nueva York en 2013, y la frecuencia con que la aerolínea voló allí.</p></li>
+<li><p>Utilizar la función anterior para encontrar los cinco principales destinos de Delta Airlines (DL) y los de American Airlines (AA). ¿Cuántos de estos destinos son compartidos con Delta?</p></li>
+<li><p>Escribir una función que, para un código de aeropuerto determinado (por ejemplo, SFO), recupere las cinco compañías aéreas más comunes que prestan servicio en ese aeropuerto desde la ciudad de Nueva York en 2013, y cuál fue su tiempo medio de retraso en la llegada.</p></li>
+</ol>
+
+<ul>
+<li>Rellenad este <a href='https://docs.google.com/forms/d/e/1FAIpQLSclnTNp6PoMcTLDuB5dPyoykFKQNZsK1h7f8-z3GsVu_SmL1Q/viewform' title=''>FORMULARIO</a> con vuestros datos y subid vuestro archivo de R para responder a estas preguntas.</li>
+</ul>
+
+<p>IMPORTANTE: el nombre de los ficheros que subáis DEBE EMPEZAR con vuestro número de DNI. Por ejemplo,</p>
+
+<ul>
+<li>12345678_ET05_micodigo.R</li>
+</ul></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

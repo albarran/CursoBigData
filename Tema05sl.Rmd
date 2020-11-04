@@ -537,7 +537,7 @@ table2 %>%
 
 ```{r, eval=FALSE, echo=TRUE}
 table3 %>% 
-  separate(rate, into = c("cases", "population"), sep = "\")
+  separate(rate, into = c("cases", "population"), sep = "/")
 ```
 * Por defecto, si no especificamos el argumento `sep`, separa cuando aparece cualquier caracter no alfanumérico:
 ```{r, eval=FALSE, echo=TRUE}

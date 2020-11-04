@@ -115,7 +115,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
   * [Tema 05 - Datos Ordenados](Tema05sl.html)
   * [Ejercicio del Tema 05](EjercT5.01.html)
-
+  
+  * [Tema 06A - Funciones](Tema06Asl.html)
+  * [Ejercicio del Tema 06A](EjercT06A.html)
+  
 ::: 
 
 ::: {}
