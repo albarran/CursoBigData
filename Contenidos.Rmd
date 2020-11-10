@@ -102,8 +102,8 @@ knitr::opts_chunk$set(echo = TRUE)
 (26-Oct. a 31-Oct.)
 
   * [Práctica 04 - Web scraping](Pract04.html)
-      + Entrega (apartado 2): 9 de Noviembre (Economía)
-      / 23 de Noviembre (ADE)
+      + Entrega (apartado 2)- ECO: 9 de Noviembre
+      + Entrega (apartado 2)- ADE: 23 de Noviembre
 
 ::: 
 

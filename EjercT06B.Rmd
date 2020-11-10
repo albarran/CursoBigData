@@ -11,9 +11,9 @@ output:
   html_document:
     toc: true
     toc_float: true
-  ioslides_presentation: 
-    widescreen: yes
-    logo: pic/by-nc-sa.eu.svg
+#  ioslides_presentation: 
+#    widescreen: yes
+#    logo: pic/by-nc-sa.eu.svg
 #  html_document: default
 #  beamer_presentation: 
 #      slide_level: 2
