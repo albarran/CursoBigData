@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ejercicio Tema 06A - Funciones</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Ejercicio Tema 06A - Funciones',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                        favIcon: 'EjercT06B_files/logo.svg',
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Prof.: Pedro Albarrán' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            {
+        name:  'Prof.: Alberto Pérez' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    code.sourceCode { white-space: pre-wrap; }
+    code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+        
+    slides > slide:not(.nobackground):before {
+      font-size: 12pt;
+      content: "";
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      background: url(EjercT06B_files/logo.svg) no-repeat 0 50%;
+      -webkit-background-size: 30px 30px;
+      -moz-background-size: 30px 30px;
+      -o-background-size: 30px 30px;
+      background-size: 30px 30px;
+      padding-left: 40px;
+      height: 30px;
+      line-height: 1.9;
+    }
+  </style>
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+        <aside class="gdbar"><img src="EjercT06B_files/logo.svg"></aside>
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Universidad de Alicante, Curso 2020/21</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>Aplicar una función a un vector de valores</h2></hgroup><article  id="aplicar-una-función-a-un-vector-de-valores">
+
+<p>Definimos una función para encontrar el año más popular para un nombre específico.</p>
+
+<pre class = 'prettyprint lang-r'>library(babynames)
+anno_mas_popular &lt;- function(name_arg) {
+  babynames %&gt;%
+    filter(name == name_arg) %&gt;%
+    group_by(year) %&gt;%
+    summarize(total = sum(prop)) %&gt;%
+    arrange(desc(total)) %&gt;%
+    head(1) %&gt;%
+    select(year)
+}</pre>
+
+<p>Si sólo quisiéramos realizar la tarea una vez, no habría necesidad de escribir la función, ya que podríamos simplemente escribir la tubería (que constituye el cuerpo de la función). Si sólo quisiéramos realizar la tarea unas cuantas veces, entonces probablemente estaría bien llamar a la función unas cuantas veces:</p>
+
+<pre class = 'prettyprint lang-r'>anno_mas_popular(name_arg = &quot;Larry&quot;)
+anno_mas_popular(name_arg = &quot;Moe&quot;)
+anno_mas_popular(name_arg = &quot;Curly&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2><code>map()</code></h2></hgroup><article  id="map">
+
+<p>¿Pero y si tuviéramos una larga lista de nombres? No nos gustaría tener que copiar y pegar ese código repetidamente. La solución es crear un vector que contenga los nombres que nos interesan, y luego usar la función <code>map()</code> para aplicar la función a cada elemento del vector. Para leer más sobre esta función, podemos buscar en la ayuda de RStudio o escribir <code>?map</code> en la consola.</p>
+
+<blockquote>
+<p>Nota: en algunos otros lenguajes de programación una operación: mapear o <code>map()</code>.</p>
+</blockquote>
+
+<p>Por ejemplo, las personas en una familia tienen los siguientes nombres:</p>
+
+<pre class = 'prettyprint lang-r'>bens_people &lt;- c(&quot;Benjamin&quot;, &quot;Cory&quot;, &quot;Alice&quot;, &quot;Arlo&quot;, 
+                 &quot;Andrew&quot;, &quot;Anna&quot;, &quot;Hanna&quot;, &quot;Josephine&quot;)</pre>
+
+<p>Para poder llamar a la función <code>anno_mas_popular()</code> en cada uno de esos nombres, podemos escribir:</p>
+
+<pre class = 'prettyprint lang-r'>map(bens_people, anno_mas_popular)</pre>
+
+<p>La función <code>map()</code> siempre devuelve una lista. Necesitamos utilizar una de las funciones <code>map_*()</code> que especifica el tipo de datos que devuelve. En este caso, como <code>anno_mas_popular()</code> devuelve un <code>data.frame</code>, utilizamos <code>map_dfr()</code>:</p>
+
+<pre class = 'prettyprint lang-r'>map_dfr(bens_people, anno_mas_popular) </pre>
+
+<h3><code>for</code> frente a <code>map()</code></h3>
+
+<p>Lógicamente, usar <code>map()</code> es muy parecido a usar un bucle <code>for</code>. Estos son perfectamente aceptables en R, pero no forman parte del estilo de codificación R (orientado a tratamiento de datos en lugar de programación &ldquo;pura&rdquo;). Además, hay situaciones en las que los bucles son menos claros que <code>map()</code>. Si nos encuentramos con un problema en R y creemos querer usar un bucle, debemos preguntarnos si realmente necesitamos conocer los valores del índice. Si no es el caso (lo cual es casi siempre), entonces se puede hacer sin usar un bucle <code>for</code>. En su lugar, escribamos una función para realizar la tarea una vez, y luego repetimos la función con <code>map()</code>.</p>
+
+</article></slide><slide class=""><hgroup><h2>Aplicación de una función a un conjunto de datos agrupado</h2></hgroup><article  id="aplicación-de-una-función-a-un-conjunto-de-datos-agrupado">
+
+<p>Supongamos que queremos calcular los 10 nombres más populares. Esta función lo hará:</p>
+
+<pre class = 'prettyprint lang-r'>top10 &lt;- function(data) {
+  data %&gt;%
+    group_by(name) %&gt;%
+    summarize(births = sum(n)) %&gt;%
+    arrange(desc(births)) %&gt;%
+    head(10)
+}
+top10(data = babynames)</pre>
+
+<p>Pero ahora supongamos que queremos aplicar esta función a cada década. Podríamos intentar dividir la tabla de nombres de bebé en una lista de <em>dataframes</em> - uno por cada década - y luego usar <code>map()</code> para iterar sobre esa lista. En su lugar, primero podemos usar <code>group_by()</code> para establecer una variable de agrupación. Podrías estar tentado a usar <code>map()</code> para iterar la función <code>top10()</code> sobre este resultado; NO funcionará porque <code>group_by()</code> devuelve un <code>tibble</code> agrupado, que no es una lista (o vector). En su lugar, usamos la función <code>group_modify()</code>, que funciona como <code>map()</code>, pero en un <code>tibble</code> agrupado en lugar de una lista (o vector). Obsérvese que el marco de datos resultante tiene una variable llamada década que indica el primer año de la década correspondiente.</p>
+
+<pre class = 'prettyprint lang-r'>top_by_decade &lt;- babynames %&gt;%
+  mutate(decade = 10 * floor(year / 10)) %&gt;%
+  group_by(decade) %&gt;%
+  group_modify(~top10(.x))</pre>
+
+<p>El <code>.</code> aquí es un marcador de posición que indica el <em>dataframe</em> correspondiente a cada década. En la ayuda de <code>%&gt;%</code> vemos:</p>
+
+<blockquote>
+<p>Se puede utilizar el punto (.) como marcador de posición. Por ejemplo, <code>y %&gt;% f(x,.)</code> es equivalente a <code>f(x,y)</code> y <code>z %&gt;% f(x, y, arg =.)</code> es equivalente a <code>f(x, y, arg =.)</code> es equivalente a <code>f(x, y, arg = z)</code>.</p>
+</blockquote>
+
+<p>Puesto que <code>top10()</code> devuelve un <em>tibble</em>, el objeto <code>top_by_decade</code> es también un <em>tibble</em> que tiene 10 filas por cada década, todas apiladas una encima de la otra.</p>
+
+</article></slide><slide class=""><hgroup><h2>Vuestro ejercicio</h2></hgroup><article  id="vuestro-ejercicio">
+
+<ol>
+<li><p>Usar <code>map()</code> y la función que escribiste en el apartado 1 del &ldquo;Ejercicio Tema 06A - Funciones&rdquo; para encontrar los cinco destinos aeroportuarios más comunes para Delta, American y United Airlines.</p></li>
+<li><p>Usar <code>map()</code> y la función que escribiste en el apartado 3 del &ldquo;Ejercicio Tema 06A - Funciones&rdquo; para encontrar las cinco aerolíneas más comunes a los aeropuertos internacionales de Bradley, Los Ángeles y San Francisco.</p></li>
+<li><p>¿Cuántas filas tiene <code>top_by_decade</code>? Explica brevemente cómo se llegó allí.</p></li>
+<li><p>Mostrar el contenido de la 11º fila de <code>top_by_decade</code> y explicar que implica para el nombre mostrado allí.</p></li>
+<li><p>Aplica la función <code>top10()</code> a cada conjunto de 20 años consecutivos.</p></li>
+</ol>
+
+<ul>
+<li>Rellenad este <a href='https://docs.google.com/forms/d/e/1FAIpQLScvr_xR608YVM1aoFX6LQgvG1SjuRSPbs3UfzJDiARuIOxVzg/viewform' title=''>FORMULARIO</a> con vuestros datos, respondiendo a las preguntas que requieren contestación escrita y subid vuestro archivo de R para responder a el resto de preguntas.</li>
+</ul>
+
+<p>IMPORTANTE: el nombre de los ficheros que subáis DEBE EMPEZAR con vuestro número de DNI. Por ejemplo,</p>
+
+<ul>
+<li>12345678_ET06B_micodigo.R</li>
+</ul></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

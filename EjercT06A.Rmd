@@ -180,7 +180,6 @@ Estos ejercicios utilizan el paquete de datos `nycflights13`.
 
 2. Utilizar la función anterior para encontrar los cinco principales destinos de Delta Airlines (DL) y los de American Airlines (AA). ¿Cuántos de estos destinos son compartidos con Delta?
 
-
 3. Escribir una función que, para un código de aeropuerto determinado (por ejemplo, SFO), recupere las cinco compañías aéreas más comunes que prestan servicio en ese aeropuerto desde la ciudad de Nueva York en 2013, y cuál fue su tiempo medio de retraso en la llegada.
 
 
@@ -189,4 +188,4 @@ Estos ejercicios utilizan el paquete de datos `nycflights13`.
     
 IMPORTANTE: el nombre de los ficheros que subáis DEBE EMPEZAR con vuestro número de DNI. Por ejemplo,
 
-  * 12345678_ET05_micodigo.R
+  * 12345678_ET06A_micodigo.R

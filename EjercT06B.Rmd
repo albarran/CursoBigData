@@ -1,0 +1,141 @@
+---
+#subtitle: "Técnicas para 'Big Data' en Economía"
+#subtitle: "Muestreo y Análisis de Datos"
+title    :  "Ejercicio Tema 06A - Funciones"
+author: 
+  - "Prof.: Pedro Albarrán"
+  - "Prof.: Alberto Pérez"
+job: "Universidad de Alicante" 
+date: "Universidad de Alicante, Curso 2020/21"  
+output:
+  html_document:
+    toc: true
+    toc_float: true
+  ioslides_presentation: 
+    widescreen: yes
+    logo: pic/by-nc-sa.eu.svg
+#  html_document: default
+#  beamer_presentation: 
+#      slide_level: 2
+#widescreen: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rmarkdown)
+```
+## Aplicar una función a un vector de valores
+
+Definimos una función para encontrar el año más popular para un nombre específico.
+```{r, eval=FALSE, echo=TRUE}
+library(babynames)
+anno_mas_popular <- function(name_arg) {
+  babynames %>%
+    filter(name == name_arg) %>%
+    group_by(year) %>%
+    summarize(total = sum(prop)) %>%
+    arrange(desc(total)) %>%
+    head(1) %>%
+    select(year)
+}
+```
+
+Si sólo quisiéramos realizar la tarea una vez, no habría necesidad de escribir la función, ya que podríamos simplemente escribir la tubería (que constituye el cuerpo de la función). Si sólo quisiéramos realizar la tarea unas cuantas veces, entonces probablemente estaría bien llamar a la función unas cuantas veces:
+
+```{r, eval=FALSE, echo=TRUE}
+anno_mas_popular(name_arg = "Larry")
+anno_mas_popular(name_arg = "Moe")
+anno_mas_popular(name_arg = "Curly")
+```
+
+## `map()`
+
+¿Pero y si tuviéramos una larga lista de nombres? No nos gustaría tener que copiar y pegar ese código repetidamente. La solución es crear un vector que contenga los nombres que nos interesan, y luego usar la función `map()` para aplicar la función a cada elemento del vector. Para leer más sobre esta función, podemos buscar en la ayuda de RStudio o escribir `?map` en la consola.
+
+> Nota: en algunos otros lenguajes de programación una operación: mapear o `map()`.
+
+Por ejemplo, las personas en una familia tienen los siguientes nombres:
+```{r, eval=FALSE, echo=TRUE}
+bens_people <- c("Benjamin", "Cory", "Alice", "Arlo", 
+                 "Andrew", "Anna", "Hanna", "Josephine")
+```
+
+Para poder llamar a la función `anno_mas_popular()` en cada uno de esos nombres, podemos escribir:
+```{r, eval=FALSE, echo=TRUE}
+map(bens_people, anno_mas_popular)
+```
+
+
+La función  `map()` siempre devuelve una lista. Necesitamos utilizar una de las funciones `map_*()` que especifica el tipo de datos que devuelve. En este caso, como `anno_mas_popular()` devuelve un `data.frame`, utilizamos `map_dfr()`:
+```{r, eval=FALSE, echo=TRUE}
+map_dfr(bens_people, anno_mas_popular) 
+```
+
+### `for` frente a `map()`
+
+Lógicamente, usar `map()` es muy parecido a usar un bucle `for`. Estos son perfectamente aceptables en R, pero no forman parte del estilo de codificación R (orientado a tratamiento de datos en lugar de programación "pura"). Además, hay situaciones en las que los bucles son menos claros que `map()`. Si nos encuentramos con un problema en R y creemos querer usar un bucle, debemos preguntarnos si realmente necesitamos conocer los valores del índice. Si no es el caso (lo cual es casi siempre), entonces se puede hacer sin usar un bucle `for`. En su lugar, escribamos una función para realizar la tarea una vez, y luego repetimos la función con `map()`.
+
+```{r, eval=FALSE, echo=FALSE}
+ptm <- proc.time()
+map(bens_people, anno_mas_popular) %>% 
+  unlist()
+proc.time()-ptm
+
+
+ptm <- proc.time()
+res <- list()
+for (i in 1:length(bens_people)) {
+ res[[i]] <- anno_mas_popular(bens_people[i])
+}
+unlist(res)
+proc.time()-ptm
+```
+
+
+## Aplicación de una función a un conjunto de datos agrupado
+
+Supongamos que queremos calcular los 10 nombres más populares. Esta función lo hará:
+```{r, eval=FALSE, echo=TRUE}
+top10 <- function(data) {
+  data %>%
+    group_by(name) %>%
+    summarize(births = sum(n)) %>%
+    arrange(desc(births)) %>%
+    head(10)
+}
+top10(data = babynames)
+```
+
+Pero ahora supongamos que queremos aplicar esta función a cada década. Podríamos intentar dividir la tabla de nombres de bebé en una lista de *dataframes* - uno por cada década - y luego usar `map()` para iterar sobre esa lista. En su lugar, primero podemos usar `group_by()` para establecer una variable de agrupación.  Podrías estar tentado a usar `map()` para iterar la función `top10()` sobre este resultado; NO funcionará porque `group_by()` devuelve un `tibble` agrupado, que no es una lista (o vector). En su lugar, usamos la función `group_modify()`, que funciona como `map()`, pero en un `tibble` agrupado en lugar de una lista (o vector). Obsérvese que el marco de datos resultante tiene una variable llamada década que indica el primer año de la década correspondiente.
+
+```{r, eval=FALSE, echo=TRUE}
+top_by_decade <- babynames %>%
+  mutate(decade = 10 * floor(year / 10)) %>%
+  group_by(decade) %>%
+  group_modify(~top10(.x))
+```
+
+El `.` aquí es un marcador de posición que indica el *dataframe* correspondiente a cada década. En la  ayuda de `%>%` vemos:
+
+> Se puede utilizar el punto (.) como marcador de posición. Por ejemplo, `y %>% f(x,.)` es equivalente a `f(x,y)` y `z %>% f(x, y, arg =.)` es equivalente a `f(x, y, arg =.)` es equivalente a `f(x, y, arg = z)`.
+
+Puesto que `top10()` devuelve un *tibble*, el objeto `top_by_decade` es también un *tibble* que tiene 10 filas por cada década, todas apiladas una encima de la otra.
+
+## Vuestro ejercicio
+
+1. Usar `map()` y la función que escribiste en el apartado 1 del "Ejercicio Tema 06A - Funciones" para encontrar los cinco destinos aeroportuarios más comunes para Delta, American y United Airlines.
+
+2. Usar `map()` y la función que escribiste en el apartado 3 del "Ejercicio Tema 06A - Funciones" para encontrar las cinco aerolíneas más comunes a los aeropuertos internacionales de Bradley, Los Ángeles y San Francisco.
+
+3. ¿Cuántas filas tiene `top_by_decade`? Explica brevemente cómo se llegó allí.
+
+4. Mostrar el contenido de la 11º fila de `top_by_decade` y explicar que implica para el nombre mostrado allí.
+
+5. Aplica la función `top10()` a cada conjunto de 20 años consecutivos.
+
+* Rellenad este [FORMULARIO](https://docs.google.com/forms/d/e/1FAIpQLScvr_xR608YVM1aoFX6LQgvG1SjuRSPbs3UfzJDiARuIOxVzg/viewform) con vuestros datos, respondiendo a las preguntas que requieren contestación escrita y subid vuestro archivo de R para responder a el resto de preguntas.
+    
+IMPORTANTE: el nombre de los ficheros que subáis DEBE EMPEZAR con vuestro número de DNI. Por ejemplo,
+
+  * 12345678_ET06B_micodigo.R

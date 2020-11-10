@@ -103,7 +103,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
   * [Práctica 04 - Web scraping](Pract04.html)
       + Entrega (apartado 2): 9 de Noviembre (Economía)
-      / 16 de Noviembre (ADE)
+      / 23 de Noviembre (ADE)
 
 ::: 
 
@@ -122,6 +122,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ::: 
 
 ::: {}
+
+## Semana 9
+(9-Nov. a 13-Nov.)
+
+  * [Tema 06B - Bucles](Tema06Bsl.html)
+  * [Ejercicio del Tema 06B](EjercT06B.html)
+
 
 ::: 
 
