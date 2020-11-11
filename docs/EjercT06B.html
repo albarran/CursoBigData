@@ -13,7 +13,7 @@
 <meta name="author" content="Prof.: Alberto Pérez" />
 
 
-<title>Ejercicio Tema 06A - Funciones</title>
+<title>Ejercicio Tema 06B - Bucles</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -27,6 +27,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -35,7 +37,7 @@
   div.column{display: inline-block; vertical-align: top; width: 50%;}
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
-      </style>
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -376,7 +378,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Ejercicio Tema 06A - Funciones</h1>
+<h1 class="title toc-ignore">Ejercicio Tema 06B - Bucles</h1>
 <h4 class="author">Prof.: Pedro Albarrán</h4>
 <h4 class="author">Prof.: Alberto Pérez</h4>
 <h4 class="date">Universidad de Alicante, Curso 2020/21</h4>
@@ -471,7 +473,7 @@ top10(data = babynames)</code></pre>
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();

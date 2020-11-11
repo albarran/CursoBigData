@@ -128,6 +128,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
   * [Tema 06B - Bucles](Tema06Bsl.html)
   * [Ejercicio del Tema 06B](EjercT06B.html)
+  
+  * [Tema 07 - Fundamentos estadísticos](Tema07sl.html)
 
 
 ::: 

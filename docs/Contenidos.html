@@ -22,6 +22,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -30,7 +32,7 @@
   div.column{display: inline-block; vertical-align: top; width: 50%;}
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
-      </style>
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -400,8 +402,9 @@ $(document).ready(function () {
 <h2 id="semana-9">Semana 9</h2>
 <p>(9-Nov. a 13-Nov.)</p>
 <ul>
-<li><a href="Tema06Bsl.html">Tema 06B - Bucles</a></li>
-<li><a href="EjercT06B.html">Ejercicio del Tema 06B</a></li>
+<li><p><a href="Tema06Bsl.html">Tema 06B - Bucles</a></p></li>
+<li><p><a href="EjercT06B.html">Ejercicio del Tema 06B</a></p></li>
+<li><p><a href="Tema07sl.html">Tema 07 - Fundamentos estadísticos</a></p></li>
 </ul>
 </div>
 </div>
@@ -416,7 +419,7 @@ $(document).ready(function () {
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();

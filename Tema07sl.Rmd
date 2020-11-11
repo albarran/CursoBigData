@@ -1,0 +1,368 @@
+---
+#subtitle: "Técnicas para 'Big Data' en Economía"
+#subtitle: "Muestreo y Análisis de Datos"
+title    :  "Tema 07 - Fundamentos Estadísticos"
+author: 
+  - "Prof.: Pedro Albarrán"
+  - "Prof.: Alberto Pérez"
+job: "Universidad de Alicante" 
+date: "Universidad de Alicante, Curso 2020/21"  
+output:
+#  html_document:
+#    toc: true
+#    toc_float: true
+  ioslides_presentation: 
+    widescreen: yes
+    logo: pic/by-nc-sa.eu.svg
+#  html_document: default
+#  beamer_presentation: 
+#      slide_level: 2
+#widescreen: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, eval = TRUE, echo = TRUE)
+
+library(tidyverse)
+library(dlookr)
+```
+
+## Fundamentos Estadísticos
+
+- Objetivo: extraer información de los datos.
+
+<center>
+![](pic/model.png)
+</center>
+
+- Herramientas previas:
+     * Limpieza y Transformación
+     * Detectar patrones iniciales
+     
+- Métodos estadísticos, incluyendo **modelización**
+     - Encontrar patrones complejos, y cuantifificar su fortaleza
+     - Interpretación de datos
+
+<!--
+
+## Métodos estadísticos
+
+ Una técnica estadística ("contraste de la t") es más que una fórmula
+
++ Supuestos
+    - ej. observaciones $X_1,\ldots,X_n$ numéricas de una distribución (normal)
+
++ Modelos
+    - ej.  $X_{i}=\mu + \varepsilon_{i}$
+
++ Métodos (numéricos) para ajustarse al modelo
+
++ Hipótesis y situaciones en las que pueden utilizarse los modelos:
+     - ej. la media de $X_i$ (desconocida) es $\mu = 0$
+
++ Métodos (probabilísticos) para cuantificar la incertidumbre en el ajuste del modelo:
+     - ej. el intervalo $\overline{X} \pm 1.96 \cdot \frac{\sigma_{X}}{\sqrt{n}}$ contiene el verdadero $\mu$ con prob. 95%
+
++ Cuantificación de la fuerza de la evidencia a favor (o en contra) de hipótesis
+     - ej.  menor valor p (contraste t), mayor evidencia en contra de la hipótesis
+-->
+
+## Muestras y Poblaciones
+
+<!--
+Aunque unos datos concretos son fijos, pero la metodología  estadística se rige por una visión más amplia: los casos observados proceden de un conjunto mucho mayor de casos potenciales. Los datos dados son una *muestra* de una *población* más grande. 
+-->
+
+* Los datos (casos observados) son una *muestra* de una *población* mayor (de casos potenciales)
+
+<center>
+![](pic/sample-pop2.png){width=82%}
+</center>
+
+
+## Muestreo de la población
+
+```{r echo=FALSE, eval=FALSE}
+library(fitdistrplus)
+library("actuar")
+
+fw <- fitdist(SF$arr_delay+87, "weibull")
+fg <- fitdist(SF$arr_delay+87, "gamma")
+fln <- fitdist(SF$arr_delay+87, "lnorm")
+fP <- fitdist(SF$arr_delay+87, "Pareto")
+
+summary(bootdist(fln, niter = 1001))
+
+par(mfrow = c(2, 2))
+plot.legend <- c("Weibull", "lognormal", "gamma", "Pareto")
+denscomp(list(fw, fln, fg, fP), legendtext = plot.legend)
+qqcomp(list(fw, fln, fg, fP), legendtext = plot.legend)
+cdfcomp(list(fw, fln, fg, fP), legendtext = plot.legend)
+ppcomp(list(fw, fln, fg, fP), legendtext = plot.legend)
+
+library(dlookr)
+SF %>% describe(arr_delay)
+SF %>% mutate(lretraso=log(arr_delay+87)) %>%  normality(lretraso)
+```
+
+* Sabiendo el retraso medio desde NY a San Francisco (SFO) podemos  planificar la antelación con que se toma el vuelo
+
+* Suponemos que la muestra total observada en `nycflights13` ha salido de una población teórica de una distribución lognormal:
+
+```{r, echo=TRUE, eval=FALSE}
+library(nycflights13)
+SF <- flights %>%
+  filter(dest == "SFO", !is.na(arr_delay))
+
+SF %>%  
+  ggplot() + geom_histogram(aes(x=arr_delay, y=..density..)) +
+             geom_line(aes(x=arr_delay, y = dlnorm(SF$arr_delay+87, 4.403,0.409)))
+SF %>% describe(arr_delay) %>% select(mean,sd, p00,p25,p50,p75,p100)
+```
+
+```{r, echo=FALSE, eval=FALSE}
+SF %>%  
+  ggplot() + geom_histogram(aes(x=arr_delay+87, y=..density..)) +
+             geom_line(aes(x=arr_delay+87, y = dlnorm(SF$arr_delay+87, 4.6,0.4))) +
+  scale_x_log10()
+
+SF %>% ggplot()+geom_histogram(aes(x=arr_delay+87))+scale_x_log10()
+
+``` 
+
+
+## Decisiones basadas en datos observados
+
+* Imaginad que NO disponemos de los datos de `nycflights13` sino solo una muestra de información con los últimos $n = 25$ vuelos
+
+```{r, eval=FALSE, echo=TRUE}
+set.seed(501) # set.seed(501)  set.seed(1001) 
+datos1 <- tibble(x=(rlnorm(n = 25, meanlog = 4.403, sdlog = 0.409)-87))
+datos1 %>% ggplot() + geom_histogram(aes(x=x, y=..density..))
+datos1 %>% describe() %>% select(mean, sd, p00, p25, p50, p75, p100)
+```
+
+<!--
+- `set.seed()` para especificar cómo imitar la selección aleatoria mediante *generador pseudo-aleatorio*.
+-->
+
+<!--
+* Regla: tomar el avión con una antelación igual al máximo observado
+
+```{r, eval=FALSE, echo=TRUE} 
+SF %>% 
+  summarize(prop.late1 = mean(arr_delay > 48), prop.late2 =mean(arr_delay > 113))
+```
+
+```{r, eval=FALSE, echo=FALSE} 
+list(48+87, 113+87) %>%  map_dbl(plnorm, meanlog = 4.403, sdlog = 0.409, lower.tail = FALSE)
+```
+
+
+## Decisiones basadas en datos observados (cont.)
+
+-->
+* Regla: bajo normalidad, sólo el 2,27% se retrasan más que $\mu + 2\sigma$ 
+
+```{r, eval=FALSE, echo=FALSE} 
+SF %>% 
+  summarize(prop.late1 = mean(arr_delay > 5.311 + 2 *	24.780),	
+            prop.late2 = mean(arr_delay > 7.933 + 2 *	43.943))	
+```
+
+```{r, eval=FALSE, echo=TRUE} 
+list((5.311 + 2 * 24.780) + 87, 
+     (7.933 + 2 *	43.943) + 87) %>%  
+  map_dbl(plnorm, meanlog = 4.403, sdlog = 0.409, lower.tail = FALSE)
+
+```
+
+1. ¿Era el supuesto apropiado? 
+2. Condicionamientos a día, hora, aerolínea
+2. ¿Qué sabemos sobre la incertidumbre en la estimación de $\mu$ y $\sigma$?
+
+## Incertidumbre por la distribución del muestreo
+
+* ¿Cómo de fiable es un estadístico muestral? Simulemos la distribución de la media en muchas muestras todas de tamaño $n=25$
+
+```{r, eval=FALSE, echo=TRUE}
+Muestras <- list()
+set.seed(101)
+for(i in 1:100){
+  Muestras[[i]] <- tibble(x = rlnorm(n = 25, meanlog = 4.403, sdlog = 0.409) - 87)  %>% 
+        summarize(media = mean(x), sd = sd(x))
+}
+Muestras %>% bind_rows() %>% head(10)
+```
+
+
+* Existe una gran variabilidad del estadístico muestral: es poco fiable
+
+* En una situación realista (solo tenemos UNA MUESTRA), ¿es posible **cuantificar la incertidumbre**?
+
+
+## Distribuciones muestrales
+
+* Un *estadístico* es un valor calculado a partir de una muestra (ej., la media)
+
+* **Distribución muestral** es la distribución del estadístico en las muestras potenciales de **tamaño muestral $n$**
+    +  si conocemos las distribución poblacional que genera las muestras, podemos disponer de muestras y ver cómo varía el valor del estadístico
+    
+<!--    + aquí lo hemos aproximado con 100 muestras -->
+
+```{r, eval=FALSE, echo=TRUE}
+Muestras %>% bind_rows() %>% ggplot(aes(x=media)) + geom_density()
+```
+
+* Por supuesto, nos interesan varios aspectos de la distribución muestral como su *forma* y *error estándar* (<!--desviación típica (variabilidad)--> variabilidad de la distribución muestral)
+
+* El *intervalo de confianza del 95%* es otra forma de resumir la distribución muestral
+    
+```{r, eval=FALSE, echo=FALSE}
+mean(Trials_df$mean) + sd(Trials_df$mean) * 1.96 * c(-1,1)  
+```
+
+
+## Distribuciones muestrales (cont.)
+
+<!--
+* La fiabilidad de un estadístico muestral se mide  por 
+
+  1. la media del estadístico (media de la distribución muestral): debe estar cerca del verdadero (en la población). 
+
+  2. el error estándar del estadístico (error estándar de la distribución muestral); debe ser pequeño. 
+-->
+* ¿Cómo cambia la media y el error estándar del estadístico cuando varia el tamaño muestral?
+
+```{r, eval=FALSE, echo=TRUE}
+Muestras_porN <- list()
+nvec <- c(25, 50, 100, 200)
+for(j in seq_along(nvec)){
+  n <- nvec[j]
+  Muestras <- list()   # bucle anterior, generalizando n y conservándolo en summarize
+  set.seed(101)
+  for(i in 1:100){
+    Muestras[[i]] <- tibble(x = rlnorm(n = n, meanlog = 4.403, sdlog = 0.409) - 87)  %>%   
+        summarize(media = mean(x), sd = sd(x), n = n)      
+  }
+  Muestras_porN[[j]] <- Muestras %>% bind_rows()
+}
+Muestras_Final <- Muestras_porN %>% bind_rows()
+```
+
+
+## Distribuciones muestrales: TCL y LGN
+
+* Si **aumentamos el tamaño de la muestra en $n$, el error estándar disminuirá**.
+
+```{r, eval=FALSE, echo=TRUE}
+Muestras_Final %>% ggplot(aes(x=media)) + geom_density() + facet_wrap(~n)
+Muestras_Final %>% group_by(n) %>% 
+  summarize(media_de_media = mean(media), error = sd(media))
+```
+
+- *Ley de números grandes*: para un tamaño de la muestra $n$ grande, el promedio de la muestra está cerca de la media de la población <!--, y el error estándar es pequeño. -->
+
+- *Teorema de Límite Central*: para un tamaño de la muestra $n$ grande, la distribución muestral de la media es normal. 
+
+    $$\mbox{Error estándar}(\bar{X}_n) = \frac{\sigma}{\sqrt{n}},$$
+    donde $\sigma$ es la desviación estándar de la población. 
+
+## Procedimiento *Bootstrap* 
+
+* En la práctica, sólo tenemos UNA muestra de tamaño $n$ (no la población)
+
+* **Idea**: pensar en la muestra como si fuera la población 
+
+    + tomar muchas nuevas muestras (*remuestras* o muestras de Bootstrap) con reemplazamiento de la muestra original
+    
+    + en cada remuestra, se puede calcular cualquier estadístico 
+    
+* Se obtiene la **distribución muestral bootstrap**: NO es la distribución muestral, pero aproxima sus aspectos principales (ej., *error estándar*).
+
+<!--una distribución de valores de los ensayos bootstrap -->
+<!-- aproxima para vlaores moderados de n -->
+
+* NOTA: remuestreo con reemplazamiento de  $(1,2,3)$: $(1,1,3)$, $(2,3,2)$, etc.
+    
+    + con $n$ grande, poca probilidad de tener la muestra original 
+    + (y solo es una combinación de muchas)
+
+<!-- es un método estadístico que nos  permite aproximar la distribución muestral sin acceso a la población.-->
+
+## *Bootstrap* y la distribución muestral 
+
+* Procedimiento de bootstrap con $B = 1000$ a partir de `datos1`
+```{r, eval=FALSE, echo=TRUE}
+n <- nrow(datos1)
+boot <- list() 
+for(i in 1:1000){
+    boot[[i]] <- datos1 %>% 
+      sample_n(size = n, replace = TRUE) %>%
+      summarize(media = mean(x))
+  }
+boot_df <- boot %>% bind_rows()
+```
+ 
+<!-- 
+- `sample_n()`  para seleccion filas de forma *aleatoria* de una tabla,
+-->
+
+ 
+```{r, eval=FALSE, echo=TRUE}
+boot_df %>% ggplot(aes(x = media)) + 
+  geom_density() + 
+  labs(title = "Distribución Bootstrap de la media de retraso en `datos1`")
+```
+
+## *Bootstrap* y la distribución muestral (cont.)
+
+* La estimación bootstrap del error estándar es la desviación estándar de la distribución bootstrap:
+
+```{r, eval=FALSE, echo=TRUE}
+sd(boot_df$media)
+```
+
+* Aunque podemos obtener un mejor intervalo de confianza basado
+
+```{r, eval=FALSE, echo=TRUE}
+mean(boot_df$media) + c(-1,1) * 1.96 * sd(boot_df$media)
+```
+
+* Podemos obtener directamente los percentiles del intervalo en la distribución muestral bootstrap:
+
+```{r, eval=FALSE, echo=TRUE}
+c(sort(boot_df$media)[25], sort(boot_df$media)[975])
+```
+
+<!--
+#### Errores estándar Bootstrap para muestras grandes
+
+El siguiente código toma muestras para la población `SF` sólo una vez para cada uno de los tamaños muestrales 25--200, y utiliza la muestra (sin referencia a la población) para estimar el error estándar. 
+
+```{r, eval=FALSE, echo=TRUE}
+Trials.bootstrap <-list()
+nvec = c(25,50,100,200)
+for(j in seq_along(nvec)){
+  n <- nvec[j]
+  sample_df <- SF %>% sample_n(size = n)
+  Trials_n <- list() 
+  for(i in 1:1000){
+    Trials_n[[i]] <- sample_df %>% 
+      sample_n(size = n, replace = TRUE) %>%
+      summarize(mean = mean(arr_delay), n = n)
+  }
+  Trials.bootstrap[[j]] <- bind_rows(Trials_n)
+}
+bind_rows(Trials.bootstrap) %>% 
+  group_by(n) %>% 
+  summarize(error = sd(mean))
+```
+
+Estas estimaciones del error estándar, calculadas mediante bootstrapping de la muestra, se aproximan bastante el error estándar, calculado a partir de la población. 
+
+En este ejemplo, el estadístico muestral es la media. En la práctica, los estadísticos de interés son más complejos, por ejemplo, la estimación del coeficiente en el modelo de regresión lineal. El procedimiento de bootsrapping se puede aplicar a casi todas las situaciones, para cuantificar la incertidumbre en un estadístico.
+-->
+
+
+

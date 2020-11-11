@@ -1,7 +1,7 @@
 ---
 #subtitle: "Técnicas para 'Big Data' en Economía"
 #subtitle: "Muestreo y Análisis de Datos"
-title    :  "Ejercicio Tema 06A - Funciones"
+title    :  "Ejercicio Tema 06B - Bucles"
 author: 
   - "Prof.: Pedro Albarrán"
   - "Prof.: Alberto Pérez"
