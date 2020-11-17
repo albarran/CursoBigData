@@ -21,10 +21,14 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE, eval = TRUE, echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, eval = TRUE, echo = TRUE, results = "hide", fig.show="hide")
 
 library(tidyverse)
 library(dlookr)
+#setwd("/home/albarran/Dropbox/MAD/00.TEC")
+library(rmarkdown)
+#render("filename.Rmd")     
+#browseURL("filename.html")
 ```
 
 ## Fundamentos Estadísticos
@@ -43,35 +47,8 @@ library(dlookr)
      - Encontrar patrones complejos, y cuantifificar su fortaleza
      - Interpretación de datos
 
-<!--
-
-## Métodos estadísticos
-
- Una técnica estadística ("contraste de la t") es más que una fórmula
-
-+ Supuestos
-    - ej. observaciones $X_1,\ldots,X_n$ numéricas de una distribución (normal)
-
-+ Modelos
-    - ej.  $X_{i}=\mu + \varepsilon_{i}$
-
-+ Métodos (numéricos) para ajustarse al modelo
-
-+ Hipótesis y situaciones en las que pueden utilizarse los modelos:
-     - ej. la media de $X_i$ (desconocida) es $\mu = 0$
-
-+ Métodos (probabilísticos) para cuantificar la incertidumbre en el ajuste del modelo:
-     - ej. el intervalo $\overline{X} \pm 1.96 \cdot \frac{\sigma_{X}}{\sqrt{n}}$ contiene el verdadero $\mu$ con prob. 95%
-
-+ Cuantificación de la fuerza de la evidencia a favor (o en contra) de hipótesis
-     - ej.  menor valor p (contraste t), mayor evidencia en contra de la hipótesis
--->
 
 ## Muestras y Poblaciones
-
-<!--
-Aunque unos datos concretos son fijos, pero la metodología  estadística se rige por una visión más amplia: los casos observados proceden de un conjunto mucho mayor de casos potenciales. Los datos dados son una *muestra* de una *población* más grande. 
--->
 
 * Los datos (casos observados) son una *muestra* de una *población* mayor (de casos potenciales)
 
@@ -82,7 +59,7 @@ Aunque unos datos concretos son fijos, pero la metodología  estadística se rig
 
 ## Muestreo de la población
 
-```{r echo=FALSE, eval=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 library(fitdistrplus)
 library("actuar")
 
@@ -109,35 +86,33 @@ SF %>% mutate(lretraso=log(arr_delay+87)) %>%  normality(lretraso)
 
 * Suponemos que la muestra total observada en `nycflights13` ha salido de una población teórica de una distribución lognormal:
 
-```{r, echo=TRUE, eval=FALSE}
+```{r}
 library(nycflights13)
 SF <- flights %>%
   filter(dest == "SFO", !is.na(arr_delay))
 
 SF %>%  
   ggplot() + geom_histogram(aes(x=arr_delay, y=..density..)) +
-             geom_line(aes(x=arr_delay, y = dlnorm(SF$arr_delay+87, 4.403,0.409)))
-SF %>% describe(arr_delay) %>% select(mean,sd, p00,p25,p50,p75,p100)
+             geom_line(aes(x = arr_delay, 
+                           y = dlnorm(SF$arr_delay+87, 4.403,0.409)
+                           ))
 ```
 
-```{r, echo=FALSE, eval=FALSE}
-SF %>%  
-  ggplot() + geom_histogram(aes(x=arr_delay+87, y=..density..)) +
-             geom_line(aes(x=arr_delay+87, y = dlnorm(SF$arr_delay+87, 4.6,0.4))) +
-  scale_x_log10()
-
-SF %>% ggplot()+geom_histogram(aes(x=arr_delay+87))+scale_x_log10()
-
-``` 
 
 
 ## Decisiones basadas en datos observados
 
-* Imaginad que NO disponemos de los datos de `nycflights13` sino solo una muestra de información con los últimos $n = 25$ vuelos
+* Disponemos de una muestra con información de solo $n=25$ vuelos
 
-```{r, eval=FALSE, echo=TRUE}
+```{r}
 set.seed(501) # set.seed(501)  set.seed(1001) 
-datos1 <- tibble(x=(rlnorm(n = 25, meanlog = 4.403, sdlog = 0.409)-87))
+datos1 <- tibble(x = (rlnorm(n = 25, meanlog = 4.403, sdlog = 0.409) - 87) ) 
+x <- datos1 %>% summarize(med=mean(x), sd = sd(x))
+x
+```
+
+
+```{r, eval=FALSE, echo=FALSE}
 datos1 %>% ggplot() + geom_histogram(aes(x=x, y=..density..))
 datos1 %>% describe() %>% select(mean, sd, p00, p25, p50, p75, p100)
 ```
@@ -146,23 +121,8 @@ datos1 %>% describe() %>% select(mean, sd, p00, p25, p50, p75, p100)
 - `set.seed()` para especificar cómo imitar la selección aleatoria mediante *generador pseudo-aleatorio*.
 -->
 
-<!--
-* Regla: tomar el avión con una antelación igual al máximo observado
 
-```{r, eval=FALSE, echo=TRUE} 
-SF %>% 
-  summarize(prop.late1 = mean(arr_delay > 48), prop.late2 =mean(arr_delay > 113))
-```
-
-```{r, eval=FALSE, echo=FALSE} 
-list(48+87, 113+87) %>%  map_dbl(plnorm, meanlog = 4.403, sdlog = 0.409, lower.tail = FALSE)
-```
-
-
-## Decisiones basadas en datos observados (cont.)
-
--->
-* Regla: bajo normalidad, sólo el 2,27% se retrasan más que $\mu + 2\sigma$ 
+* Regla: bajo normalidad, sólo el 2,27% se retrasan más que $\mu + 2\sigma$:
 
 ```{r, eval=FALSE, echo=FALSE} 
 SF %>% 
@@ -170,29 +130,36 @@ SF %>%
             prop.late2 = mean(arr_delay > 7.933 + 2 *	43.943))	
 ```
 
-```{r, eval=FALSE, echo=TRUE} 
+```{r, eval=FALSE, echo=FALSE} 
 list((5.311 + 2 * 24.780) + 87, 
-     (7.933 + 2 *	43.943) + 87) %>%  
+     (7.933 + 2 * 43.943) + 87) %>%  
   map_dbl(plnorm, meanlog = 4.403, sdlog = 0.409, lower.tail = FALSE)
-
 ```
 
+```{r} 
+plnorm( (x$med + 2 * x$sd) , meanlog = 4.403, sdlog = 0.409, lower.tail = FALSE)
+```
+
+
 1. ¿Era el supuesto apropiado? 
-2. Condicionamientos a día, hora, aerolínea
-2. ¿Qué sabemos sobre la incertidumbre en la estimación de $\mu$ y $\sigma$?
+
+2. Condicionar a día, hora, aerolínea
+
+3. ¿Qué sabemos sobre la incertidumbre en la estimación de $\mu$ y $\sigma$?
 
 ## Incertidumbre por la distribución del muestreo
 
 * ¿Cómo de fiable es un estadístico muestral? Simulemos la distribución de la media en muchas muestras todas de tamaño $n=25$
 
-```{r, eval=FALSE, echo=TRUE}
+```{r}
 Muestras <- list()
 set.seed(101)
 for(i in 1:100){
   Muestras[[i]] <- tibble(x = rlnorm(n = 25, meanlog = 4.403, sdlog = 0.409) - 87)  %>% 
         summarize(media = mean(x), sd = sd(x))
 }
-Muestras %>% bind_rows() %>% head(10)
+Muestras_df <- Muestras %>% bind_rows()
+Muestras_df
 ```
 
 
@@ -210,7 +177,7 @@ Muestras %>% bind_rows() %>% head(10)
     
 <!--    + aquí lo hemos aproximado con 100 muestras -->
 
-```{r, eval=FALSE, echo=TRUE}
+```{r}
 Muestras %>% bind_rows() %>% ggplot(aes(x=media)) + geom_density()
 ```
 
@@ -218,8 +185,8 @@ Muestras %>% bind_rows() %>% ggplot(aes(x=media)) + geom_density()
 
 * El *intervalo de confianza del 95%* es otra forma de resumir la distribución muestral
     
-```{r, eval=FALSE, echo=FALSE}
-mean(Trials_df$mean) + sd(Trials_df$mean) * 1.96 * c(-1,1)  
+```{r}
+mean(Muestras_df$media) + sd(Muestras_df$media) * 1.96 * c(-1,1) 
 ```
 
 
@@ -234,7 +201,7 @@ mean(Trials_df$mean) + sd(Trials_df$mean) * 1.96 * c(-1,1)
 -->
 * ¿Cómo cambia la media y el error estándar del estadístico cuando varia el tamaño muestral?
 
-```{r, eval=FALSE, echo=TRUE}
+```{r}
 Muestras_porN <- list()
 nvec <- c(25, 50, 100, 200)
 for(j in seq_along(nvec)){
@@ -251,11 +218,9 @@ Muestras_Final <- Muestras_porN %>% bind_rows()
 ```
 
 
-## Distribuciones muestrales: TCL y LGN
+## Distribuciones muestrales: LGN y TCL
 
-* Si **aumentamos el tamaño de la muestra en $n$, el error estándar disminuirá**.
-
-```{r, eval=FALSE, echo=TRUE}
+```{r}
 Muestras_Final %>% ggplot(aes(x=media)) + geom_density() + facet_wrap(~n)
 Muestras_Final %>% group_by(n) %>% 
   summarize(media_de_media = mean(media), error = sd(media))
@@ -263,37 +228,39 @@ Muestras_Final %>% group_by(n) %>%
 
 - *Ley de números grandes*: para un tamaño de la muestra $n$ grande, el promedio de la muestra está cerca de la media de la población <!--, y el error estándar es pequeño. -->
 
-- *Teorema de Límite Central*: para un tamaño de la muestra $n$ grande, la distribución muestral de la media es normal. 
+- *Teorema de Límite Central*: para un tamaño de la muestra $n$ grande, la distribución muestral de la media es normal.
 
-    $$\mbox{Error estándar}(\bar{X}_n) = \frac{\sigma}{\sqrt{n}},$$
+* $\mbox{Error estándar}(\bar{X}_n) = \frac{\sigma}{\sqrt{n}},$
     donde $\sigma$ es la desviación estándar de la población. 
+
+    * Si **aumentamos el tamaño de la muestra en $n$, el error estándar disminuirá**.
+
 
 ## Procedimiento *Bootstrap* 
 
-* En la práctica, sólo tenemos UNA muestra de tamaño $n$ (no la población)
+<!-- * En la práctica, sólo tenemos UNA muestra de tamaño $n$ (no la población) -->
 
-* **Idea**: pensar en la muestra como si fuera la población 
+* **Idea**: pensar en la ÚNICA muestra como si fuera la población 
 
-    + tomar muchas nuevas muestras (*remuestras* o muestras de Bootstrap) con reemplazamiento de la muestra original
-    
-    + en cada remuestra, se puede calcular cualquier estadístico 
+1. Tomar muchas nuevas muestras (*remuestras* o muestras de Bootstrap) con reemplazamiento de la muestra original
+
+    *  Ej.: para $(1,2,3)$ incluye los casos $(1,1,2)$, $(1,1,3)$, $(2,2,1)$, etc.
+  
+    * ${n\choose n}= (n + n - 1)!/(n! (n-1)!)$ remuestras: la muestra original es una combinación entre muchas
+
+2. En cada remuestra, se puede calcular cualquier estadístico 
     
 * Se obtiene la **distribución muestral bootstrap**: NO es la distribución muestral, pero aproxima sus aspectos principales (ej., *error estándar*).
 
 <!--una distribución de valores de los ensayos bootstrap -->
 <!-- aproxima para vlaores moderados de n -->
 
-* NOTA: remuestreo con reemplazamiento de  $(1,2,3)$: $(1,1,3)$, $(2,3,2)$, etc.
-    
-    + con $n$ grande, poca probilidad de tener la muestra original 
-    + (y solo es una combinación de muchas)
+* Puede aplicarse para cuantificar la incertidumbre de **casi cualquier estadístico** (media, varianzas, coeficientes de regresión, etc.)
 
 <!-- es un método estadístico que nos  permite aproximar la distribución muestral sin acceso a la población.-->
 
-## *Bootstrap* y la distribución muestral 
-
-* Procedimiento de bootstrap con $B = 1000$ a partir de `datos1`
-```{r, eval=FALSE, echo=TRUE}
+## *Bootstrap* con $B = 1000$ para `datos1` 
+```{r}
 n <- nrow(datos1)
 boot <- list() 
 for(i in 1:1000){
@@ -309,29 +276,30 @@ boot_df <- boot %>% bind_rows()
 -->
 
  
-```{r, eval=FALSE, echo=TRUE}
+```{r}
+boot_df %>% ggplot(aes(x = media)) + geom_density() # densidad bootstrap de la media
+sd(boot_df$media)                                   # estimación bootstrap del error estándar
+```
+
+ 
+```{r, eval=FALSE, echo=FALSE}
 boot_df %>% ggplot(aes(x = media)) + 
   geom_density() + 
   labs(title = "Distribución Bootstrap de la media de retraso en `datos1`")
 ```
 
-## *Bootstrap* y la distribución muestral (cont.)
 
-* La estimación bootstrap del error estándar es la desviación estándar de la distribución bootstrap:
-
-```{r, eval=FALSE, echo=TRUE}
-sd(boot_df$media)
-```
-
+<!--
 * Aunque podemos obtener un mejor intervalo de confianza basado
 
-```{r, eval=FALSE, echo=TRUE}
+```{r}
 mean(boot_df$media) + c(-1,1) * 1.96 * sd(boot_df$media)
 ```
+-->
 
-* Podemos obtener directamente los percentiles del intervalo en la distribución muestral bootstrap:
+* Sin suponer normalidad o TCL, se obtienen los percentiles del intervalo en la distribución muestral bootstrap:
 
-```{r, eval=FALSE, echo=TRUE}
+```{r}
 c(sort(boot_df$media)[25], sort(boot_df$media)[975])
 ```
 
@@ -340,7 +308,7 @@ c(sort(boot_df$media)[25], sort(boot_df$media)[975])
 
 El siguiente código toma muestras para la población `SF` sólo una vez para cada uno de los tamaños muestrales 25--200, y utiliza la muestra (sin referencia a la población) para estimar el error estándar. 
 
-```{r, eval=FALSE, echo=TRUE}
+```{r}
 Trials.bootstrap <-list()
 nvec = c(25,50,100,200)
 for(j in seq_along(nvec)){
@@ -364,5 +332,151 @@ Estas estimaciones del error estándar, calculadas mediante bootstrapping de la 
 En este ejemplo, el estadístico muestral es la media. En la práctica, los estadísticos de interés son más complejos, por ejemplo, la estimación del coeficiente en el modelo de regresión lineal. El procedimiento de bootsrapping se puede aplicar a casi todas las situaciones, para cuantificar la incertidumbre en un estadístico.
 -->
 
+## Modelización Condicional 
+
+* La población NO suele ser *homogenea*.
+
+* Los retrasos son más frecuentes a determinadas horas 
+
+```{r}
+SF %>%
+  ggplot(aes(x = hour, y = arr_delay)) +
+  geom_boxplot(aes(group = hour)) + geom_smooth(method = "lm")  +
+  coord_cartesian(ylim = c(-30, 120))
+
+mod1 <- lm(arr_delay ~ hour, data = SF)
+broom::tidy(mod1)
+```
+
+* En particular, los grandes retrasos (superior a 60 minutos)
+```{r}
+SF %>% mutate(gran_retraso = arr_delay > 60) %>%
+  ggplot(aes(x = hour, fill= gran_retraso)) + 
+  geom_bar(position = "fill")                  # para representar frecuencia
+```
+
+## Modelización Condicional (cont.)
+
+<!--
+* También tenemos variación por mes, día de la semana, aeropuerto de origen, aerolínea, etc.
+-->
+
+* Un modelo de regresión permite incluir todas las **variables explicativas** de la variación de la variable dependiente
+
+```{r echo=TRUE, eval=FALSE}
+library(lubridate)
+SF2 <- SF %>% 
+  mutate(
+    fecha  = as.Date(time_hour), 
+    diasem = as.factor(wday(day, label = TRUE)),
+    estaci = ifelse(month %in% 6:7, "verano", "otros meses")
+  )
+
+mod2 <- lm(arr_delay ~ hour + origin + carrier + as.factor(month) + dow, data = SF2)
+broom::tidy(mod2)
+```
+
+* Para una variable de respuesta binaría como `gran_retraso` puede utilizar la *regresión logística* (logit)
 
 
+## "Confounding factor" y Causalidad
+
+* **"Correlación no implica causalidad"**, salvo en [ensayos científicos aleatorios](https://es.wikipedia.org/wiki/Prueba_controlada_aleatorizada) cuidadosamente controlados
+  + en otros campos como marketing digital o analítica de web se denominan [pruebas A/B](https://es.wikipedia.org/wiki/Prueba_A/B) (ej. dos versiones de una misma web)
+
+* En general (datos observacionales), nos preocupa que otros factores que puedan ser los verdaderos determinantes de la relación observada
+
+* En los ensayos aleatorios se controla quien recibe una intervención (tratamiento) y quien no (control)
+
+    + En promedio, todos los demás factores están equilibrados entre los dos grupos: las diferencias pueden atribuirse a la aplicación del tratamiento
+
+    +  Pero si los sujetos no cumplen con los tratamientos o se pierden en el seguimiento...
+
+## "National Supported Work Demonstration"
+```{r}
+url <- "http://www.nber.org/~rdehejia/data/"
+nsw <- haven::read_dta(paste0(url,"nsw_dw.dta")) 
+lm(data=nsw %>%  filter(black==1), re78 ~ treat ) %>% broom::tidy()
+```
+
+* Añadimos más datos observacionales
+
+```{r}
+nsw2 <- nsw %>% bind_rows(haven::read_dta(paste0(url,"psid_controls.dta"))) 
+lm(data=nsw2 %>%  filter(black==1), re78 ~ treat ) %>% broom::tidy()
+```
+
+* El programa estaba dirigido a quienes previamente ganaban menos: 
+```{r}
+nsw2 <- nsw2 %>% mutate(rePre = (re74+re75)/2)
+lm(data=nsw2 %>%  filter(black==1), rePre ~ treat ) %>% broom::tidy()
+```
+
+* ¿Y si mantenemos "constante" ese factor en `nsw2`? ¿Y en `nsw`? [Responder](https://docs.google.com/forms/d/e/1FAIpQLSfTdODmH2MIUuC00wJF9H89aLsQf4KQqDeZ71BgaaSferbn1Q/viewform)
+```{r}
+lm(data=nsw2 %>%  filter(black==1), re78 ~ treat + rePre) %>% broom::tidy()
+```
+<!--
+
+* PREGUNTA: ¿cambia algo si controlamos por la renta previa usando los datos experimentales?
+
+```{r}
+nsw <- nsw %>% mutate(rePre = (re74+re75)/2)
+lm(data=nsw2 %>%  filter(black==1), re78 ~ treat + rePre) %>% broom::tidy()
+```
+
+```{r, echo=FALSE, eval=FALSE}
+nsw <- nsw %>% mutate(rePre = (re74+re75)/2)
+lm(data=nsw %>%  filter(black==1), rePre ~ treat ) %>% broom::tidy()
+```
+-->
+
+## Descuentos y ventas
+
+```{r echo=FALSE, eval=FALSE}
+clear 
+set seed 404
+set obs 404
+
+gen tipo = int(_n/40)
+
+gen discount = max(3.5*tipo + int(3*(uniform()-0.5)),0)
+
+gen income=uniform()*(20-tipo*2)*1000+2000
+gen renta_baja = income < 7500
+
+gen sales=5390+4.4*income+544*discount+990*discount*!renta_baja+invnorm(uniform())*1500
+
+drop tipo renta_baja
+cd /home/albarran/Archivos/teaching/MAD/00.TEC/data
+outsheet using discount.csv, delim(",") replace
+
+
+reg sales discount
+reg sales discount income
+
+gen renta_baja = income < 7500
+reg sales discount if renta_baja
+reg sales discount if !renta_baja
+```
+
+
+```{r}
+datos <- read_csv("https://www.dropbox.com/s/c91j0nvg51hwq89/discount.csv?dl=1")
+```
+
+* El porcentaje medio de descuentos afecta negativamente a las ventas
+
+```{r}
+datos %>% ggplot(aes(x=discount, y=sales)) + geom_point() + geom_smooth(method = "lm")
+lm(data = datos, sales ~ discount) %>% broom::tidy()
+```
+
+* Pero si tenemos en cuenta la renta...
+
+```{r}
+datos %>% mutate(renta_baja = income < 7500) %>%  
+  ggplot(aes(x=discount, y=sales)) + geom_point() + geom_smooth(method = "lm") +
+  facet_wrap(~renta_baja)
+lm(data = datos, sales ~ discount + income) %>% broom::tidy()
+```

@@ -135,3 +135,32 @@ knitr::opts_chunk$set(echo = TRUE)
 ::: 
 
 ::::
+
+
+
+:::: {style="display: flex;"}
+
+::: {}
+## Semana 10
+(16-Nov. a 20-Nov.)
+
+  * [Tema 07 - Fundamentos estadísticos](Tema07sl.html)
+  * [Ejercicio del Tema 07](EjercT07.html)
+      + Entrega: 24-nov. (ECO)
+      +           4-dic. (ADE)
+  
+  * [Tema 08 - Aprendizaje estadístico](Tema08sl.html)
+
+::: 
+
+
+::: {}
+
+::: 
+
+
+::: {}
+
+::: 
+
+::::

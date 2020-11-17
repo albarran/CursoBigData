@@ -20,14 +20,14 @@ output:
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, eval = TRUE, echo = TRUE, results = "hide", fig.show="hide")
+
 library(tidyverse)
-#setwd("~/Archivos/teaching/MAD/0Slides/stat1291")
-#setwd("C:/Users/pedro/Dropbox/MAD/0Slides/stat1291")
+library(dlookr)
+#setwd("/home/albarran/Dropbox/MAD/00.TEC")
 library(rmarkdown)
 #render("filename.Rmd")     
 #browseURL("filename.html")
-#[//]: # (Comment: rintro.r)
 ```
 
 ## Múltiples tablas de datos

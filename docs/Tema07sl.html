@@ -226,35 +226,7 @@ slide:not(.current) .plotly.html-widget{
 </ul></li>
 </ul>
 
-<!--
-
-## Métodos estadísticos
-
- Una técnica estadística ("contraste de la t") es más que una fórmula
-
-+ Supuestos
-    - ej. observaciones $X_1,\ldots,X_n$ numéricas de una distribución (normal)
-
-+ Modelos
-    - ej.  $X_{i}=\mu + \varepsilon_{i}$
-
-+ Métodos (numéricos) para ajustarse al modelo
-
-+ Hipótesis y situaciones en las que pueden utilizarse los modelos:
-     - ej. la media de $X_i$ (desconocida) es $\mu = 0$
-
-+ Métodos (probabilísticos) para cuantificar la incertidumbre en el ajuste del modelo:
-     - ej. el intervalo $\overline{X} \pm 1.96 \cdot \frac{\sigma_{X}}{\sqrt{n}}$ contiene el verdadero $\mu$ con prob. 95%
-
-+ Cuantificación de la fuerza de la evidencia a favor (o en contra) de hipótesis
-     - ej.  menor valor p (contraste t), mayor evidencia en contra de la hipótesis
--->
-
 </article></slide><slide class=""><hgroup><h2>Muestras y Poblaciones</h2></hgroup><article  id="muestras-y-poblaciones">
-
-<!--
-Aunque unos datos concretos son fijos, pero la metodología  estadística se rige por una visión más amplia: los casos observados proceden de un conjunto mucho mayor de casos potenciales. Los datos dados son una *muestra* de una *población* más grande. 
--->
 
 <ul>
 <li>Los datos (casos observados) son una <em>muestra</em> de una <em>población</em> mayor (de casos potenciales)</li>
@@ -279,52 +251,35 @@ SF &lt;- flights %&gt;%
 
 SF %&gt;%  
   ggplot() + geom_histogram(aes(x=arr_delay, y=..density..)) +
-             geom_line(aes(x=arr_delay, y = dlnorm(SF$arr_delay+87, 4.403,0.409)))
-SF %&gt;% describe(arr_delay) %&gt;% select(mean,sd, p00,p25,p50,p75,p100)</pre>
+             geom_line(aes(x = arr_delay, 
+                           y = dlnorm(SF$arr_delay+87, 4.403,0.409)
+                           ))</pre>
 
 </article></slide><slide class=""><hgroup><h2>Decisiones basadas en datos observados</h2></hgroup><article  id="decisiones-basadas-en-datos-observados">
 
 <ul>
-<li>Imaginad que NO disponemos de los datos de <code>nycflights13</code> sino solo una muestra de información con los últimos \(n = 25\) vuelos</li>
+<li>Disponemos de una muestra con información de solo \(n=25\) vuelos</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>set.seed(501) # set.seed(501)  set.seed(1001) 
-datos1 &lt;- tibble(x=(rlnorm(n = 25, meanlog = 4.403, sdlog = 0.409)-87))
-datos1 %&gt;% ggplot() + geom_histogram(aes(x=x, y=..density..))
-datos1 %&gt;% describe() %&gt;% select(mean, sd, p00, p25, p50, p75, p100)</pre>
+datos1 &lt;- tibble(x = (rlnorm(n = 25, meanlog = 4.403, sdlog = 0.409) - 87) ) 
+x &lt;- datos1 %&gt;% summarize(med=mean(x), sd = sd(x))
+x</pre>
 
 <!--
 - `set.seed()` para especificar cómo imitar la selección aleatoria mediante *generador pseudo-aleatorio*.
 -->
 
-<!--
-* Regla: tomar el avión con una antelación igual al máximo observado
-
-
-```r
-SF %>% 
-  summarize(prop.late1 = mean(arr_delay > 48), prop.late2 =mean(arr_delay > 113))
-```
-
-
-
-
-## Decisiones basadas en datos observados (cont.)
-
--->
-
 <ul>
-<li>Regla: bajo normalidad, sólo el 2,27% se retrasan más que \(\mu + 2\sigma\)</li>
+<li>Regla: bajo normalidad, sólo el 2,27% se retrasan más que \(\mu + 2\sigma\):</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>list((5.311 + 2 * 24.780) + 87, 
-     (7.933 + 2 *   43.943) + 87) %&gt;%  
-  map_dbl(plnorm, meanlog = 4.403, sdlog = 0.409, lower.tail = FALSE)</pre>
+<pre class = 'prettyprint lang-r'>plnorm( (x$med + 2 * x$sd) , meanlog = 4.403, sdlog = 0.409, lower.tail = FALSE)</pre>
 
 <ol>
-<li>¿Era el supuesto apropiado?</li>
-<li>Condicionamientos a día, hora, aerolínea</li>
-<li>¿Qué sabemos sobre la incertidumbre en la estimación de \(\mu\) y \(\sigma\)?</li>
+<li><p>¿Era el supuesto apropiado?</p></li>
+<li><p>Condicionar a día, hora, aerolínea</p></li>
+<li><p>¿Qué sabemos sobre la incertidumbre en la estimación de \(\mu\) y \(\sigma\)?</p></li>
 </ol>
 
 </article></slide><slide class=""><hgroup><h2>Incertidumbre por la distribución del muestreo</h2></hgroup><article  id="incertidumbre-por-la-distribución-del-muestreo">
@@ -339,7 +294,8 @@ for(i in 1:100){
   Muestras[[i]] &lt;- tibble(x = rlnorm(n = 25, meanlog = 4.403, sdlog = 0.409) - 87)  %&gt;% 
         summarize(media = mean(x), sd = sd(x))
 }
-Muestras %&gt;% bind_rows() %&gt;% head(10)</pre>
+Muestras_df &lt;- Muestras %&gt;% bind_rows()
+Muestras_df</pre>
 
 <ul>
 <li><p>Existe una gran variabilidad del estadístico muestral: es poco fiable</p></li>
@@ -365,6 +321,8 @@ Muestras %&gt;% bind_rows() %&gt;% head(10)</pre>
 <li><p>Por supuesto, nos interesan varios aspectos de la distribución muestral como su <em>forma</em> y <em>error estándar</em> (<!--desviación típica (variabilidad)--> variabilidad de la distribución muestral)</p></li>
 <li><p>El <em>intervalo de confianza del 95%</em> es otra forma de resumir la distribución muestral</p></li>
 </ul>
+
+<pre class = 'prettyprint lang-r'>mean(Muestras_df$media) + sd(Muestras_df$media) * 1.96 * c(-1,1) </pre>
 
 </article></slide><slide class=""><hgroup><h2>Distribuciones muestrales (cont.)</h2></hgroup><article  id="distribuciones-muestrales-cont.">
 
@@ -394,34 +352,43 @@ for(j in seq_along(nvec)){
 }
 Muestras_Final &lt;- Muestras_porN %&gt;% bind_rows()</pre>
 
-</article></slide><slide class=""><hgroup><h2>Distribuciones muestrales: TCL y LGN</h2></hgroup><article  id="distribuciones-muestrales-tcl-y-lgn">
+</article></slide><slide class=""><hgroup><h2>Distribuciones muestrales: LGN y TCL</h2></hgroup><article  id="distribuciones-muestrales-lgn-y-tcl">
 
-<ul>
-<li>Si <strong>aumentamos el tamaño de la muestra en \(n\), el error estándar disminuirá</strong>.</li>
-</ul>
+<pre class = 'prettyprint lang-r'>Muestras_Final %&gt;% ggplot(aes(x=media)) + geom_density() + facet_wrap(~n)</pre>
 
-<pre class = 'prettyprint lang-r'>Muestras_Final %&gt;% ggplot(aes(x=media)) + geom_density() + facet_wrap(~n)
-Muestras_Final %&gt;% group_by(n) %&gt;% 
+<pre class = 'prettyprint lang-r'>Muestras_Final %&gt;% group_by(n) %&gt;% 
   summarize(media_de_media = mean(media), error = sd(media))</pre>
 
 <ul>
 <li><p><em>Ley de números grandes</em>: para un tamaño de la muestra \(n\) grande, el promedio de la muestra está cerca de la media de la población <!--, y el error estándar es pequeño. --></p></li>
-<li><p><em>Teorema de Límite Central</em>: para un tamaño de la muestra \(n\) grande, la distribución muestral de la media es normal.</p>
+<li><p><em>Teorema de Límite Central</em>: para un tamaño de la muestra \(n\) grande, la distribución muestral de la media es normal.</p></li>
+<li><p>\(\mbox{Error estándar}(\bar{X}_n) = \frac{\sigma}{\sqrt{n}},\) donde \(\sigma\) es la desviación estándar de la población.</p>
 
-<p>\[\mbox{Error estándar}(\bar{X}_n) = \frac{\sigma}{\sqrt{n}},\] donde \(\sigma\) es la desviación estándar de la población.</p></li>
+<ul>
+<li>Si <strong>aumentamos el tamaño de la muestra en \(n\), el error estándar disminuirá</strong>.</li>
+</ul></li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Procedimiento <em>Bootstrap</em></h2></hgroup><article  id="procedimiento-bootstrap">
 
-<ul>
-<li><p>En la práctica, sólo tenemos UNA muestra de tamaño \(n\) (no la población)</p></li>
-<li><p><strong>Idea</strong>: pensar en la muestra como si fuera la población</p>
+<!-- * En la práctica, sólo tenemos UNA muestra de tamaño $n$ (no la población) -->
 
 <ul>
-<li><p>tomar muchas nuevas muestras (<em>remuestras</em> o muestras de Bootstrap) con reemplazamiento de la muestra original</p></li>
-<li><p>en cada remuestra, se puede calcular cualquier estadístico</p></li>
+<li><strong>Idea</strong>: pensar en la ÚNICA muestra como si fuera la población</li>
+</ul>
+
+<ol>
+<li><p>Tomar muchas nuevas muestras (<em>remuestras</em> o muestras de Bootstrap) con reemplazamiento de la muestra original</p>
+
+<ul>
+<li><p>Ej.: para \((1,2,3)\) incluye los casos \((1,1,2)\), \((1,1,3)\), \((2,2,1)\), etc.</p></li>
+<li><p>\({n\choose n}= (n + n - 1)!/(n! (n-1)!)\) remuestras: la muestra original es una combinación entre muchas</p></li>
 </ul></li>
-<li><p>Se obtiene la <strong>distribución muestral bootstrap</strong>: NO es la distribución muestral, pero aproxima sus aspectos principales (ej., <em>error estándar</em>).</p></li>
+<li><p>En cada remuestra, se puede calcular cualquier estadístico</p></li>
+</ol>
+
+<ul>
+<li>Se obtiene la <strong>distribución muestral bootstrap</strong>: NO es la distribución muestral, pero aproxima sus aspectos principales (ej., <em>error estándar</em>).</li>
 </ul>
 
 <!--una distribución de valores de los ensayos bootstrap -->
@@ -429,21 +396,12 @@ Muestras_Final %&gt;% group_by(n) %&gt;%
 <!-- aproxima para vlaores moderados de n -->
 
 <ul>
-<li><p>NOTA: remuestreo con reemplazamiento de \((1,2,3)\): \((1,1,3)\), \((2,3,2)\), etc.</p>
-
-<ul>
-<li>con \(n\) grande, poca probilidad de tener la muestra original</li>
-<li>(y solo es una combinación de muchas)</li>
-</ul></li>
+<li>Puede aplicarse para cuantificar la incertidumbre de <strong>casi cualquier estadístico</strong> (media, varianzas, coeficientes de regresión, etc.)</li>
 </ul>
 
 <!-- es un método estadístico que nos  permite aproximar la distribución muestral sin acceso a la población.-->
 
-</article></slide><slide class=""><hgroup><h2><em>Bootstrap</em> y la distribución muestral</h2></hgroup><article  id="bootstrap-y-la-distribución-muestral">
-
-<ul>
-<li>Procedimiento de bootstrap con \(B = 1000\) a partir de <code>datos1</code></li>
-</ul>
+</article></slide><slide class=""><hgroup><h2><em>Bootstrap</em> con \(B = 1000\) para <code>datos1</code></h2></hgroup><article  id="bootstrap-con-b-1000-para-datos1">
 
 <pre class = 'prettyprint lang-r'>n &lt;- nrow(datos1)
 boot &lt;- list() 
@@ -458,26 +416,21 @@ boot_df &lt;- boot %&gt;% bind_rows()</pre>
 - `sample_n()`  para seleccion filas de forma *aleatoria* de una tabla,
 -->
 
-<pre class = 'prettyprint lang-r'>boot_df %&gt;% ggplot(aes(x = media)) + 
-  geom_density() + 
-  labs(title = &quot;Distribución Bootstrap de la media de retraso en `datos1`&quot;)</pre>
+<pre class = 'prettyprint lang-r'>boot_df %&gt;% ggplot(aes(x = media)) + geom_density() # densidad bootstrap de la media</pre>
 
-</article></slide><slide class=""><hgroup><h2><em>Bootstrap</em> y la distribución muestral (cont.)</h2></hgroup><article  id="bootstrap-y-la-distribución-muestral-cont.">
+<pre class = 'prettyprint lang-r'>sd(boot_df$media)                                   # estimación bootstrap del error estándar</pre>
 
-<ul>
-<li>La estimación bootstrap del error estándar es la desviación estándar de la distribución bootstrap:</li>
-</ul>
+<!--
+* Aunque podemos obtener un mejor intervalo de confianza basado
 
-<pre class = 'prettyprint lang-r'>sd(boot_df$media)</pre>
 
-<ul>
-<li>Aunque podemos obtener un mejor intervalo de confianza basado</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>mean(boot_df$media) + c(-1,1) * 1.96 * sd(boot_df$media)</pre>
+```r
+mean(boot_df$media) + c(-1,1) * 1.96 * sd(boot_df$media)
+```
+-->
 
 <ul>
-<li>Podemos obtener directamente los percentiles del intervalo en la distribución muestral bootstrap:</li>
+<li>Sin suponer normalidad o TCL, se obtienen los percentiles del intervalo en la distribución muestral bootstrap:</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>c(sort(boot_df$media)[25], sort(boot_df$media)[975])</pre>
@@ -510,7 +463,133 @@ bind_rows(Trials.bootstrap) %>%
 Estas estimaciones del error estándar, calculadas mediante bootstrapping de la muestra, se aproximan bastante el error estándar, calculado a partir de la población. 
 
 En este ejemplo, el estadístico muestral es la media. En la práctica, los estadísticos de interés son más complejos, por ejemplo, la estimación del coeficiente en el modelo de regresión lineal. El procedimiento de bootsrapping se puede aplicar a casi todas las situaciones, para cuantificar la incertidumbre en un estadístico.
---></article></slide>
+-->
+
+</article></slide><slide class=""><hgroup><h2>Modelización Condicional</h2></hgroup><article  id="modelización-condicional">
+
+<ul>
+<li><p>La población NO suele ser <em>homogenea</em>.</p></li>
+<li><p>Los retrasos son más frecuentes a determinadas horas</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>SF %&gt;%
+  ggplot(aes(x = hour, y = arr_delay)) +
+  geom_boxplot(aes(group = hour)) + geom_smooth(method = &quot;lm&quot;)  +
+  coord_cartesian(ylim = c(-30, 120))</pre>
+
+<pre class = 'prettyprint lang-r'>mod1 &lt;- lm(arr_delay ~ hour, data = SF)
+broom::tidy(mod1)</pre>
+
+<ul>
+<li>En particular, los grandes retrasos (superior a 60 minutos)</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>SF %&gt;% mutate(gran_retraso = arr_delay &gt; 60) %&gt;%
+  ggplot(aes(x = hour, fill= gran_retraso)) + 
+  geom_bar(position = &quot;fill&quot;)                  # para representar frecuencia</pre>
+
+</article></slide><slide class=""><hgroup><h2>Modelización Condicional (cont.)</h2></hgroup><article  id="modelización-condicional-cont.">
+
+<!--
+* También tenemos variación por mes, día de la semana, aeropuerto de origen, aerolínea, etc.
+-->
+
+<ul>
+<li>Un modelo de regresión permite incluir todas las <strong>variables explicativas</strong> de la variación de la variable dependiente</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>library(lubridate)
+SF2 &lt;- SF %&gt;% 
+  mutate(
+    fecha  = as.Date(time_hour), 
+    diasem = as.factor(wday(day, label = TRUE)),
+    estaci = ifelse(month %in% 6:7, &quot;verano&quot;, &quot;otros meses&quot;)
+  )
+
+mod2 &lt;- lm(arr_delay ~ hour + origin + carrier + as.factor(month) + dow, data = SF2)
+broom::tidy(mod2)</pre>
+
+<ul>
+<li>Para una variable de respuesta binaría como <code>gran_retraso</code> puede utilizar la <em>regresión logística</em> (logit)</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>&ldquo;Confounding factor&rdquo; y Causalidad</h2></hgroup><article  id="confounding-factor-y-causalidad">
+
+<ul>
+<li><p><strong>&ldquo;Correlación no implica causalidad&rdquo;</strong>, salvo en <a href='https://es.wikipedia.org/wiki/Prueba_controlada_aleatorizada' title=''>ensayos científicos aleatorios</a> cuidadosamente controlados</p>
+
+<ul>
+<li>en otros campos como marketing digital o analítica de web se denominan <a href='https://es.wikipedia.org/wiki/Prueba_A/B' title=''>pruebas A/B</a> (ej. dos versiones de una misma web)</li>
+</ul></li>
+<li><p>En general (datos observacionales), nos preocupa que otros factores que puedan ser los verdaderos determinantes de la relación observada</p></li>
+<li><p>En los ensayos aleatorios se controla quien recibe una intervención (tratamiento) y quien no (control)</p>
+
+<ul>
+<li><p>En promedio, todos los demás factores están equilibrados entre los dos grupos: las diferencias pueden atribuirse a la aplicación del tratamiento</p></li>
+<li><p>Pero si los sujetos no cumplen con los tratamientos o se pierden en el seguimiento…</p></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>&ldquo;National Supported Work Demonstration&rdquo;</h2></hgroup><article  id="national-supported-work-demonstration">
+
+<pre class = 'prettyprint lang-r'>url &lt;- &quot;http://www.nber.org/~rdehejia/data/&quot;
+nsw &lt;- haven::read_dta(paste0(url,&quot;nsw_dw.dta&quot;)) 
+lm(data=nsw %&gt;%  filter(black==1), re78 ~ treat ) %&gt;% broom::tidy()</pre>
+
+<ul>
+<li>Añadimos más datos observacionales</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>nsw2 &lt;- nsw %&gt;% bind_rows(haven::read_dta(paste0(url,&quot;psid_controls.dta&quot;))) 
+lm(data=nsw2 %&gt;%  filter(black==1), re78 ~ treat ) %&gt;% broom::tidy()</pre>
+
+<ul>
+<li>El programa estaba dirigido a quienes previamente ganaban menos:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>nsw2 &lt;- nsw2 %&gt;% mutate(rePre = (re74+re75)/2)
+lm(data=nsw2 %&gt;%  filter(black==1), rePre ~ treat ) %&gt;% broom::tidy()</pre>
+
+<ul>
+<li>¿Y si mantenemos &ldquo;constante&rdquo; ese factor en <code>nsw2</code>? ¿Y en <code>nsw</code>? <a href='https://docs.google.com/forms/d/e/1FAIpQLSfTdODmH2MIUuC00wJF9H89aLsQf4KQqDeZ71BgaaSferbn1Q/viewform' title=''>Responder</a></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>lm(data=nsw2 %&gt;%  filter(black==1), re78 ~ treat + rePre) %&gt;% broom::tidy()</pre>
+
+<!--
+
+* PREGUNTA: ¿cambia algo si controlamos por la renta previa usando los datos experimentales?
+
+
+```r
+nsw <- nsw %>% mutate(rePre = (re74+re75)/2)
+lm(data=nsw2 %>%  filter(black==1), re78 ~ treat + rePre) %>% broom::tidy()
+```
+
+
+-->
+
+</article></slide><slide class=""><hgroup><h2>Descuentos y ventas</h2></hgroup><article  id="descuentos-y-ventas">
+
+<pre class = 'prettyprint lang-r'>datos &lt;- read_csv(&quot;https://www.dropbox.com/s/c91j0nvg51hwq89/discount.csv?dl=1&quot;)</pre>
+
+<ul>
+<li>El porcentaje medio de descuentos afecta negativamente a las ventas</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>datos %&gt;% ggplot(aes(x=discount, y=sales)) + geom_point() + geom_smooth(method = &quot;lm&quot;)</pre>
+
+<pre class = 'prettyprint lang-r'>lm(data = datos, sales ~ discount) %&gt;% broom::tidy()</pre>
+
+<ul>
+<li>Pero si tenemos en cuenta la renta…</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>datos %&gt;% mutate(renta_baja = income &lt; 7500) %&gt;%  
+  ggplot(aes(x=discount, y=sales)) + geom_point() + geom_smooth(method = &quot;lm&quot;) +
+  facet_wrap(~renta_baja)</pre>
+
+<pre class = 'prettyprint lang-r'>lm(data = datos, sales ~ discount + income) %&gt;% broom::tidy()</pre></article></slide>
 
 
   <slide class="backdrop"></slide>

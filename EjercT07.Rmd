@@ -1,0 +1,100 @@
+---
+#subtitle: "Técnicas para 'Big Data' en Economía"
+#subtitle: "Muestreo y Análisis de Datos"
+title    :  "Ejercicio Tema 07 - Bootstrap"
+author: 
+  - "Prof.: Pedro Albarrán"
+  - "Prof.: Alberto Pérez"
+job: "Universidad de Alicante" 
+date: "Universidad de Alicante, Curso 2020/21"  
+output:
+  html_document:
+    toc: true
+    toc_float: true
+#  ioslides_presentation: 
+#    widescreen: yes
+#    logo: pic/by-nc-sa.eu.svg
+#  html_document: default
+#  beamer_presentation: 
+#      slide_level: 2
+#widescreen: yes
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, eval = TRUE, echo = TRUE, results = "hide", fig.show="hide")
+
+library(tidyverse)
+library(dlookr)
+#setwd("/home/albarran/Dropbox/MAD/00.TEC")
+library(rmarkdown)
+#render("filename.Rmd")     
+#browseURL("filename.html")
+library(kableExtra)
+```
+
+
+## Datos
+
+La Comisión de Planificación del Valle del Pionero (PVPC) recolectó datos en Florencia, Massachusetts por un período de noventa días. Los recolectores de datos configuraron un sensor láser que registra cuando un usuario del camino ciclista ("via verde") pasa por la estación de recogida de datos.
+
+```{r, echo=TRUE, eval=TRUE}
+#install.packages("mosaicData")
+library("mosaicData")
+data("RailTrail")
+```
+
+El PVPC quiere entender la relación entre el número de ciclistas diarios (es decir, el número de ciclistas y caminantes que usan el carril bici en un día dado) y una colección de variables explicativas, incluyendo la temperatura, lluvia, nubosidad y el día de la semana. Para esto, estimamos el siguiente modelo de regresión:
+
+```{r, echo=TRUE, eval=TRUE, results='markup'}
+modelo <- lm(volume ~ hightemp + cloudcover + weekday + precip, 
+             data = RailTrail)
+modelo %>% broom::tidy() %>% kbl() %>% kable_classic()
+```
+
+A partir de ahora, trabajaréis con un coeficiente concreto dependiendo de la última cifra de vuestro DNI o similar: 
+
+* si es 1, 4 o 7, con el de `hightemp`
+* si es 2, 5 o 8, con el de `cloudcover`
+* si es 3, 6 o 9, con el de `weekday`
+* si es 0, con el de `precip`
+
+
+## Información de utilidad
+
+Podéis acceder a los coefficientes de estimados por `lm()` con la función `coef()`, a la matriz de varianza-covarianza de los coeficientes con `vcov` y la varianza del error con `summary(modelo)$sigma**2`. Por ejemplo,  
+
+```{r, echo=TRUE, eval=TRUE, warning=FALSE}
+coef(modelo) 
+vcov(modelo)
+
+summary(modelo)$sigma**2 
+```
+
+
+## Vuestro Ejercicio
+
+1. Bajo el supuesto de normalidad de los errores en el modelo de regresión, calcular el intervalo de confianza al 95% para vuestro coeficiente y el intervalo de confianza al 95% para la varianza del error.
+
+    Nota: En R, los valores críticos se obtienen de la siguiente manera:
+
+    * el de una normal estándar que deja a su izquierda una probabilidad $a$, $0<a<1$: `qnorm(a)`
+
+    * el de una $\chi ^2$ con $q$ grados de libertad que deja a su izquierda una probabilidad $a$, $0<a<1$: `chi2(a, q)`
+
+
+2. Utilizar bootstrap para obtener el intervalo de confianza al 95% para vuestro coeficiente y el intervalo de confianza al 95% para la varianza del error. Debéis fijar como semilla vuestro DNI para realizar un bucle como el visto en clase.
+  
+    NOTA: tened cuidado con el tipo de datos que tenéis aquí. En el ejemplo de clase, en la asignación del bucle `for` teníamos un "data frame" (resultado del `summarize`) mientra que ahora trabajáis con `coef` y `summary(modelo)$sigma**2` que devuelven "arrays".
+
+
+3. Comentar BREVEMENTE las diferencias en los intervalos de confianza de ambos apartados. (Podéis incluirlo como breve comentario en vuestro archivo .R)
+
+<!--
+Como os he comentado en clase, debéis entregar un ejercicio para antes del jueves 21 de noviembre a las 23:00h.
+-->
+
+Rellenad este 
+[FORMULARIO](https://docs.google.com/forms/d/e/1FAIpQLSdxiED_Cc9JoMvQIbvezUY_0ZDff17P_nalVfjycCWVRQq9WA/viewform) con vuestros datos y subid vuestro archivo de .R
+
+IMPORTANTE: el nombre del archivo DEBE EMPEZAR con vuestro número de DNI (el resto es libre): ej.,  `12345678_ET07_micod.R`
