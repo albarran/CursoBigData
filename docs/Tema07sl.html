@@ -404,7 +404,8 @@ Muestras_Final &lt;- Muestras_porN %&gt;% bind_rows()</pre>
 </article></slide><slide class=""><hgroup><h2><em>Bootstrap</em> con \(B = 1000\) para <code>datos1</code></h2></hgroup><article  id="bootstrap-con-b-1000-para-datos1">
 
 <pre class = 'prettyprint lang-r'>n &lt;- nrow(datos1)
-boot &lt;- list() 
+boot &lt;- list()
+set.seed(101)
 for(i in 1:1000){
     boot[[i]] &lt;- datos1 %&gt;% 
       sample_n(size = n, replace = TRUE) %&gt;%

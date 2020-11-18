@@ -80,7 +80,7 @@ summary(modelo)$sigma**2
 
     * el de una normal estándar que deja a su izquierda una probabilidad $a$, $0<a<1$: `qnorm(a)`
 
-    * el de una $\chi ^2$ con $q$ grados de libertad que deja a su izquierda una probabilidad $a$, $0<a<1$: `chi2(a, q)`
+    * el de una $\chi ^2$ con $q$ grados de libertad que deja a su izquierda una probabilidad $a$, $0<a<1$: `qchisq(a, q)`
 
 
 2. Utilizar bootstrap para obtener el intervalo de confianza al 95% para vuestro coeficiente y el intervalo de confianza al 95% para la varianza del error. Debéis fijar como semilla vuestro DNI para realizar un bucle como el visto en clase.

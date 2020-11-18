@@ -24,8 +24,6 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
-<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -34,7 +32,7 @@
   div.column{display: inline-block; vertical-align: top; width: 50%;}
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
-    </style>
+      </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -497,31 +495,9 @@ Esto es una línea normal</code></pre>
 </ol>
 <p>Los fragmentos del código de R se pueden utilizar para producir salida de R en documentos o para mostrar simplemente el código como ilustración. Aquí está un fragmento simple del código de R que resultará en el código y su salida que es incluida:</p>
 <pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
 <p>Para mostrar el resultado del fragmento de código, pero no código de R que lo genera, se especifica la opción <code>echo=FALSE</code>:</p>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
 <p>Se puede incluir un identificador del fragmento despues de <code>r</code> (separado por espacio o por comas igual que el resto de opciones del fragmento):</p>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
 <p>Tened en cuenta que los trozos de código R también se pueden utilizar sólo para procesar el código de R, mostrando el resultado pero no el código:</p>
-<p><img src="Pract01_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>Para mostrar el código R sin evaluarlo, especifique la opción <code>eval = FALSE</code>:</p>
 <pre class="r"><code>summary(cars)</code></pre>
 <p>Notad que sí un fragmento no se evalua, sus resultados no están disponibles para partes posteriores del documento. Es importante que si queremos cargar unos datos o una biblioteca necesarios para después o hacemos un cálculo cuyo resultado se usa posteriormente nos aseguremos de que estamos evaluando ese fragmento.</p>
@@ -660,7 +636,7 @@ b. Practica lo que has aprendido creando un informe. Tu archivo .Rmd tendrá nom
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();

@@ -59,8 +59,6 @@
   <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
   <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
   <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
-  <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
-  <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
   <style type="text/css">
 
@@ -447,82 +445,6 @@ Carseats[c(18:28, 325:335), &quot;Income&quot;] &lt;- NA  </pre>
 <pre class = 'prettyprint lang-r'>Carseats %&gt;% count(ShelveLoc) %&gt;% 
   kableExtra::kbl() %&gt;% kableExtra::kable_paper(&quot;hover&quot;)</pre>
 
-<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
-
-<thead>
-
-<tr>
-
-<th style="text-align:left;">
-
-ShelveLoc
-
-</th>
-
-<th style="text-align:right;">
-
-n
-
-</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr>
-
-<td style="text-align:left;">
-
-Bad
-
-</td>
-
-<td style="text-align:right;">
-
-96
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-Good
-
-</td>
-
-<td style="text-align:right;">
-
-85
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-Medium
-
-</td>
-
-<td style="text-align:right;">
-
-219
-
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
 </article></slide><slide class=""><hgroup><h2>Visualizando distribuciones: Variable continua</h2></hgroup><article  id="visualizando-distribuciones-variable-continua">
 
 <ul>
@@ -632,9 +554,7 @@ g4 &lt;- g0 + geom_histogram(mapping = aes(x = Price), binwidth = 10)</pre>
 ggplot(carseats2, aes(x = price)) +  geom_histogram(na.rm = TRUE)
 ggplot(carseats2, aes(x = price)) + geom_histogram(aes(y=..density..))+ geom_density() </pre>
 
-<ul>
-<li><code>ggplot</code> se adhiere a la filosofía de que los <code>NA</code> ruidosos</li>
-</ul>
+<pre >* `ggplot` se adhiere a la filosofía de que los `NA` ruidosos</pre>
 
 </article></slide><slide class=""><hgroup><h2>Algunas funciones alternativas</h2></hgroup><article  id="algunas-funciones-alternativas">
 
