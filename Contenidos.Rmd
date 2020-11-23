@@ -154,7 +154,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Semana 11
 (23-Nov. a 27-Nov.)
 
-  * [Tema 08 - Aprendizaje estadístico](Tema08slAAAAAAAAAAAAAAA.html)
+  * [Tema 08 - Aprendizaje estadístico](Tema08sl.html)
   
   * [Practica 05 - "Tidymodels"](Pract05.html) 
 

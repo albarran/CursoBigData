@@ -350,6 +350,8 @@ legend(1975, 400000,
        col=c("black", "red"),
        pch=c(1, 1))
 ```
+
+<img src="Pract02_files/figure-html/unnamed-chunk-5-1.png" width="672" />
 mientras que con `ggplot2`
 
 ```r
@@ -359,6 +361,8 @@ ggplot(subset(housing, State %in% c("MA", "TX")),
            color=State))+
   geom_point()
 ```
+
+<img src="Pract02_files/figure-html/unnamed-chunk-6-1.png" width="672" />
 
 Las principales ventajas de `ggplot2` son:
 
@@ -1051,6 +1055,7 @@ graf</code></pre>
 <p>Podríamos pasar una gran cantidad de tiempo haciendo pequeños retoques para colorear las paletas. Por suerte, existe una bibiloteca <code>RColorBrewer</code> donde la autora Cynthia Brewer (<a href="http://www.colorbrewer2.org">ver aquí</a>) ha incorporado algunas muy buenas paletas, bien pensadas según estándares de diseño y visualización de la información, que podemos usar.</p>
 <pre class="r"><code>library(RColorBrewer)
 display.brewer.all()</code></pre>
+<p><img src="Pract02_files/figure-html/unnamed-chunk-55-1.png" width="672" /></p>
 <p>Disponemos de muchas opciones para hacer gráficos optimizados perceptivamente. Podemos usar estas paletas con <code>scale_fill_brewer()</code>:</p>
 <pre class="r"><code>graf +
    scale_fill_brewer(palette = &quot;Set3&quot;)</code></pre>
