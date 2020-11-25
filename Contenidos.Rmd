@@ -156,13 +156,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
   * [Tema 08 - Aprendizaje estadístico](Tema08sl.html)
   
-  * [Practica 05 - "Tidymodels"](Pract05.html) 
-
+  * [Tema 09 - Regresión Lineal](Tema09sl.html)
 
 ::: 
 
 
 ::: {}
+
+  * [Tema 10 - Regresión Logística](Tema10sl.html)
+
+  * [Practica 05 - "Tidymodels"](Pract05.html) 
+
+
 
 ::: 
 
