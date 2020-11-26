@@ -299,7 +299,7 @@ Y = f(X) + \varepsilon
 <li><p><strong>Problema de Clasificación</strong></p>
 
 <ul>
-<li>La variable de respuesta es cualitativa (toma valores en una de \(K\) categorías o clases)</li>
+<li>La variable de respuesta es cualitativa (toma valores en una de \(C\) categorías o clases)</li>
 </ul></li>
 </ol>
 
@@ -562,6 +562,11 @@ A medida que se añaden más y más parámetros a un modelo, la complejidad del 
 <img width="95%" src='pic/biasvariance-tradeoff.png' title=''/>
 
 </center>
+
+<!--
+SESGO-VARIANZA VISTO EN ECONOMETRIA I: omitir variable relevante (modelos menos flexible), crea sesgo.
+                                       incluir variable no relevante (mas flexibe), aumenta varianza
+-->
 
 </article></slide><slide class=""><hgroup><h2>&ldquo;Trade-off&rdquo; Varianza–Sesgo (cont.)</h2></hgroup><article  id="trade-off-varianzasesgo-cont.">
 
@@ -870,12 +875,19 @@ https://towardsdatascience.com/understanding-auc-roc-curve-68b2303cc9c5
 -->
 
 <ul>
-<li><p>La técnica más usada se llama de validación cruzada (<em>cross-validation</em> o <em>rotation estimation</em>).</p>
+<li>La técnica más usada se llama de validación cruzada (<em>cross-validation</em> o <em>rotation estimation</em>).
 
 <ul>
 <li>se repite varias veces y de forma ordenada el proceso de remuestreo para la partición en grupos de entrenamiento y prueba (similar a <em>bootstrap</em>)</li>
 <li>se evita que los resultados sean sensibles a una partición concreta</li>
 </ul></li>
+</ul>
+
+<!--
+the estimate of test error is highlyvariable, depending on precisely which observations areincluded in the training set and which observations areincluded in the validation set.•In the validation approach, only a subset of theobservations — those that are included in the training setrather than in the validation set — are used to fit themodel.•This suggests that the validation set error may tend tooverestimatethe test error for the model fit on the entiredata set
+-->
+
+<ul>
 <li><p>Entre las variantes más habituales se encuentran:</p>
 
 <ul>

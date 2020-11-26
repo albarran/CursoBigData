@@ -110,7 +110,7 @@ Y = f(X) + \varepsilon
 
 2. **Problema de Clasificación**  
 
-    + La variable de respuesta es cualitativa (toma valores en una de $K$ categorías o clases)
+    + La variable de respuesta es cualitativa (toma valores en una de $C$ categorías o clases)
 
 <!--
 No trataremos todas las técnicas ni podemos entrar en el fondo de cada técnica.  
@@ -395,6 +395,10 @@ A medida que se añaden más y más parámetros a un modelo, la complejidad del 
 ![](pic/biasvariance-tradeoff.png){width=95%}
 </center>
 
+<!--
+SESGO-VARIANZA VISTO EN ECONOMETRIA I: omitir variable relevante (modelos menos flexible), crea sesgo.
+                                       incluir variable no relevante (mas flexibe), aumenta varianza
+-->
 
 ## "Trade-off" Varianza--Sesgo (cont.)
 
@@ -577,6 +581,11 @@ https://towardsdatascience.com/understanding-auc-roc-curve-68b2303cc9c5
 * La técnica más usada se llama de validación cruzada (*cross-validation* o *rotation estimation*). 
     - se repite varias veces y de forma ordenada el proceso de remuestreo para la partición en grupos de entrenamiento y prueba (similar a *bootstrap*)
     - se evita que los resultados sean sensibles a una partición concreta
+
+<!--
+the estimate of test error is highlyvariable, depending on precisely which observations areincluded in the training set and which observations areincluded in the validation set.•In the validation approach, only a subset of theobservations — those that are included in the training setrather than in the validation set — are used to fit themodel.•This suggests that the validation set error may tend tooverestimatethe test error for the model fit on the entiredata set
+-->
+
 
 * Entre las variantes más habituales se encuentran:
 

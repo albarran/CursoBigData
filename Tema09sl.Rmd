@@ -31,11 +31,6 @@ library(rmarkdown)
 #browseURL("filename.html")
 ```
 
-
-<!--
-## Regresión Lineal Simple
--->
-
 ## Regresión Lineal 
 
 * La regresión lineal predice una respuesta cuantitativa $\small Y$ como a partir de $k$ regresores $X=$ $\small X_1,X_2,\dots,X_k$
@@ -43,12 +38,12 @@ library(rmarkdown)
 * Supuesto<!-- de linealidad (en los parámetros)-->:  relación lineal entre $\small X$ e $\small Y$
 \[
 \small
-Y=\beta_0+\beta_1 X_1+ \dots + \beta_k X_p + \varepsilon
+Y=\beta_0+\beta_1 X_1+ \dots + \beta_k X_k + \varepsilon
 \]
 
 * Los coeficientes o parámetros del modelo representan
 
-    * $\small \beta_0$ (constante): valor esperado de $\small Y$ cuando $\small X_=X_2=\dots=X_k=0$
+    * $\small \beta_0$ (constante): valor esperado de $\small Y$ cuando $\small X_1=X_2=\dots=X_k=0$
 
     * $\small \beta_j$ (pendiente de la línea): cambio medio en $\small Y$ por un incremento de una unidad en $\small X_j$ (para $j=1,...,k$), *ceteris paribus*
 
