@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Prof.: Pedro Albarrán" />
+<meta name="author" content="Prof.: Alberto Pérez" />
+
+
+<title>Tema 3. Mini-práctica</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Big Data (UA)</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Introducción</a>
+</li>
+<li>
+  <a href="Contenidos.html">Contenidos</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Tema 3. Mini-práctica</h1>
+<h4 class="author">Prof.: Pedro Albarrán</h4>
+<h4 class="author">Prof.: Alberto Pérez</h4>
+<h4 class="date">Universidad de Alicante, Curso 2020/21</h4>
+
+</div>
+
+
+<!--
+Reemplaza el número en `mi.DNI` por los números de tu DNI (o NIE) y ejecuta *todo* el siguiente código de una vez. Obtendrás un nombre para usar posteriormente.
+
+```r
+mi.DNI <- 1234567890   
+set.seed(mi.DNI)  
+babynames %>% 
+        group_by(name) %>% 
+        summarise(pr=sum(prop)) %>% 
+        arrange(desc(pr)) %>% 
+        head(100) %>% 
+        filter(row_number()==round(runif(1,1,100))) %>% 
+        select(name)
+```
+Escribe el código que responda a las preguntas de cada de los siguientes apartados.
+-->
+<div id="mini-práctica" class="section level1">
+<h1>Mini-Práctica</h1>
+<p>Escribe un archivo .R con el código necesario para responder a las siguientes preguntas. La transformación de datos será una línea con comandos anidados.</p>
+<p>El nombre del archivo DEBE EMPEZAR con vuestro número de DNI (el resto es libre): ej.,</p>
+<blockquote>
+<p>12345678_T03.R</p>
+</blockquote>
+<p>Finalmente, rellenad este <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5A8m0SfgQzl5DXva66bk4m0wVBE1QCyDagKdL_Ko0xyiVQQ/viewform">FORMULARIO</a> con vuestros datos y subid</p>
+</div>
+<div id="preguntas" class="section level1">
+<h1>Preguntas</h1>
+<ol style="list-style-type: decimal">
+<li>Elige un nombre y encontrar el año en que fue usado con más frecuencia.</li>
+</ol>
+<!--
+2. ¿Qué nombre fue el más popular en el año del apartado anterior?
+-->
+<ol start="2" style="list-style-type: decimal">
+<li><p>¿En qué año hubo más nacimientos y cuántos fueron?</p></li>
+<li><p>Encontar los diez nombres más populares de la década de los 1990s.</p></li>
+</ol>
+<!--  
+4. Obtener un conjunto de datos (`data frame`) con tres variables: cada nombre, el primer año en que aparece y el último año en que aparece.
+-->
+<!--  
+3. In which year was that name given to M and F babies most equally (i.e. closest to a 50/50 split)?
+
+
+There are 15 names that have been assigned to both sexes in all 138 years. List them.
+-->
+<!--
+5. Considera los nombres con al menos 1% de nacimientos en un año dado. ¿Cuál es el año más reciente en que aparece?
+
+-->
+<!--  
+It seems like there is more diversity of names now than in the past. How have the number of names used changed over time? Has it been the same for boys and girls?
+
+  -->
+<!--
+Use ggplot2 and group_by() to create an interesting and informative data graphic. It need not be about babynames. Post your graphic and a short description of it to Slack.
+-->
+<!--More Practice (optional)
+
+If you are looking for some more practice, try these, using the nycflights13 package.
+-->
+<!--
+What was the daily average number of flights leaving each of the three NYC airports in 2013?
+
+-->
+<ol start="4" style="list-style-type: decimal">
+<li><p>Usando los datos del paquete <code>nycflights13</code>, calcular para cada compañía (<code>carrier</code>) el número total de vuelos, el retraso medio en la salida, el número de destinos únicos a los que vuela, y el número de aviones únicos utilizados.</p></li>
+<li><p>Usando el conjunto de datos obtenido en el apartado anterior, obtener los siguientes gráficos:</p>
+<ul>
+<li><p>Un gráfico de caja (<code>boxplot</code>) del retraso medio.</p></li>
+<li><p>Un histograma del número de aviones.</p></li>
+<li><p>La densidad del número total de vuelos.</p></li>
+</ul></li>
+</ol>
+<!--
+Plot the distribution of average daily delay time across the entire year for each of the three airports.
+
+Challenge: Plot the average arrival delay time as a function of the distance flown to the nearest 100 miles for each of the three airports.
+-->
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

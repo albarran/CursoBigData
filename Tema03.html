@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Prof.: Pedro Albarrán" />
+<meta name="author" content="Prof.: Alberto Pérez" />
+
+
+<title>Tema 03 - Manipulación de datos con dplyr (una sola tabla)</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Big Data (UA)</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Introducción</a>
+</li>
+<li>
+  <a href="Contenidos.html">Contenidos</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Tema 03 - Manipulación de datos con <code>dplyr</code> (una sola tabla)</h1>
+<h4 class="author">Prof.: Pedro Albarrán</h4>
+<h4 class="author">Prof.: Alberto Pérez</h4>
+<h4 class="date">Universidad de Alicante, Curso 2020/21</h4>
+
+</div>
+
+
+<div id="ordenando-los-datos" class="section level2">
+<h2>Ordenando los datos</h2>
+<p>Para visualizar y analizar los datos de forma efectiva, necesitamos que los datos estén en un formato que llamaremos “ordenado” (“tidy” en inglés). Tener los datos almacenados en un formato “ordenado” es más que lo que la definición coloquial del término “ordenado” podría sugerir. No se trata solo de disponer de datos “ordenadamente organizados” como en una hoja de cálculo, donde cada columna es una variable y cada fila es una observación. Definimos el término “ordenado” de una manera más rigurosa, esbozando un conjunto de reglas por las que se pueden almacenar los datos y las implicaciones de estas reglas en los análisis.</p>
+<p>El conocimiento de este tipo de formateo de datos no fue necesario en nuestro tratamiento de visualización de datos, porque todos los datos ya estaban en formato ordenado. Veremos que tener datos ordenados permite crear visualizaciones de datos más fácilmente y también analizar los datos con modelos estadísticos.</p>
+<p>El proceso completo para analizar los datos puede describirse en este esquema <img src="pic/tidying.png" /></p>
+<p>Para realizar un análisis de datos adecuado y comunicar de forma efectiva, se requiere una tarea previa de “tratamiento” de datos que suele suponer más de la mitad del tiempo total de un proyecto de análisis de datos. Las tareas de limpieza, transformación y manipulación de datos se denominan habitualmente como “data wrangling” (pelearse con los datos) o “data munging”. Este trabajo “sucio” es clave para obtener información útil en la toma de decisiones. Este artículo de “The New York Times” deja claro desde su título esta idea <a href="https://www.nytimes.com/2014/08/18/technology/for-big-data-scientists-hurdle-to-insights-is-janitor-work.html">“‘Janitor Work’ Is Key Hurdle to Insights”</a>. El experto Jeffrey Heer afirma</p>
+<blockquote>
+<p>It’s an absolute myth that you can send an algorithm over raw data and have insights pop up.</p>
+</blockquote>
+<div id="el-paquete-tidyverse" class="section level3">
+<h3>El paquete <code>tidyverse</code></h3>
+<p>El meta-paquete <code>tidyverse</code> incluye una colección de paquetes que ayudan en todo el proceso “ordenación de datos”. El núcleo de <code>tidyverse</code> lo componen los siguientes paquetes (podéis ver una descripción <a href="https://www.tidyverse.org/packages/">aquí</a>):</p>
+<ul>
+<li><code>ggplot2</code></li>
+<li><code>tibble</code></li>
+<li><code>tidyr</code></li>
+<li><code>readr</code></li>
+<li><code>purrr</code></li>
+<li><code>dplyr</code></li>
+</ul>
+<p>A su vez estos se integran con otros paquetes importantes del “ecosistema” de R: <img src="pic/tidyverse_full.jpg" /></p>
+<p>En esta y siguientes sesiones, primero vamos a usar <code>dplyr</code> para manipular un conjunto de datos ordenados (la parte transformadora del ciclo en el gráfico anterior). Luego volveremos a la parte de ordenar/organizar unos datos desordenados usando <code>tidyr</code>.</p>
+</div>
+</div>
+<div id="manipulacion-de-datos-con-dplyr" class="section level2">
+<h2>Manipulacion de datos con <code>dplyr</code></h2>
+<p>Esta sección explora las principales funciones en <code>dplyr</code> que Hadley Wickham describe como una <em>gramática de manipulación de datos</em> – el contrapunto a su <em>gramática de gráficos</em> en <code>ggplot2</code>. Notar que una gramática consiste en verbos, sustantivos y objetos directos.</p>
+<p>El paqute <code>dplyr</code> fue diseñado para:</p>
+<ul>
+<li>proporcionar herramientas de manipulación de datos de uso común;<br />
+</li>
+<li>tener un rendimiento rápido para operaciones en memoria;<br />
+</li>
+<li>abstraer la interfaz entre las operaciones de manipulación de datos y la fuente de datos.</li>
+</ul>
+<div id="nota-sobre-data-frames-y-tibbles" class="section level3">
+<h3>Nota sobre “Data frames” y “Tibbles”</h3>
+<p>Las funciones <code>dplyr</code> operan sobre “data frames” (marcos de datos), pero también en “tibbles”, una versión recortada de un “data frame” (<code>tbl_df</code>) que proporciona una mejor comprobación e impresión visual. Los “tibbles” son particularmente buenos para los conjuntos de datos grandes ya que sólo muestran las primeras 10 filas y las primeras 7 columnas por defecto, aunque se proporciona información adicional sobre las filas y columnas.</p>
+<p>Por ejemplo, si usamos el “data frame” <code>ggplot2::presidential</code>.</p>
+<pre class="r"><code>library(dplyr)
+library(ggplot2) 
+data(&quot;presidential&quot;)
+presidential</code></pre>
+<p>tenemos el nombre, fecha de comienzo y finalización del mandato y partido de los presidentes de EE.UU. Pero <code>presidential</code> no se muestra como un <em>data frame</em> habitual porque es un <em>tibble</em>. Estos fueron diseños para datos con muchas filas y/o columnas, es decir, “big data”. En este caso la función <code>print</code> combina características de <code>head</code> y de <code>str</code>. Podemos ver el tipo de datos y su ruta de herencia (relación con otros tipos de objetos) con <code>class()</code>:</p>
+<pre class="r"><code>class(presidential)</code></pre>
+<p>A efectos de comparación, podéis ver cómo se muestra un <em>data frame</em> tradicional.</p>
+<pre class="r"><code>MASS::Boston
+as_tibble(MASS::Boston)</code></pre>
+</div>
+</div>
+<div id="los-cinco-verbos" class="section level2">
+<h2>Los cinco verbos</h2>
+<p>El creador de <code>dplyr</code> (y <code>ggplot2</code>), Hadley Wickham, argumenta que la mayoría de las operaciones que es necesario realizar en una tabla de datos pueden ser logradas usando combinaciones de los siguientes cinco “verbos”:</p>
+<ol style="list-style-type: decimal">
+<li><code>select()</code></li>
+<li><code>filter()</code></li>
+<li><code>mutate()</code> (y <code>rename()</code>)</li>
+<li><code>arrange()</code></li>
+<li><code>summarize()</code></li>
+</ol>
+<ul>
+<li><p><code>select()</code>: selecciona columnas (variables) en un <em>data frame</em>;<br />
+<img src="pic/select.png" /></p></li>
+<li><p><code>filter()</code>: selecciona filas (observaciones) en un <em>data frame</em>; <img src="pic/filter.png" /></p></li>
+<li><p><code>mutate()</code>: añade nuevas columnas a un <em>data frame</em>;<br />
+<img src="pic/mutate.png" /></p>
+<ul>
+<li>también <code>rename()</code>: cambiar el nombre de una columna de un <em>data frame</em>; <img src="pic/rename.png" /></li>
+</ul></li>
+<li><p><code>arrange()</code>: re-ordena filas en un <em>data frame</em>;<br />
+<img src="pic/arrange.png" /></p></li>
+<li><p><code>summarise()</code>: contrae/colapsa un <em>data frame</em> en una sola fila; <img src="pic/summarise.png" /></p></li>
+</ul>
+<p>Todos los verbos funcionan de manera similar:</p>
+<ol style="list-style-type: decimal">
+<li><p>El primer argumento es un <em>data frame</em>.</p></li>
+<li><p>Los argumentos siguientes describen qué hacer con el <em>data frame</em>, usando los nombres de variables (sin comillas).</p></li>
+<li><p>El resultado es un nuevo <em>data frame</em> (realmente une <code>tbl_df</code>)</p></li>
+</ol>
+<p>Juntas, estas propiedades hacen que sea fácil encadenar múltiples pasos simples para lograr un resultado complejo. Veremos como estas operaciones se pueden encadenar con el operador de tuberías o “pipes” (%&gt;%), tomado del operador “|” de los lenguajes de consola de Unix y similares.</p>
+<p>Todas estas funciones se pueden utilizar conjuntamente con <code>group_by()</code>, lo que cambia el alcance de cada función al pasar de operar en todo el conjunto de datos a hacerlo grupo por grupo. Estas funciones proporcionan los verbos para un lenguaje de manipulación de datos.</p>
+<p>En caso de duda, se puede mirar la <a href="https://github.com/rstudio/cheatsheets/raw/master/source/pdfs/data-transformation-cheatsheet.pdf">chuleta de transformación de datos</a>. También se pueden encontrar online esta y otras chuletas de R y RStudio <a href="https://www.rstudio.com/resources/cheatsheets/">aquí</a>; notad que existen versiones en castellano de algunas de ellas.</p>
+<div id="una-pequeña-digresión-sobre-historia" class="section level3">
+<h3>Una pequeña digresión sobre historia</h3>
+<p>El enfoque de Wickham se inspira en su deseo de desdibujar los límites entre R y la omnipresente sintaxis de consulta de la base de datos relacional SQL. De hecho, los cinco verbos, cuando se combinan, muestran una estrecha similitud con las declaraciones de consulta SQL (al menos para fines de análisis de datos). De este modo, el dominio de los verbos de <code>dplyr</code> para manipulación de datos se ha convertido en una puerta de entrada para analizar “big data”, tanto a través del sistema de gestión de bases de datos relacionales como más allá. El verdadero poder de <code>dplyr</code> es que abstrae la fuente de datos, es decir, no importa si es un <em>data frame</em>, una base de datos o <a href="http://spark.apache.org/">Spark</a>.</p>
+<p>De hecho, el paquete estadístico “SAS” siempre ha tenido una poderosa herramienta que hace más o menos lo mismo, desde la década de 1970.</p>
+</div>
+</div>
+<div id="primer-ejemplo" class="section level2">
+<h2>Primer ejemplo</h2>
+<div id="seleccionar-variables-y-filtrar-filas" class="section level3">
+<h3>Seleccionar variables y filtrar filas</h3>
+<pre class="r"><code>presidential</code></pre>
+<p>Para recuperar sólo los nombres y partidos de estos presidentes, usaríamos <code>select()</code>. El primer argumento para la función <code>select()</code> es el <em>data frame</em>, seguido de una lista arbitrariamente larga de nombres de columnas, separados por comas.</p>
+<pre class="r"><code>select(presidential, name, party)</code></pre>
+<p>Para recuperar sólo a los presidentes republicanos, utilizamos <code>filter()</code>. El primer argumento para <code>filter()</code> es un <em>data frame</em>, y los argumentos siguientes son <em>condiciones lógicas</em> que se evalúan en cualquier columna involucrada.</p>
+<pre class="r"><code>filter(presidential, party == &quot;Republican&quot;)</code></pre>
+</div>
+<div id="anidamiento-y-tuberías" class="section level3">
+<h3>Anidamiento y tuberías</h3>
+<p>Naturalmente, la combinación de los comandos <code>filter()</code> y <code>select()</code> permite profundizar en información muy específica. Por ejemplo, podemos encontrar los presidentes demócratas que sirvieron desde Watergate.</p>
+<pre class="r"><code>select(filter(presidential, start &gt; 1973 &amp; party == &quot;Democratic&quot;), name)</code></pre>
+<p>En la sintaxis mostrada anteriormente, la operación <code>filter()</code> está anidada dentro de la operación <code>select()</code>. Cada uno de los cinco verbos toma y devuelve un <em>data frame</em>, lo que hace posible este tipo de anidamiento.</p>
+<pre class="r"><code>ejemplo &lt;- select(filter(presidential, start &gt; 1973 &amp; party == &quot;Democratic&quot;), name)
+dim(ejemplo)
+head(ejemplo)
+class(ejemplo)</code></pre>
+<p>Estas largas expresiones se vuelven muy difíciles de leer. En su lugar, recomendamos el uso del operador <code>%&gt;%</code> (tubería).</p>
+<pre class="r"><code>presidential %&gt;%
+  filter(start &gt; 1973 &amp; party == &quot;Democratic&quot;) %&gt;%
+  select(name)</code></pre>
+<p>Notar como la expresión <code>dataframe %&gt;% filter(condition)</code> es equivalente a <code>filter(dataframe, condition)</code>.</p>
+<p>La tubería anterior se lee como</p>
+<blockquote>
+<p>Tomar el <em>data frame</em> <code>presidential</code>, entonces filtrar a los presidentes demócratas cuyo año de inicio es mayor que 1973. A continuación, seleccionar la variable <code>name</code>.</p>
+</blockquote>
+</div>
+<div id="mutar-variables-para-crear-nuevas-variables" class="section level3">
+<h3>Mutar variables para crear nuevas variables</h3>
+<p>Frecuentemente, en el proceso de análisis de datos, crearemos, redefiniremos y re-nombraremos algunas de nuestras variables. Las funciones <code>mutate()</code> y <code>rename()</code> proporcionan estas capacidades.</p>
+<p>Si bien tenemos los datos brutos sobre la fecha de inicio y finalización del mandato, no tenemos una variable numérica que indique la duración del mandato de cada presidente.</p>
+<pre class="r"><code>mypresidents &lt;- presidential %&gt;%
+  mutate(term_length = end - start) 
+head(mypresidents,2)</code></pre>
+<p>En esta situación, generalmente se considera un buen estilo crear un nuevo objeto en lugar de “machacar” el que proviene de una fuente externa. Para preservar el <em>data frame</em> presidenciales existente, guardamos el resultado de <code>mutate()</code> como un nuevo objeto llamado <code>mypresidents</code>.</p>
+<p>La forma en que opera <code>rename()</code> es muy similar:</p>
+<pre class="r"><code>presidential %&gt;%
+  rename(nombre = name) </code></pre>
+</div>
+<div id="organizar-filas" class="section level3">
+<h3>Organizar filas</h3>
+<p>La función sort() ordenará un vector, pero no un <em>data frame</em>. La función que clasificará un <em>data frame</em> se llama <code>arrange()</code>.</p>
+<p>Para ordenar nuestro <em>data frame</em> por la duración del mandato de cada presidente, especificamos que queremos la columna <code>term_length</code> en orden descendente.</p>
+<pre class="r"><code>mypresidents %&gt;% arrange(desc(term_length))</code></pre>
+<p>Varios presidentes concluyeron uno o dos mandatos completos, por lo que tienen exactamente la misma duración (4 u 8 años, respectivamente). Para romper estos empates, podemos clasificarlos adicionalmente por <code>start</code>.</p>
+<pre class="r"><code>mypresidents %&gt;% arrange(desc(term_length), start)</code></pre>
+</div>
+<div id="resumir-todo-el-conjunto-de-datos-o-para-cada-grupo" class="section level3">
+<h3>Resumir todo el conjunto de datos o para cada grupo</h3>
+<p>El último de los cinco verbos para el análisis de una sola tabla es <code>summarize()</code>, que a menudo se usa en conjunción con <code>group_by()</code>. Los verbos anteriores nos proporcionaron los medios para manipular un <em>data frame</em> de maneras poderosas y flexibles. Pero la extensión del análisis que podemos hacer con estos cuatro verbos es limitada. Por otra parte, <code>summarize()</code> con <code>group_by()</code> nos permite hacer comparaciones.</p>
+<p>Cuando se usa solo, <code>summarize()</code> colapsa un <em>data frame</em> en una sola fila. Tenemos que especificar <em>cómo</em> queremos reducir una columna entera de datos en un solo valor.</p>
+<pre class="r"><code>library(lubridate)
+mypresidents %&gt;%
+  summarize(
+    N = n(), 
+    first_year = min(year(start)), 
+    last_year = max(year(end)),
+    num_dems = sum(party == &quot;Democratic&quot;),
+    avg_term_length = mean(term_length)
+    )</code></pre>
+<p>En este ejemplo, la función <code>n()</code> simplemente cuenta el número de filas. Esto es casi siempre información útil. (También se puede usar <code>n_distinct()</code>). La siguiente variable determina el primer año en que uno de estos presidentes asumió el cargo. Este es el año más pequeño en la columna de <code>start</code>. La variable <code>num_dems</code> simplemente cuenta el número de filas en las que el valor de la variable de partido era demócrata.</p>
+<p>Esto plantea la pregunta de si los presidentes demócratas o republicanos cumplieron un mandato promedio más largo durante este período de tiempo. Para resolver esto, podemos ejecutar <code>summarize()</code> de nuevo, pero esta vez, en lugar de que el primer argumento sea el <em>data frame</em> de <code>mypresidents</code>, especificaremos que las filas del <em>data frame</em> de los <code>mypresidents</code> deben ser agrupadas por los valores de la variable <code>party</code>. De esta manera, los mismos cálculos que los anteriores se llevarán a cabo para cada una de los partidos por separado.</p>
+<pre class="r"><code>mypresidents %&gt;%
+  group_by(party) %&gt;% 
+  summarize(
+    N = n(), 
+    avg_term_length = mean(term_length)
+    )
+# Comparar el data.frame intermedio group_by(mypresidents,party) con mypresidents</code></pre>
+</div>
+</div>
+<div id="la-tuberia-pipe" class="section level2">
+<h2>La tuberia (“pipe”)</h2>
+<p>La tubería, <code>%&gt;%</code>, proviene del paquete <code>magrittr</code> de Stefan Milton Bache. Los paquetes en el <code>tidyverse</code> cargan <code>%&gt;%</code> automáticamente.</p>
+<p>El método abreviado de teclado para escribir <code>%&gt;%</code> es</p>
+<ul>
+<li>Cmd + Shift + M (Mac)</li>
+<li>Ctrl + Shift + M (Windows, PC)</li>
+</ul>
+<p>Notad que el operador de tubería se puede aplicar a cualquier función que hemos visto anteriormente (no solo verbos de manipulación de datos)</p>
+<pre class="r"><code>log(10)
+10 %&gt;% log()
+
+presidential %&gt;% names()
+mypresidents %&gt;% nrows()</code></pre>
+<p>En el caso de los gráficos de <code>ggplot2</code> se utiliza <code>+</code>, que es exclusivo de este paquete, en lugar de <code>%&gt;%</code>. La única razón está en que <code>ggplot2</code> fue desarrollado antes que el operador de tuberias. El autor de <code>ggplot2</code> ha reconocido que si “volviera atrás en el tiempo” usaría el operador de tuberías.</p>
+</div>
+<div id="suplemento" class="section level2">
+<h2>Suplemento</h2>
+<div id="comparaciones-para-filter" class="section level3">
+<h3>Comparaciones para <code>filter()</code></h3>
+<p>El primer argumento de la función <code>filter()</code> es el conjunto de datos (normalmente suministrado a través de tuberías).</p>
+<p>El segundo argumento de <code>filter()</code> es un vector lógico: es decir, un vector que consiste en <code>TRUE</code> y <code>FALSE</code>. Sólo se conservan las filas en las que la condición se evalúa a “VERDADERO”.</p>
+<p>El vector lógico se crea comparando una o más variables.</p>
+<ul>
+<li><p>Los operadores lógicos básicos son <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>!=</code> (no igual), y <code>==</code> (igual).</p></li>
+<li><p>Para la comparación de conjuntos, se utiliza <code>x %in% Y</code>, que es cierto cuando <code>x</code> es un elemento del conjunto <code>Y</code>.</p></li>
+<li><p>Cuando se combinan dos o más comparaciones, se usan operadores booleanos: <code>&amp;</code> (y), <code>|</code> (o), <code>!</code> (no),</p></li>
+</ul>
+<p>Suponga que <code>x</code> es una variable con cuatro observaciones. ¿Cuál es el vector lógico resultante?</p>
+<pre class="r"><code>x &lt;- c(2,1,3,0)
+x == 0 
+!(x == 0)
+x == 0 | x == 1 
+x %in% c(0,1)</code></pre>
+</div>
+<div id="seleccionar-muchas-variables" class="section level3">
+<h3>Seleccionar muchas variables</h3>
+<p>El conjunto de datos <code>presidential</code> sólo tiene cuatro variables, por lo que la selección de variables tiene un poco de sentido. Para seleccionar variables para conjuntos de datos con un gran número de variables, hay algunas opciones útiles.</p>
+<p>Para demostrarlo, cargamos el <em>data frame</em> <code>nycflights13::flights</code> que contienes 19 variables (tampoco un número terriblemente grande).</p>
+<pre class="r"><code>#install.packages(&quot;nycflights13&quot;)
+library(nycflights13)
+flights</code></pre>
+<ul>
+<li><p>Seleccionar unas pocas variables es fácil: <code>select(flights, year, month, day)</code></p></li>
+<li><p>Para seleccionar todas las variables desde la variable <code>year</code> hasta la variable <code>arr_time</code>: <code>select(flights, year:arr_time)</code> (para no tener que escribir todos los nombres de variables)</p></li>
+<li><p>Para seleccionar todas las variables excepto <code>year, month, day</code>: <code>select(flights, -(year:day))</code></p></li>
+<li><p>Existen varias funciones de ayuda que puede utilizar dentro de <code>select()</code>:</p>
+<ul>
+<li><p><code>starts_with("abc")</code>: para los nombres que comienzan con “abc”.</p></li>
+<li><p><code>ends_with("xyz")</code>: para todos los nombres que acaban con “xyz”.</p></li>
+<li><p><code>contains("ijk")</code>: para los nombres que contienen “ijk”.</p></li>
+<li><p><code>num_range("x", 1:3)</code>: para x1, x2 y x3.</p></li>
+<li><p><code>matches("(.)\\1")</code>: selecciona las variables que coinciden con una expresión regular (en este caso, cualquier variable que contenga caracteres repetidos).</p></li>
+</ul></li>
+</ul>
+</div>
+<div id="manejo-de-valores-ausentes" class="section level3">
+<h3>Manejo de valores ausentes</h3>
+<p>Una característica importante de la R que puede hacer complicada la comparación son los valores ausentes (faltantes), o <code>NA</code>s (“no disponibles”).</p>
+<pre class="r"><code>library(nycflights13)
+head(is.na(flights$dep_delay))
+
+flights %&gt;%
+  summarize(num_flights = n(), missing_delay = sum(is.na(dep_delay))) %&gt;%
+  mutate(missing_pct = missing_delay / num_flights)</code></pre>
+<p><code>NA</code> representa un valor desconocido, por lo que los valores que faltan son “contagiosos”: casi cualquier operación que implique un valor desconocido también devolverá un valor desconocido. Todas las operaciones siguientes devuelven <code>NA</code>.</p>
+<pre class="r"><code>x &lt;- NA
+x &gt; 5
+x + 10 
+x == x
+
+flights %&gt;%
+  summarize(num_flights = n(), mean_delay_NA = mean(dep_delay), 
+            mean_delay = mean(dep_delay, na.rm = TRUE))</code></pre>
+<p>Para comprobar si los elementos de <code>x</code> son <code>NA</code>, se usa <code>is.na(x)</code>.</p>
+<p>Por ejemplo, para filtrar todas las observaciones con valores que faltan <code>&lt;dataframe&gt; %&gt;% filter(!is.na(&lt;variable&gt;))</code>:</p>
+<pre class="r"><code>flights %&gt;% 
+  filter(!is.na(dep_delay)) %&gt;% 
+   summarize(num_flights = n(), missing_delay = sum(is.na(dep_delay)))</code></pre>
+<p>También podemos usar los argumentos que algunos comandos tienen para eliminar valores ausentes (típicamente, <code>na.rm=TRUE</code>, pero en <code>cor()</code> es <code>use = "complete.obs"</code>) o bien usar la función <code>na.omit()</code>:</p>
+<pre class="r"><code>flights %&gt;%
+  summarize(num_flights = n(), mean_delay_NA = mean(dep_delay), 
+            mean_delay = mean(dep_delay, na.rm = TRUE))
+
+flights %&gt;%
+  na.omit() %&gt;%
+  summarize(num_flights = n(), mean_delay_NA = mean(dep_delay), 
+            mean_delay = mean(dep_delay, na.rm = TRUE))</code></pre>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

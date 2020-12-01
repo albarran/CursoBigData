@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tema 02 - Más R</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Tema 02 - Más R',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                      },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Prof.: Pedro Albarrán' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            {
+        name:  'Prof.: Alberto Pérez' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    code.sourceCode { white-space: pre-wrap; }
+    code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+        
+  </style>
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Universidad de Alicante, Curso 2020/21</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>Bibliotecas (&ldquo;libraries&rdquo;)</h2></hgroup><article  id="bibliotecas-libraries">
+
+<ul>
+<li>R puede extenderse con capacidades adicionales instalando paquetes con bibliotecas</li>
+<li>Una biblioteca contiene un conjunto (nuevo) de objetos de R: funciones, datos, etc.</li>
+<li>Para instalar una nueva biblioteca:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>install.packages(&quot;AER&quot;)
+install.packages(&quot;tidyverse&quot;)</pre>
+
+<ul>
+<li>También se pueden instalar:
+
+<ul>
+<li>en el menú: Tools &gt; Install packages</li>
+<li>en el cuadrante inferior-derecha de RStudio, pestaña de Packages</li>
+</ul></li>
+<li>Nota: conviene mantener actualizados los paquetes instalados</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Bibliotecas (cont.)</h2></hgroup><article  id="bibliotecas-cont.">
+
+<ul>
+<li>Es necesario cargar la biblioteca antes de usarla</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>library(&quot;tidyverse&quot;)</pre>
+
+<ul>
+<li>Pasa a formar parte del &ldquo;Global Environment&rdquo;</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>search()
+library(&quot;AER&quot;)
+search()</pre>
+
+<ul>
+<li>Se puede buscar información en la ayuda (ej. de RStudio), que puede incluir &ldquo;vignettes&rdquo; sobre el uso de las funciones de la biblioteca</li>
+</ul>
+
+<!--
+En Linux puede ser necesario 
+
+libcurl4-openssl-dev
+libssl-dev
+libxml2-dev 
+
+https://community.rstudio.com/t/packages-installation-process-failed-on-linux-probably-due-to-missing-path-in-the-pkg-config-search-path/50619
+-->
+
+</article></slide><slide class=""><hgroup><h2>Bibliotecas (cont.)</h2></hgroup><article  id="bibliotecas-cont.-1">
+
+<ul>
+<li>Notad que el nombre completo de un objeto de R es <code>biblioteca::nombre</code></li>
+</ul>
+
+<!-- (se puede notar en una búsqueda en la ayudar) -->
+
+<pre class = 'prettyprint lang-r'>?log
+base::log(1)
+log(1)</pre>
+
+<ul>
+<li>Aunque la primera parte se suele omitir, salvo conflicto entre bibliotecas</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>find(&quot;units&quot;)
+library(&quot;Hmisc&quot;)
+find(&quot;units&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>El paquete <code>tidyverse</code></h2></hgroup><article  id="el-paquete-tidyverse">
+
+<ul>
+<li><p>El <strong>meta-paquete</strong> <code>tidyverse</code> incluye una colección de otros paquetes y librerías para todo el proceso &ldquo;tratamiento de datos&rdquo;.</p></li>
+<li><p>El núcleo de <code>tidyverse</code> lo componen los siguientes paquetes (podéis ver una descripción <a href='https://www.tidyverse.org/packages/' title=''>aquí</a>):</p></li>
+</ul>
+
+<div style="display: flex;">
+<div>
+<ul>
+<li><code>readr</code></li>
+<li><code>tibble</code></li>
+<li><code>ggplot2</code></li>
+<li><code>tidyr</code></li>
+<li><code>purrr</code></li>
+<li><code>dplyr</code></li>
+</ul></div>
+
+<div>
+<img width="45%" src='pic/tidyverse_full.jpg' title=''/></div></div>
+
+</article></slide><slide class=""><hgroup><h2>Datos incorporados en bibliotecas de R</h2></hgroup><article  id="datos-incorporados-en-bibliotecas-de-r">
+
+<ul>
+<li>Para listar los datos de las bibliotecas cargadas</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>data()</pre>
+
+<ul>
+<li>Información detallada de los datos en ayuda (nombre de variables, etc)</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>help(&quot;Affairs&quot;)</pre>
+
+<ul>
+<li>Cargar una base de datos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>data(&quot;Affairs&quot;)
+str(Affairs)     # También en &quot;Environment&quot; de RStudio
+glimpse(Affairs) # Alternativa a str en tidyverse
+head(Affairs)</pre>
+
+<ul>
+<li>RStudio muestra visualmente la tabla de datos</li>
+</ul>
+
+<!--
+* Se trabaja con las variables de la forma habitual, accediendo con '$'
+-->
+
+</article></slide><slide class=""><hgroup><h2>Función &lsquo;attach&rsquo;</h2></hgroup><article  id="función-attach">
+
+<ul>
+<li>&lsquo;Attach&rsquo; permite carga un objeto como parte del &ldquo;Environment&rdquo; principal</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>head(age)
+attach(Affairs)
+head(age)</pre>
+
+<ul>
+<li><p>Ahora se accede a las variables solo por nombre (sin <code>$</code>)</p></li>
+<li><p>Útil si se usa una sola base de datos o no hay lugar a confusión</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>data(&quot;PSID1982&quot;)</pre>
+
+<ul>
+<li>Se deja de vincular la base de datos (o una biblioteca) con <code>detach</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>detach(Affairs)</pre>
+
+<ul>
+<li>La función <code>base::with</code> también permite trabajar fácilmente con variables</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>age2 &lt;- with(Affairs, age^2)</pre>
+
+<!--
+## Función 'with'
+
+
+
+* Notar que se pueden tener más de una base de datos (como cualquier objeto), 
+aunque haya variables de mismo nombre en ellas
+
+
+```r
+data("PSID1982")  # help(PSID1982)
+
+head(Affairs$gender)
+head(PSID1982$gender)
+```
+
+* Para evitar el uso de '$', se puede usar 'with'
+
+
+```r
+with(PSID1982,  head(wage))
+```
+
+* Más relevante con enunciados complejos
+
+
+```r
+annualWage <- PSID1982$wage * PSID1982$weeks  # sin 'with'
+annualWage <- with(PSID1982, wage * weeks)    # con 'with'
+```
+-->
+
+</article></slide><slide class=""><hgroup><h2>Estadísticas en R</h2></hgroup><article  id="estadísticas-en-r">
+
+<ul>
+<li>Estadísticos descriptivos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>data(&quot;PSID1982&quot;)  # help(PSID1982)
+summary(PSID1982$wage)     # de una variable
+summary(PSID1982)          # de todo el marco de datos</pre>
+
+<ul>
+<li><p>Notar el tratamiento diferente de variables factores</p></li>
+<li><p>Tabla de frecuencias</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>table(PSID1982$gender) </pre>
+
+<ul>
+<li>El resultado es un objeto de R, que puede ser usado en otras funciones</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>df &lt;- table(PSID1982$gender)  
+str(df)
+prop.table(df)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Otras funciones de estadísticos</h2></hgroup><article  id="otras-funciones-de-estadísticos">
+
+<pre class = 'prettyprint lang-r'>attach(PSID1982)
+
+min(wage)
+max(wage)
+range(wage)
+
+mean(wage)    
+median(wage)
+sum(wage)
+sd(wage)
+var(wage)
+
+table(wage)</pre>
+
+<ul>
+<li>¿Cómo obtendríamos la moda? Tu respuesta <a href='https://docs.google.com/forms/d/e/1FAIpQLSc2dYxHSuTLF-aGuVkusM3UevEKkCu6Iky2HC7aL6wkcP3r0g/viewform' title=''>aquí</a></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Gráficos Básicos</h2></hgroup><article  id="gráficos-básicos">
+
+<ul>
+<li>Dibujar un vector frente al indice</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>a &lt;- 1:10
+plot(a)     # Notar la pestaña de Studio donde aparece</pre>
+
+<ul>
+<li>Dibujar funciones</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>plot(sin, -pi, 2*pi)
+plot(log, 1, 10)</pre>
+
+<ul>
+<li>Dibujar dos vectores uno contra el otro</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>b &lt;- 2:20
+plot(a, b)              # deben ser de la misma longitud
+plot(a, b[1:10])</pre>
+
+</article></slide><slide class=""><hgroup><h2>Gráficos Básicos (cont.)</h2></hgroup><article  id="gráficos-básicos-cont.">
+
+<ul>
+<li>Se pueden añadir títulos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>plot(a, b[1:10], xlab=&quot;Eje X&quot;, ylab=&quot;Eje Y&quot;, main=&quot;Mi título&quot;)</pre>
+
+<ul>
+<li>En lugar de puntos <code>type = &quot;p&quot;</code> (defecto), se pueden usar líneas <code>type=&quot;l&quot;</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>plot(a, b[1:10], type=&quot;l&quot;)</pre>
+
+<ul>
+<li>o ambos <code>type = &quot;b&quot;</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>plot(a,b[1:10],type=&quot;b&quot;)</pre>
+
+<ul>
+<li>Los gráficos aportan <strong>información</strong> útil sobre variables</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>attach(PSID1982)
+plot(wage, experience)
+cor(wage, experience)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Regresión en R</h2></hgroup><article  id="regresión-en-r">
+
+<ul>
+<li>Función <code>lm</code> y notación de fórmula en R</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>lm(data=PSID1982, wage ~ experience)
+res &lt;- lm(data=PSID1982, wage ~ experience)   # str(res)
+summary(res)</pre>
+
+<ul>
+<li>Regresión múltiple</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>summary(lm(data=PSID1982, wage ~ experience + gender))
+summary(lm(data=PSID1982, wage ~ experience + I(experience^2) + experience*gender))</pre>
+
+<ul>
+<li>Educación como variable continua o como factor</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>table(education)
+summary(lm(data=PSID1982, wage ~ experience + education))
+summary(lm(data=PSID1982, wage ~ experience + as.factor(education)))</pre>
+
+</article></slide><slide class=""><hgroup><h2>Datos &ldquo;nativos&rdquo; en R</h2></hgroup><article  id="datos-nativos-en-r">
+
+<ul>
+<li>Los objetos del espacio de trabajo se guardan con la función <code>save</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 2 * pi
+y &lt;- x + 1
+
+save(x, file=&quot;x.RData&quot;)      # un solo objeto
+save(x, y, file=&quot;xy.RData&quot;)  # varios objetos</pre>
+
+<ul>
+<li>O todo el workspace con <code>save.image</code> (= icono de guardar en RStudio)</li>
+<li>Se cargan al espacio de trabajo con <code>load</code> (también icono en RStudio)</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>rm( list=ls() )
+load(&quot;xy.RData&quot;)   </pre>
+
+<ul>
+<li>Un fichero del disco se elimina con &lsquo;unlink&rsquo;</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>unlink(&quot;xy.RData&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Cargar datos externos</h2></hgroup><article  id="cargar-datos-externos">
+
+<ul>
+<li><p>Existen varias formas de almacenar datos</p>
+
+<ul>
+<li>Texto plano con delimitadores</li>
+<li>Texto plano con variables definidas por ancho fijo</li>
+<li>Formatos de hojas de cálculo o de bases de dato SQL</li>
+<li>Formatos de software estadístico</li>
+</ul></li>
+<li><p>Varias bibliotecas para cada caso: ej. <code>utils</code> (R base) y <code>readr</code> (<code>tidyverse</code>)</p></li>
+<li><p>&ldquo;Import Dataset&rdquo; de RStudio: acceso por menús a algunas de estas funciones</p></li>
+<li><p>Texto plano con delimitadores</p>
+
+<ul>
+<li>La primera línea puede contener nombre, los datos en resto</li>
+<li>Una línea por caso, columnas separadas por delimitador (ej., coma) <!--       (espacio, tabulador, coma, punto y coma) --></li>
+<li>Variables de caracteres con valores entre comillas</li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2><code>read.table</code> de <code>utils</code></h2></hgroup><article  id="read.table-de-utils">
+
+<pre class = 'prettyprint lang-r'>?read.table</pre>
+
+<ul>
+<li>Se debe especificar: el archivo, si existe encabezamiento y el separador.</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>sexdata &lt;- read.table(&quot;data/sex_data.csv&quot;, 
+                      header=TRUE, sep=&quot;,&quot;)</pre>
+
+<!--
+
+```r
+sexdata <- read.table("/home/albarran/Archivos/teaching/MAD/00.TEC/data/sex_data.csv", 
+                      header=TRUE, sep=",")
+```
+
+* si se fija el directorio de trabajo
+
+
+```r
+setwd("/home/albarran/Archivos/teaching/MAD/00.TEC")
+setwd("E:/Archivos/teaching/MAD/00.TEC")
+
+sexdata <- read.table("data/sex_data.csv", 
+                      header=TRUE, sep=",")
+```
+
+## 'read.table' de 'utils'  (cont.)
+
+* Se puede dar nombres a las columnas, especificar la clase de las variables, etc.
+
+-->
+
+<pre class = 'prettyprint lang-r'>sexdata &lt;- read.table(&quot;data/sex_data.csv&quot;, 
+                      header=F, sep=&quot;,&quot;, 
+                      col.names = c(&quot;valor&quot;, &quot;fecha&quot;, &quot;otra&quot;, as.character(4:25)),
+                      colClasses = c(rep(&quot;character&quot;,25)))</pre>
+
+</article></slide><slide class=""><hgroup><h2><code>read.csv</code>, <code>read.delim</code>, etc.</h2></hgroup><article  id="read.csv-read.delim-etc.">
+
+<ul>
+<li><p>Existen implementaciones simplificadas derivadas de <code>read.table</code> que fijan las opciones habituales<br/>y el resto igual a read.table (&ldquo;…&rdquo;)</p></li>
+<li><p>Dos opciones equivalentes:</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>sexdata  &lt;- read.table(&quot;data/sex_data.csv&quot;, 
+                      header=TRUE, sep=&quot;,&quot;)
+sexdata1 &lt;- read.csv(&quot;data/sex_data.csv&quot;)</pre>
+
+<ul>
+<li>Si no se quiere que los caracteres sean factores</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>sexdata2 &lt;- read.csv(&quot;data/sex_data.csv&quot;, stringsAsFactors=F)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Formato de ancho fijo</h2></hgroup><article  id="formato-de-ancho-fijo">
+
+<ul>
+<li>Se debe especificar el ancho de cada variable</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>?read.fwf
+x &lt;- read.fwf(
+  file=&quot;data/fichero.txt&quot;,
+  skip=4,
+  widths=c(12, 7, 4, 9, 4, 9, 4, 9, 4))</pre>
+
+</article></slide><slide class=""><hgroup><h2>Funciones en <code>readr</code></h2></hgroup><article  id="funciones-en-readr">
+
+<ul>
+<li><p>Ofrece versiones equivalentes a las anteriores: <code>read_csv</code>, <code>read_tsv</code> y <code>read_delim</code></p></li>
+<li><p>Diferentes opciones por defecto, más rápidas</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>library(&quot;readr&quot;)
+?read_csv
+
+sexdata3 &lt;- read_csv(&quot;data/sex_data.csv&quot;)</pre>
+
+<ul>
+<li><p>Notar el diferente tratamiento de caracteres: en <code>readr</code> por defecto <em>no</em> se convierten en factores</p></li>
+<li><p>Ayuda adicional en la &ldquo;viñeta&rdquo; (vignette) de <a href='https://cran.r-project.org/web/packages/readr/vignettes/readr.html' title=''>&lsquo;readr&rsquo;</a></p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Funciones en <code>readr</code> (cont.)</h2></hgroup><article  id="funciones-en-readr-cont.">
+
+<ul>
+<li>Permite cargar un fragmento del archivo de datos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>arch &lt;- file.path(&quot;data&quot;, &quot;sex_data.csv&quot;)
+sexdata4 &lt;- read_csv(arch, skip = 6, n_max = 5)</pre>
+
+<ul>
+<li>Tambien se puede asignar el nombre de las columnas y el tipo de las variables</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>nombres &lt;- names(sexdata)
+sexdata4 &lt;- read_csv(arch, skip = 6, n_max = 5, 
+                     col_names = nombres, 
+                     col_types = &quot;ciiiiiiiiiiiiiiiifnfinnnn&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Paquetes para formato de hoja de cálculo</h2></hgroup><article  id="paquetes-para-formato-de-hoja-de-cálculo">
+
+<ul>
+<li><code>openxlsx</code>, <code>gdata</code> (solo .xls)</li>
+<li><code>readxl</code>: lectura tanto de .xls como .xlsx</li>
+<li><code>XLConnect</code>: lee y cambia archivos .xls y .xlsx; requiere Java.</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>library(readxl)
+beauty&lt;-read_excel(&quot;data/beauty.xls&quot;)        </pre>
+
+<ul>
+<li>Se puede especificar hoja por nombre o número</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>read_excel(&quot;archivo.xls&quot;, sheet = &quot;data&quot;)
+read_excel(&quot;archivo.xls&quot;, sheet = 2)</pre>
+
+<ul>
+<li>Se puede especificar qué representa missing/NA si no es celda en blanco</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>read_excel(&quot;archivo.xls&quot;, na = &quot;NA&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Formatos de software estadístico</h2></hgroup><article  id="formatos-de-software-estadístico">
+
+<ul>
+<li>Biblioteca <code>foreign</code>: .dta de Stata y .sav de SPSS</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>library(foreign)
+?read.dta                             </pre>
+
+<pre class = 'prettyprint lang-r'>?read.spss
+earn &lt;- read.spss(&quot;data/earnings_data.sav&quot;, 
+                  to.data.frame=TRUE, use.value.labels=FALSE)
+head(earn) </pre>
+
+<ul>
+<li>Bibilioteca <code>haven</code>: además formato de SAS</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>library(haven)
+?read_sas()
+?read_stata()
+?read_sav()</pre>
+
+</article></slide><slide class=""><hgroup><h2>Exportar datos a formatos no nativos</h2></hgroup><article  id="exportar-datos-a-formatos-no-nativos">
+
+<ul>
+<li>Esto permite portar datos para ser leidos en otro software</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>sex &lt;- read.spss(&quot;data/sex_data.sav&quot;, 
+                 to.data.frame=TRUE, use.value.labels=FALSE)
+write.csv(sex, &quot;data/sex_data2.csv&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Valores ausentes (&ldquo;missing values&rdquo;): &lsquo;NA&rsquo;</h2></hgroup><article  id="valores-ausentes-missing-values-na">
+
+<ul>
+<li>En (muchas) ocasiones, no se tendrá información para todas las variables de todas las observaciones</li>
+<li>Funciones con información sobre &lsquo;NA&rsquo;:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- earn$earnings
+
+is.na(x)          # es el elemento un NA?
+any(is.na(x))     # hay algun NAs?
+which(is.na(x))   # qué elementos son NA</pre>
+
+<ul>
+<li>En los datos de &lsquo;earnings&rsquo;</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>table(is.na(x))</pre>
+
+</article></slide><slide class=""><hgroup><h2>Valores ausentes (cont.)</h2></hgroup><article  id="valores-ausentes-cont.">
+
+<ul>
+<li>el resultado habitual de un cálculo con NAs es NA</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>mean(x)
+sum(x)
+quantile( x, probs=c(0.25, 0.75) ) # 1er y 3er cuartil
+cor(x, earn$age)</pre>
+
+<ul>
+<li>Muchas funciones tienen un argumento na.rm (&ldquo;NA remove&rdquo;)</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>mean(x, na.rm=TRUE)
+sum(x, na.rm=TRUE)
+quantile( x, probs=c(0.25, 0.75), na.rm=TRUE ) # 1er y 3er cuartil</pre>
+
+<ul>
+<li>Mirar ayuda: el argumento es diferente en otras</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>cor(x, earn$age, use=&quot;complete.obs&quot;)   </pre>
+
+</article></slide><slide class=""><hgroup><h2>Tratamiento de datos con valores ausentes</h2></hgroup><article  id="tratamiento-de-datos-con-valores-ausentes">
+
+<ul>
+<li>Una opción es reemplazando los NAs con un nuevo valor</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>y &lt;- replace(x, which(is.na(x)), -1)   # nuevo vector con valores reemplazados
+x[ is.na(x) ] &lt;- -1                    # reemplaza en el vector original</pre>
+
+<ul>
+<li>Otra es seleccionar solo observaciones completas <!-- (como también hace 'na.rm') --></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>y &lt;- x[!is.na(x)]</pre>
+
+<ul>
+<li>O con la función &lsquo;complete.cases&rsquo;</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>s &lt;- complete.cases(x)    # str(s)
+earnComplete &lt;- earn[s,]</pre>
+
+<ul>
+<li>El número de casos completos depende de las variables que queramos usar</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Estadísticas por grupos: <code>aggregate</code></h2></hgroup><article  id="estadísticas-por-grupos-aggregate">
+
+<ul>
+<li>Estadísticas de una variable por grupos definidos por otra</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>earnComplete &lt;- earn[complete.cases(earn), ]</pre>
+
+<pre class = 'prettyprint lang-r'>aggregate(earnComplete$earnings, by=list(earnComplete$gender), FUN=mean)
+aggregate(earnings ~ gender, data=earnComplete,  FUN=mean)</pre>
+
+<ul>
+<li>O de varias variables por otra</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>aggregate( cbind(earnings, age) ~ year, data=earnComplete, FUN=mean )</pre>
+
+<ul>
+<li>O de varias variables por varias variables</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>a &lt;- aggregate( cbind(earnings, age) ~ year + degree, data=earnComplete, mean )
+str(a) # &#39;a&#39; es un data frame!</pre>
+
+</article></slide><slide class=""><hgroup><h2>Acceso a Datos de Internet</h2></hgroup><article  id="acceso-a-datos-de-internet">
+
+<ul>
+<li><p>Existen muchas bases de datos disponibles &ldquo;online&rdquo; y varias posibilidades de acceder a ellas</p></li>
+<li><p>Muchas plataformas incluyen <a href='https://es.wikipedia.org/wiki/Interfaz_de_programaci%C3%B3n_de_aplicaciones' title=''>APIs</a> para acceder a sus datos</p></li>
+<li><p>Entre las varias opciones disponibles en R, veremos la biblioteca &lsquo;quantmod&rsquo;</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>install.packages(&quot;quantmod&quot;)
+library(&quot;quantmod&quot;)
+help(quantmod)
+?getSymbols</pre>
+
+</article></slide><slide class=""><hgroup><h2>Datos macroeconómicos</h2></hgroup><article  id="datos-macroeconómicos">
+
+<ul>
+<li><p>En <a href='https://fred.stlouisfed.org/' title=''>FRED</a> se puede acceder a datos macroeconomicos de muchos países</p></li>
+<li><p>Se busca un dato: ej., inflación en España</p>
+
+<ul>
+<li><p>Elegimos en concreto</p></li>
+<li><p>&ldquo;Inflation, consumer prices for Spain; Percent, Annual, Not Seasonally Adjusted&rdquo;</p></li>
+</ul></li>
+<li><p>Averiguamos el &ldquo;symbol&rdquo; o nombre interno de la variable</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>getSymbols(&quot;FPCPITOTLZGESP&quot;,src=&#39;FRED&#39;)
+plot(FPCPITOTLZGESP)
+
+str(FPCPITOTLZGESP)
+
+plot(FPCPITOTLZGESP[1:20,])</pre>
+
+</article></slide><slide class=""><hgroup><h2>Datos Financieros</h2></hgroup><article  id="datos-financieros">
+
+<ul>
+<li><p>Se pueden obtener datos de <a href='https://es.finance.yahoo.com/' title=''>Yahoo Finance</a></p></li>
+<li><p>Nuevamente, se busca un dato (ej., &ldquo;Telefonica, Equity - NYQ&rdquo;) y averiguamos su símbolo</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>getSymbols(&#39;TEF&#39;,src=&#39;yahoo&#39;)
+dim(TEF)
+plot(TEF$TEF.Close)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Datos Financieros (cont.)</h2></hgroup><article  id="datos-financieros-cont.">
+
+<ul>
+<li>&lsquo;quantmod&rsquo; incorpora funciones específicas de análisis, incluyendo de gráficos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>candleChart(TEF, up.col = &quot;black&quot;, dn.col = &quot;red&quot;, 
+            theme = &quot;white&quot;)</pre>
+
+<pre class = 'prettyprint lang-r'>getSymbols(&#39;^IBEX&#39;,src=&#39;yahoo&#39;)
+candleChart(IBEX[1:20,], up.col = &quot;black&quot;, dn.col = &quot;red&quot;, theme = &quot;white&quot;)
+
+candleChart(IBEX[-(1:3150),], up.col = &quot;black&quot;, dn.col = &quot;red&quot;, theme = &quot;white&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Más análisis con &lsquo;quantmod&rsquo;</h2></hgroup><article  id="más-análisis-con-quantmod">
+
+<ul>
+<li>Conviene renombrar las variables para que sean más descriptivas</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>getSymbols(&#39;MKTGDPESA646NWDB&#39;,
+           src=&#39;FRED&#39;)        #  Gross Domestic Product for Spain
+                              # Current U.S. Dollars, Annual, Not Seasonally Adjusted
+
+inf &lt;- FPCPITOTLZGESP
+gdp &lt;- MKTGDPESA646NWDB       # rm(FPCPITOTLZGESP, MKTGDPESA646NWDB)</pre>
+
+<ul>
+<li>Podemos hacer estadísticas descriptivas</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>cor(inf, gdp) </pre>
+
+<ul>
+<li>Cuidado con NAs y que las longitudes de los vectores sean iguales</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>dim(inf)
+dim(gdp)
+cor(inf[1:56,], gdp[1:56,]) 
+
+plot(as.numeric(inf), as.numeric(gdp))</pre></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

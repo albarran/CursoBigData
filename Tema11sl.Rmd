@@ -281,3 +281,40 @@ LASSO/ridge  más factibles computacionalmente: sustituyen unas restricciones in
   3. Seleccionar el valor con menor error
   
   4. Volver a ajustar el modelo usando todas las observaciones y el valor del parámetro de ajuste seleccionado.
+  
+  
+## `glmnet` para regresión lineal
+
+```{r}
+library(mosaicData)
+library(glmnet)
+
+x <- model.matrix(volume ~ spring + summer + fall + weekday + poly(avgtemp, 6), data = RailTrail)
+
+fit.lmreg <- glmnet(x = x, y = RailTrail$volume, family="gaussian",lambda=0.5, alpha=0.5)
+coef(fit.lmreg)
+```
+
+* Elegimos el parámetero de regularización mediante validación cruzada
+
+```{r}
+set.seed(1)
+cv.glmnet(x, RailTrail$volume) %>% plot()
+```
+
+## `glmnet` para regresión logística
+
+```{r}
+censo <- read_csv("https://www.dropbox.com/s/6bqyjnkd2c638rm/census.csv?dl=1") %>%
+  mutate(income = as.integer(factor(income))-1)
+
+x <- model.matrix(income ~ education + relationship + poly(age,2) + 
+                    workclass + occupation, 
+              family = "binomial", data = censo)
+
+fit.glmreg <- glmnet(x = x, y = censo$income, lambda=0.001, alpha=1)
+coef(fit.glmreg)
+
+set.seed(1)  # validación cruzada para elegir parámetro de regularización
+cv.glmnet(x, censo$income) %>% plot()
+```

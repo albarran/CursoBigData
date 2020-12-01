@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tema 01 - Introducción a R y a RStudio</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Tema 01 - Introducción a R y a RStudio',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                      },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Prof.: Pedro Albarrán' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            {
+        name:  'Prof.: Alberto Pérez' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    code.sourceCode { white-space: pre-wrap; }
+    code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+        
+  </style>
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Universidad de Alicante, Curso 2020/21</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>Introducción</h2></hgroup><article  id="introducción">
+
+<!--
+actualizar ordenadores, evitar usuarios con caracteres problematicos
+
+-->
+
+<!--
+Estimad@s tod@s,
+
+simplemente busca Rstudio en google y te aparecerá el enlace a la página de descargas,
+https://www.rstudio.com/products/rstudio/download/
+Allí, elige la opción "Free" y sigue las instucciones:
+1. primero tienes que descargar R e instalar, desde el vinculo que alli te pone (tendrás que elegir R para Windows)
+2. luego descargar e instalar Rstudio desde el vinculo que aparece debajo.
+
+Dada la suspensión de clases de la semana pasada, os comento aquí algunas cosas que debéis preparar antes de la clase y así poder reducir el retraso que llevamos.
+
+1. Debéis traer siempre ordenador portátil a clase (desde el primer día) dado que habitualmente tendréis que realizar tareas prácticas. Es altísimamente recomendable que cada estudiante trabaje con su propio ordenador de forma habitual. Notad que si vuestros ordenadores tienen una duración de la bateria limitada tendréis que tenerlos enchufados y dada la escasez dec enchufes sería recomendable el uso de regletas (existen algunas en la conserjería del aulario, pero pueden ser escasas por lo que sería recomendable traer de casa).
+
+2. Para la primera clase deberéis haber descargado e instalado en vuestro ordenadores de trabajo el software con el que trabajaremos habitualmente: el lenguaje de programación R y el interfaz-editor para este, RStudio. Ámbos programas son totalmente gratuitos. En primer lugar, debéis instalar R, descargándolo desde esta página web según vuestro sistema operativo:
+https://cran.r-project.org/
+
+En el caso de Windows, entraréis en "Download R for Windows", luego en "base" y allí encontraréis la versión actual "Download R 3.6.1 for Windows".
+
+En el caso de MacOS, entraréis en "Download R for (Mac) OS X", y allí la versión correspondiente a vuestra versión (típicamente "R-3.6.1.pkg").
+
+En el caso de Linux, seguid las instrucciones (típicamente a través de vuestro sistema de instalación).
+
+A continuación debéis instalar RStudio desde
+https://www.rstudio.com/products/rstudio/download/
+Debéis elegir la opción "Free" y allí encontraréis la que se ajusta a vuestro sistema.
+
+Saludos,
+Pedro.
+-->
+
+<ul>
+<li>En el curso usaremos <strong>R</strong> y <strong>RStudio</strong> (ambas son gratuitas)</li>
+</ul>
+
+<ol>
+<li><p>Instalar R (para vuestro sistema operativo) desde <a href='https://cran.r-project.org/' title=''>https://cran.r-project.org/</a></p>
+
+<ul>
+<li><p>para Windows, cliclar en &ldquo;Download R for Windows&rdquo;, luego en &ldquo;base&rdquo; y allí encontraréis la versión actual (&ldquo;Download R 4.0.2 for Windows&rdquo;)</p></li>
+<li><p>para MacOS, cliclar en &ldquo;Download R for (Mac) OS X&rdquo;, y allí la versión correspondiente a vuestra versión (típicamente &ldquo;R-4.0.2.pkg&rdquo;).</p></li>
+<li><p>para Linux, seguid las instrucciones (típicamente a través de vuestro sistema de instalación).</p></li>
+</ul></li>
+<li><p>Luego, RStudio desde <a href='https://www.rstudio.com/products/rstudio/download/' title=''>https://www.rstudio.com/products/rstudio/download/</a></p>
+
+<ul>
+<li><p>elegir la opción &ldquo;Free&rdquo;</p></li>
+<li><p>encontraréis la que se ajusta a vuestro sistema.</p></li>
+</ul></li>
+</ol>
+
+</article></slide><slide class=""><hgroup><h2>Introducción (cont.)</h2></hgroup><article  id="introducción-cont.">
+
+<ul>
+<li><p>Primero vamos a familiarizarnos con R y su consola</p></li>
+<li><p>Iremos aprendiendo los conceptos y comandos básicos de programación en R</p></li>
+<li><p>También veremos también como usar ficheros de comandos de R</p></li>
+<li><p>Conoceremos las ventajas de RStudio como entorno integrado para trabajar con R</p>
+
+<ul>
+<li><p>cómo se divide la pantalla del programa</p></li>
+<li><p>cómo nos ayuda con resaltado de síntaxis, autocompletado, botones con atajos a utilidades comúnes, etc.</p></li>
+</ul></li>
+<li><p>Finalmente, empezaremos a saber cómo organizar un trabajo de análisis de datos</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>R y RStudio: la interfaz</h2></hgroup><article  id="r-y-rstudio-la-interfaz">
+
+<ul>
+<li><p>Usar la consola es la forma más &ldquo;primitiva&rdquo; de interactuar con R</p></li>
+<li><p>La forma más habitual es usar un buen <strong>editor</strong> de texto y luego enviar los comandos en la consola.</p></li>
+<li><p>RStudio es un entorno de desarrollo integrado (IDE) que combina:</p>
+
+<ul>
+<li>un editor con resaltado de síntaxis,</li>
+<li>consola de R,</li>
+<li>ayuda,</li>
+<li>otras herramientas de R</li>
+</ul></li>
+<li><p>R es un lenguaje interpretado: ejecuta las instrucciones directamente</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>R como una calculadora básica</h2></hgroup><article  id="r-como-una-calculadora-básica">
+
+<ul>
+<li>Se pueden escribir directamente fórmulas en la consola como:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>2+2               
+8-3
+2*3
+3 * (2 + 3)
+12/3
+10^2
+sqrt(4)   # raíz cuadrada
+abs(-5)   # valor absoluto
+
+9 %/% 4   # división entera 
+9 %% 4    # módulo</pre>
+
+</article></slide><slide class=""><hgroup><h2>Comentarios en R</h2></hgroup><article  id="comentarios-en-r">
+
+<ul>
+<li><p>El carácter &ldquo;#&rdquo; marca el inicio de un comentario</p></li>
+<li><p>Todo lo que sigue a &ldquo;#&rdquo; se &ldquo;ignora&rdquo;: no ejecuta o procesa en R</p></li>
+<li><p>Los comentarios pueden ir tanto al principio de una linea como después de alguna instrucción</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'># vamos a sumar
+2+2 # el resultado debe ser 4</pre>
+
+<ul>
+<li>Comentar el código es un buen hábito</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Funciones en R</h2></hgroup><article  id="funciones-en-r">
+
+<ul>
+<li>Las expresiones que aceptan <!--un argumento o--> argumentos se denominan funciones.</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>exp(2)
+sin(pi/6)
+
+floor(3.1)
+ceiling(5.2)</pre>
+
+<ul>
+<li><p>Algunos argumentos son obligatorios, otros tienen valores por defecto que se pueden omitir</p></li>
+<li><p>Los argumentos se pueden especificar por nombre o por orden.</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>log(2, base=2)  
+log(2, 10)      </pre>
+
+<ul>
+<li>¿Cómo sabemos la manera de usar una función (ej. argumentos necesarios) o comando de R?</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Ayuda en R y RStudio</h2></hgroup><article  id="ayuda-en-r-y-rstudio">
+
+<ul>
+<li><p>RStudio tiene autocompletado y ayuda flotante para funciones y otros elementos de R</p>
+
+<ul>
+<li>¿Qué pasa si empezamos a escribir la función <code>log</code>?</li>
+</ul></li>
+<li><p>RStudio también tiene una <strong>pestaña</strong> para buscar ayuda</p></li>
+</ul>
+
+<!--
+
+* Si escribimos una función sin argumentos
+
+```r
+  log
+```
+  la consola nos responde con la forma esperada de trabajar con esa función
+-->
+
+<ul>
+<li>Se puede obtener ayuda tambien en la consola de un comando</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>help(min)
+?min</pre>
+
+<ul>
+<li>Para buscar ayuda sobre algo de lo que se desconoce el nombre concreto de la función</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>??minimize</pre>
+
+<ul>
+<li>Las búsquedas online también suelen ser muy útiles</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Asignación</h2></hgroup><article  id="asignación">
+
+<ul>
+<li>Para &ldquo;almacenar&rdquo; el resultado con un nombre y poder usarlo posteriormente se usa el operador de asignación <code>&lt;-</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 2*3    # asignación, no muestra resultado
+x           # ejecutamos mostrar la variable</pre>
+
+<ul>
+<li>También podemos mostrar por pantalla el valor de una variable con</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>(x &lt;- 2)
+print(x)
+show(x)</pre>
+
+<ul>
+<li><p>La asignación puede hacerse usando <code>=</code>, pero <code>&lt;-</code> es el método preferido</p></li>
+<li><p>R es &ldquo;case-sensitive&rdquo;: <code>x</code> y <code>X</code> son dos variables distintas</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Asignación (cont.)</h2></hgroup><article  id="asignación-cont.">
+
+<ul>
+<li>Los resultados pueden usarse después:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>y &lt;- x + 5
+y</pre>
+
+<ul>
+<li>Notar que <code>y</code> se mantendrá igual a <code>7</code> incluso si cambiamos <code>x</code> después</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 5
+y</pre>
+
+<ul>
+<li>También podemos especificar una variables en términos de ella misma, generar nuevas a partir de otras, etc.</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- x*3
+z &lt;- x-y
+x
+z</pre>
+
+</article></slide><slide class=""><hgroup><h2>El espacio de Trabajo en R y RStudio</h2></hgroup><article  id="el-espacio-de-trabajo-en-r-y-rstudio">
+
+<ul>
+<li><p>Un objeto es simplemente algo almacenado en la <em>memoria</em> de R.</p>
+
+<ul>
+<li>esto incluye vectores, matrices, datos, funciones, etc.</li>
+</ul></li>
+<li><p>El espacio de trabajo (&ldquo;workspace&rdquo;) de R es el conjunto de objetos actualmente activos/cargados en memoria</p></li>
+<li><p>En RStudio, la pestaña de <strong>Environment</strong> muestra los objetos y su valor</p></li>
+<li><p>También tenemos comandos de R para mostra sus contenidos y eliminar objetos</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>ls()    # mostrar objetos
+rm(y)   # eliminar el objeto (variable) &quot;y&quot;</pre>
+
+</article></slide><slide class=""><hgroup><h2>El espacio de Trabajo (cont.)</h2></hgroup><article  id="el-espacio-de-trabajo-cont.">
+
+<ul>
+<li>Se pueden borrar más de un objeto, separados por comas</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>a&lt;-3; b&lt;-3; c&lt;-a+b
+ls()
+rm(a,b,c)
+ls()</pre>
+
+<ul>
+<li>Para borrar <em>todos</em> los objetos del espacio de trabajo con <code>rm</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>rm( list=ls() )</pre>
+
+<ul>
+<li><p>o en Environment de RStudio, usando el icono de la escoba</p></li>
+<li><p>Al cerrar RStudio, tendremos la opción de guardar el entorno de trabajo pero esto NO suele resultar interesante en RStudio (a diferencia de otros programas que estáis acostumbrados como Word)</p></li>
+<li><p>Nos interesar más los archivos con los comandos para obtener los resultados.</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Trabajar con ficheros de guión (&ldquo;scripts&rdquo;)</h2></hgroup><article  id="trabajar-con-ficheros-de-guión-scripts">
+
+<ul>
+<li><p>Habitualmente se escriben todas los comandos de R que queremos ejecutar en un (en principio) único archivo</p>
+
+<ul>
+<li><p>podemos ejecutar todo o parte (para ir probando)</p></li>
+<li><p>nos permite tener guardado lo que queremos hacer y reproducirlo</p></li>
+</ul></li>
+<li><p>Estos archivos tienen extensión .R o .r</p></li>
+<li><p>En RStudio, podemos crear un nuevo archivo en blanco en su editor</p></li>
+<li><p>Se pueden ejecutar comandos:</p>
+
+<ul>
+<li><p>línea a línea: icono de &ldquo;Run&rdquo; o con el atajo de teclado &ldquo;Ctrl+Enter&rdquo;</p></li>
+<li><p>o todos (icono de &ldquo;Source&rdquo;)</p></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Directorio de Trabajo</h2></hgroup><article  id="directorio-de-trabajo">
+
+<ul>
+<li><p>Podemos querer usar archivos guardados en nuestro disco duro.</p></li>
+<li><p>En RStudio, existe una pestaña para moverse por los directorios del disco y realizar operaciones con archivos</p></li>
+<li><p>Es conveniente fijar un directorio de trabajo habitual</p>
+
+<ul>
+<li>p.e., será donde se guarde nuestro archivo .R</li>
+</ul></li>
+<li><p>Se puede hacer en RStudio (icono de engranaje) o con el comando de R</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>setwd(&quot;C:/Users/pedro/TEC&quot;) </pre>
+
+<ul>
+<li>Para conocer el directorio de trabajo actual</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>getwd()  </pre>
+
+</article></slide><slide class=""><hgroup><h2>Directorio de Trabajo (cont.)</h2></hgroup><article  id="directorio-de-trabajo-cont.">
+
+<ul>
+<li><p>Debemos ser organizados con la estructura de ficheros y directorios al programar.</p></li>
+<li><p>Se suele fijar un directorio de trabajo &ldquo;raíz&rdquo; donde estarán nuestro</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Estructuras Básicas de Datos</h2></hgroup><article  id="estructuras-básicas-de-datos">
+
+<ul>
+<li><p>R trabaja con varias estructuras de datos: variables, vectores, matrices, factores, marcos de datos, listas, …</p></li>
+<li><p>Las estructuras de datos, como todos los objetos de R, tienen una clases</p></li>
+<li><p>Las clases más comunes son:</p>
+
+<ul>
+<li><p>carácter (cadena de caracteres, normalmente se introducen y muestran entre comillas dobles)</p></li>
+<li><p>numérico (números reales)</p></li>
+<li><p>entero</p></li>
+<li><p>lógico (valores lógicos TRUE y FALSE)</p></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Vectores</h2></hgroup><article  id="vectores">
+
+<!--
+The most basic type of object in R is a *vector*.
+
+ Los vectores almacenan variables (como en "variables en un conjunto de datos")
+-->
+
+<ul>
+<li><p>Un vector es una secuencia de elementos atómicos (números, cadenas o valores lógicos).</p></li>
+<li><p>Podemos crear vectores usando la función &ldquo;c()&rdquo; (combinar).</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>xvect &lt;- c(2,4,6,8,10)                 # vector numérico
+yvect &lt;- c(&quot;hola&quot;, &quot;adios&quot;)            # vector de caracteres
+zvect &lt;- c(FALSE, TRUE, FALSE, FALSE)  # vector lógico</pre>
+
+<ul>
+<li>La clase (o modo) de un tipo de objeto se puede conocer con los comandos <code>is</code>, <code>class</code> o <code>mode</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>is(xvect)
+class(yvect)
+mode(zvect)</pre>
+
+<ul>
+<li>También en el &ldquo;Environment&rdquo; de RStudio (que se correponde con la función <code>str</code>)</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Atributos de un objecto Vector</h2></hgroup><article  id="atributos-de-un-objecto-vector">
+
+<ul>
+<li><p>Los vectores pueden tener nombres: una &ldquo;etiqueta&rdquo; para los elementos del vector, que debe ser único</p></li>
+<li><p>Los nombres de un vector es un vector de caracteres de la misma longitud</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- c(1,2,3,2,1)
+names(x) &lt;- c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot;)
+names(x)    </pre>
+
+</article></slide><slide class=""><hgroup><h2>Conversión entre clases</h2></hgroup><article  id="conversión-entre-clases">
+
+<ul>
+<li>No se pueden mezclar tipos en mismo vector: R busca el modo que pueda ajustarse a todos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>vcc &lt;- c(2.2, 1)
+vcr &lt;- c(&quot;lunes&quot;, 2)</pre>
+
+<ul>
+<li>Tampoco se pueden realizar operaciones que son incompatibles entre clases</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>2.5+&quot;hola&quot;</pre>
+
+<ul>
+<li>Podemos forzar que un objeto sea tratado con un modo particular, con las funciones &ldquo;as.numeric&rdquo;, &ldquo;as.character&rdquo; y &ldquo;as.logical&rdquo;</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- as.numeric(x)
+x + 5</pre>
+
+</article></slide><slide class=""><hgroup><h2>Conversión entre clases (cont.)</h2></hgroup><article  id="conversión-entre-clases-cont.">
+
+<ul>
+<li>Si no se puede convertir a número, devuelve &ldquo;NA&rdquo;, con un &ldquo;warning&rdquo;</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>as.numeric( c(&quot;1&quot;, &quot;2&quot;, &quot;foo&quot;, &quot;10&quot;, &quot;bar&quot;) )</pre>
+
+<ul>
+<li>También podemos convertir números a caracteres o a valores lógicos …</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>as.character(c(1,5))
+as.logical( c(-1, 0, 1, 2) )
+
+as.numeric( c(TRUE, FALSE) )
+as.character( c(TRUE, FALSE) )</pre>
+
+<ul>
+<li>Las funciones &ldquo;is.numeric&rdquo;, &ldquo;is.logical&rdquo; e &ldquo;is.character&rdquo; comprueban si un objeto es del tipo indicado, devolviendo un valor lógico.</li>
+</ul>
+
+<!--
+* Nota: si tenéis problemas al mostrar resultados numéricos o caracteres, mirad la función "format" (de momento no vamos a discutir sobre esta)
+-->
+
+</article></slide><slide class=""><hgroup><h2>Funciones para vectores numéricos</h2></hgroup><article  id="funciones-para-vectores-numéricos">
+
+<ul>
+<li>Algunas funciones comunmente usadas con vectores numéricos son:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>max(xvect)
+min(xvect)
+length(xvect)
+sort(xvect)
+mean(xvect)
+var(xvect)
+sum(xvect)
+prod(xvect)</pre>
+
+<ul>
+<li>Podemos crear vectores a partir de otros vectores</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>xvect &lt;- c(2,4,6,8,10)
+yvect &lt;- c(1,3,5,7,9)
+z &lt;- c(xvect, yvect)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Más Funciones para crear vectores numéricos</h2></hgroup><article  id="más-funciones-para-crear-vectores-numéricos">
+
+<ul>
+<li>Para crear algunos vectors los comandos <code>rep()</code> y <code>seq()</code> pueden ser útiles</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- rep(1, times=4)
+x
+y &lt;- seq(from = 2, to = 10, by = 2)
+y
+z &lt;- seq(from = 10, to = 1, by = -1)
+z</pre>
+
+<ul>
+<li>Normalmente los nombres se omiten en fuciones comunes</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- rep(1,4)
+y &lt;- seq(2,10,2)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Más Funciones para crear vectores (cont.)</h2></hgroup><article  id="más-funciones-para-crear-vectores-cont.">
+
+<ul>
+<li>PERO añadir los nombres, tiene dos ventajas:
+
+<ol>
+<li>Claridad</li>
+<li>Los argumentos no tienen que especificarse en orden (sin nombre del argumento debe seguirse el orden establecido)</li>
+</ol></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>z &lt;- seq(by = 0.5, to = 10, from = 1)
+z
+z &lt;- seq(0.5,10,1)
+z</pre>
+
+<ul>
+<li>Notar que una versión simple de <code>seq</code> para incrementos unitarios consecutivos es usar <code>:</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>z &lt;- seq(from = 1, to = 10, by = 1)
+z
+z &lt;- 1:10
+z</pre>
+
+</article></slide><slide class=""><hgroup><h2>Aritmética de vectores</h2></hgroup><article  id="aritmética-de-vectores">
+
+<ul>
+<li>La mayoría de los operadores habituales se aplican elemento-a-elemento en los vectores</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>a &lt;- seq(1,5,1)
+b &lt;- seq(6,10,1)
+a+b
+a*b</pre>
+
+<ul>
+<li>Si los vectores tienen longitud diferentes, R NO producirá un ERROR. Simplemente repetirá el vector más corto cuantas veces sea necesario.</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>a &lt;- seq(1,5,1)
+b &lt;- seq(1,10,1)
+a+b</pre>
+
+</article></slide><slide class=""><hgroup><h2>Aritmética de vectores (cont.)</h2></hgroup><article  id="aritmética-de-vectores-cont.">
+
+<ul>
+<li><p>En general debemos tener cuidado y comprobar las dimensiones de los vectores que usamos</p></li>
+<li><p>Aunque, a veces, este comportamiento es el deseado</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>a &lt;- seq(1,5,1)
+2*a
+a+1</pre>
+
+<ul>
+<li>Si la dimensión del vector de mayor tamaño no es un múltiplo <em>exacto</em> de la del vector de menor tamaño, se producirá un <strong>aviso</strong> (&ldquo;Warning&rdquo;)</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>a &lt;- seq(1,5,1)
+b &lt;- seq(1,12,1)
+a+b</pre>
+
+</article></slide><slide class=""><hgroup><h2>Nota: diferencia entre &ldquo;Error&rdquo; y &ldquo;Warning&rdquo;</h2></hgroup><article  id="nota-diferencia-entre-error-y-warning">
+
+<pre class = 'prettyprint lang-r'>log(-1)
+
+seq(from = 10, to = 2, by = 1)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Operaciones con Vectores de caracteres</h2></hgroup><article  id="operaciones-con-vectores-de-caracteres">
+
+<ul>
+<li>También podemos usar la función &ldquo;paste&rdquo; para crear un nuevo carácter a partir de otros</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>w &lt;- &quot;Universidad&quot;; x &lt;- &quot;de&quot;; y &lt;- &quot;Alicante&quot;
+z &lt;- paste(w,x,y)</pre>
+
+<ul>
+<li>Podemos especificar que un carácter aparezca entre las cadenas con la opción <code>sep</code>; la opción por defecto en <code>paste</code> es espacio en blanco &quot; &quot;</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>z &lt;- paste(w,x,y,sep=&quot;.&quot;)
+z &lt;- paste(w,x,y,sep=&quot;,&quot;)</pre>
+
+<ul>
+<li>La función <code>paste0</code> equivale a <code>paste</code> sin carácter de separación (<code>sep=&quot;&quot;</code>)</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Operadores lógicos básicos</h2></hgroup><article  id="operadores-lógicos-básicos">
+
+<pre class = 'prettyprint lang-r'>1 == 1       # igualdad, notad el doble &quot;==&quot;
+1 != 3       # NO igual
+1 &gt; 2        # mayor que
+3 &gt;= 2       # mayor o igual
+2 + 2 &lt; 4    # menor que 
+
+TRUE &amp; TRUE  # operador AND
+TRUE | FALSE # operador OR 
+!TRUE        # operador NOT
+TRUE == T    # &quot;T&quot; y &quot;F&quot;&quot; son &quot;atajos&quot; de &quot;TRUE&quot; y &quot;FALSO&quot;
+F | F</pre>
+
+<ul>
+<li>Por supuesto, también en vectores, elemento-a-elemento</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- c(3,2,1,4,3)
+y &lt;- c(5,4,1,2,3)
+z &lt;- x == y   </pre>
+
+</article></slide><slide class=""><hgroup><h2>Vectores lógicos (cont.)</h2></hgroup><article  id="vectores-lógicos-cont.">
+
+<ul>
+<li>Se pueden aplicar comparaciones lógicas a cadenas</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>&#39;cadena&#39; == &quot;cadena&quot;
+&#39;hola&#39; &gt; &#39;adios&#39;               # las cadenas se comparan lexicográficamente</pre>
+
+<ul>
+<li>Algunas funciones para vectores lógicos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>any(z)      # ¿es algún elemento de &quot;z&quot; es Verdadero?
+all(z)      # ¿son todos los elementos de &quot;z&quot; son Verdaderos?
+which(z)    # ¿qué elementos de &quot;z&quot; son Verdaderos?</pre>
+
+</article></slide><slide class=""><hgroup><h2>Acceso a los elementos de un vector</h2></hgroup><article  id="acceso-a-los-elementos-de-un-vector">
+
+<ul>
+<li>Se accede a uno o un conjunto de elementos con el operador <code>[]</code> (paréntesis cuadrado) y un vector indicando <strong>posiciones</strong></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- c(1,2,3,2,1)
+x[3]              
+x[c(1,3,5)]
+x[2:4]</pre>
+
+<ul>
+<li>o especificando cuales NO queremos, con un vector de posiciones negativas</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x[ - c(2, 4) ]</pre>
+
+<ul>
+<li>Podemos acceder por <strong>nombres</strong></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>names(x) &lt;- c(&quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;d&quot;, &quot;e&quot;)
+x[ &quot;a&quot; ]          
+x[ c(&quot;c&quot;, &quot;d&quot;) ]  </pre>
+
+</article></slide><slide class=""><hgroup><h2>Acceso a los elementos de un vector (cont.)</h2></hgroup><article  id="acceso-a-los-elementos-de-un-vector-cont.">
+
+<ul>
+<li>También podemos usar (un vector de) <strong>condiciones lógicas</strong> para acceder a los elementos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 1:20
+x[x &gt;= 12]
+
+pos &lt;- (x %% 2 == 0 | x &gt; 15) 
+x[pos]</pre>
+
+<ul>
+<li>Con la asignación se pueden cambiar elementos específicos de un vector</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- 1:20
+x[3] &lt;- 100
+x[c(2,4)] &lt;- c(20,40)</pre>
+
+<ul>
+<li>O añadir nuevos elementos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x[length(x)+1] &lt;- 0</pre>
+
+</article></slide><slide class=""><hgroup><h2>Acceso a los elementos de un vector (cont.)</h2></hgroup><article  id="acceso-a-los-elementos-de-un-vector-cont.-1">
+
+<ul>
+<li>Para averiguar si un vector contiene un elemento o elementos usamos la funcion &ldquo;%in%&rdquo;</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- c(2,3,4,4,5,6)
+5 %in% x
+c(5,3) %in% x</pre>
+
+<ul>
+<li>Notad que con &ldquo;which&rdquo; podemos averiguar la posición</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>which(x == 4)
+which(x == 9)
+which(x == c(3,5))</pre>
+
+</article></slide><slide class=""><hgroup><h2>Matrices</h2></hgroup><article  id="matrices">
+
+<ul>
+<li><p>Una matrix es un vector de vectores o vector en 2 dimensiones</p></li>
+<li><p>Se crea con la funcion <code>matrix</code> (ver Ayuda) y conocemos sus dimensiones con <code>dim</code></p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>matrx &lt;- matrix(data = 1:15, nrow = 3, ncol = 5) 
+matrx
+dim(matrx)</pre>
+
+<ul>
+<li>También podemos crear matrices desde vectores (o matrices) de la mismas dimensiones con <code>cbind</code> y <code>rbind</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>cbind(1:5, 6:10)  # por columnas
+rbind(6:10, 1:5)  # por filas</pre>
+
+</article></slide><slide class=""><hgroup><h2>Matrices: nombres de filas y columnas</h2></hgroup><article  id="matrices-nombres-de-filas-y-columnas">
+
+<ul>
+<li>Podemos dar nombres a columnas y filas</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>colnames(matrx) &lt;- c(&quot;ene&quot;, &quot;feb&quot;, &quot;mar&quot;, &quot;abr&quot;, &quot;may&quot;)
+rownames(matrx) &lt;- c(&quot;ingr&quot;, &quot;gast&quot;, &quot;benef&quot;)
+matrx</pre>
+
+<ul>
+<li>Notad que NO podemos usar la función &ldquo;names&rdquo; vista anteriormente porque solo aplica a vectores</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Matrices: acceso a elementos</h2></hgroup><article  id="matrices-acceso-a-elementos">
+
+<ul>
+<li>Para acceder a elementos usamos los paréntesis cuadrados</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>matrx[4]                   # posición del elemento en el total
+matrx[1,3]                 # posición del elemento en dos dimensiones
+matrx[&quot;benef&quot;, &quot;ene&quot;]      # idem por nombres</pre>
+
+<ul>
+<li>También se puedn extraer filas o columnas enteras</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>matrx[3,]                   # por posición 
+matrx[,&quot;feb&quot;]              # por nombre</pre>
+
+</article></slide><slide class=""><hgroup><h2>Aritmética de Matrices</h2></hgroup><article  id="aritmética-de-matrices">
+
+<ul>
+<li>Se pueden calcular sumas o medias de las filas o columnas de una matriz</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>rowSums(matrx)
+colMeans(matrx)       </pre>
+
+<ul>
+<li>También, se puede operar con un subconjunto de la matriz (que puede ser otra matriz o un vector)</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>colSums(matrx[1:2,2:3])
+mean(matrx[3,2:4])       </pre>
+
+</article></slide><slide class=""><hgroup><h2>Aritmética de Matrices (cont.)</h2></hgroup><article  id="aritmética-de-matrices-cont.">
+
+<ul>
+<li>Podemos operar una matriz con un escalar</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>A &lt;- matrx / 3       
+B &lt;- matrx + 1
+C &lt;- matrx * 2</pre>
+
+<ul>
+<li><p>Esto son realmente operaciones elemento-a-elemento en las R ha &ldquo;expandido&rdquo; los escalares a una matriz de dimensiones equivalente (una matriz con todos los elementos iguales al escalar)</p></li>
+<li><p>Se pueden hacer todo tipo <a href='http://www.statmethods.net/advstats/matrix.html' title=''>operaciones matriciales con R</a></p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>&ldquo;Arrays&rdquo;</h2></hgroup><article  id="arrays">
+
+<ul>
+<li>Un &ldquo;Array&rdquo; es un vector de &ldquo;n&rdquo; dimensiones. Se crea con la función <code>array</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- array(c(1:8), dim =c(2,2,2) )
+x</pre>
+
+<ul>
+<li>Se puede acceder a los elementos con paréntesis cuadrados</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x[2,1,2]
+x[,,1]</pre>
+
+<ul>
+<li><p>Los nombres de todas las dimensiones de un &ldquo;array&rdquo; (includas matrices) se manejan con la función <code>dimnames</code>, además de al crearlos.</p>
+
+<ul>
+<li>Es un tipo de objetos nuevos conocidos como listas.</li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Factores</h2></hgroup><article  id="factores">
+
+<ul>
+<li><p>Los factores son un tipo de datos de R que se utiliza para almacenar <strong>variables categóricas</strong> (toman valores un número limitado de categorías)</p></li>
+<li><p>La distinción entre variables categóricas y variables numéricas (pueden tomar infinitos valores) es importante en muchos tipos de análisis de datos</p>
+
+<ul>
+<li>por esto existe un tipo de datos con atributos específicos</li>
+</ul></li>
+<li><p>Se usa <code>factor()</code> para crear un vector o variable de tipo factor</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>genero &lt;- c(&quot;Masculino&quot;, &quot;Femenino&quot;, &quot;Femenino&quot;, &quot;Masculino&quot;, &quot;Masculino&quot;)
+
+factor_genero &lt;- factor(genero)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Factores (cont.)</h2></hgroup><article  id="factores-cont.">
+
+<ul>
+<li><p>Existen dos tipos de variables categóricas:</p>
+
+<ul>
+<li><p>nominales: sus categorías no tienen orden implícito, como el género</p></li>
+<li><p>ordinales: sus categorías o niveles poseen un orden natural, como satisfación de un cliente</p></li>
+</ul></li>
+<li><p>Debemos especificar si el factor es ordinal y sus niveles al crearlo</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>satisfaccion &lt;- c(&quot;Alto&quot;, &quot;Bajo&quot;, &quot;Alto&quot;, &quot;Bajo&quot;, &quot;Medio&quot;)
+factor_satisfaccion &lt;- factor(satisfaccion, order = TRUE, 
+                              levels = c(&quot;Bajo&quot;, &quot;Medio&quot;, &quot;Alto&quot;))</pre>
+
+<ul>
+<li>Sólo con factores ordinales tienen sentido las comparaciones</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>factor_satisfaccion[2] &gt; factor_satisfaccion[5]
+factor_genero[2] &gt; factor_genero[4]</pre>
+
+</article></slide><slide class=""><hgroup><h2>Atributos de los factores</h2></hgroup><article  id="atributos-de-los-factores">
+
+<ul>
+<li><p>Los datos originales pueden estar codificados de una manera que no resulta clara para el análisis (género como número o abreviatura)</p></li>
+<li><p>La función <code>levels()</code> permite cambiar los niveles de un factor.</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>genero &lt;- c(&quot;M&quot;, &quot;F&quot;, &quot;F&quot;, &quot;M&quot;, &quot;M&quot;)
+factor_genero &lt;- factor(genero)
+
+levels(factor_genero) &lt;- c(&quot;Femenino&quot;, &quot;Masculino&quot;)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Listas</h2></hgroup><article  id="listas">
+
+<ul>
+<li>Son <em>similares</em> a los vectores, pero pueden contener objetos de distintos tipos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>newList &lt;- list(&quot;hola&quot;,x,y,z,6,7,8)
+newList</pre>
+
+<ul>
+<li><p>Nuevamente, los paréntesis cuadrados se usan para acceder a un subconjunto, en este caso, sublista.</p></li>
+<li><p>Con un solo &ldquo;[ ]&rdquo; el resultado es otra lista:</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>newList[3]
+mode(newList[3])</pre>
+
+<ul>
+<li>Si usamos<code>[[ ]]</code>, extraemos elementos de la lista, en su modo original</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>newList[[3]]
+mode(newList[[3]])</pre>
+
+</article></slide><slide class=""><hgroup><h2>Listas (cont.)</h2></hgroup><article  id="listas-cont.">
+
+<ul>
+<li>Podemos acceder a elementos individuales de la (sub-)lista con la notación:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>newList[[3]][1]</pre>
+
+<ul>
+<li>… pero NO con la notación de un único paréntesis</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>newList[3][1]               # tenemos unas lista de longitud 1</pre>
+
+<ul>
+<li><p>Podemos convertir una lista en un vector con la función &ldquo;unlist&rdquo;</p></li>
+<li><p>Como ya discutimos, si todos elementos de la lista no tienen el mismo modo, se convierten a un modo común posible (típicamente, caracteres)</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Listas (cont.)</h2></hgroup><article  id="listas-cont.-1">
+
+<ul>
+<li>Podemos añadir nombres a los elementos de una lista</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>names(newList) &lt;- c(&quot;saludo&quot;, &quot;x&quot;,&quot;y&quot;,&quot;z&quot;,&quot;seis&quot;,&quot;siete&quot;,&quot;ocho&quot;)
+newList[[&quot;x&quot;]]
+newList[[&quot;saludo&quot;]]</pre>
+
+<ul>
+<li>o al generarla:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>milista &lt;- list(a=&quot;hola&quot;, bc = 2:4)</pre>
+
+<ul>
+<li>También accedemos a elementos de una lista por nombre usando &ldquo;$&rdquo;</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>newList$x
+newList$saludo</pre>
+
+</article></slide><slide class=""><hgroup><h2>&ldquo;Data Frames&rdquo;</h2></hgroup><article  id="data-frames">
+
+<ul>
+<li>R es un lenguaje de programación, usado principalmente para análisis de datos</li>
+</ul>
+
+<p><a href='#Aunque%20R%20es%20un%20lenguaje%20de%20programación%20por%20derecho%20propio,%20se%20usa%20principalmente%20para%20análisis%20de%20estadísticos%20de%20datos' title=''>//</a>: * Para esto tenemos que crear y manipular un nuevo tipo de objetos llamados &ldquo;data frames&rdquo;: una colección (técnicamente, una lista) de vectores que corresponde a cada variable.</p>
+
+<ul>
+<li><p>Se necesita un nuevo tipo de objetos llamado &ldquo;data frame&rdquo;: una colección (lista) de vectores que corresponde a cada variable.</p></li>
+<li><p>La función &ldquo;data.frame&rdquo; permite generarlos a partir de vectores existentes</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>height &lt;- c(177,178,168,164,186,162,160)
+weight &lt;- c(75,85,70,60,80,65,54)
+
+size.dat &lt;- data.frame(&quot;Height&quot;=height,&quot;Weight&quot;=weight)
+size.dat
+class(size.dat)</pre>
+
+<ul>
+<li>Hemos generado el &ldquo;data frame&rdquo; con nombres para las variables &ldquo;Height&rdquo; y &ldquo;Weight&rdquo;</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>&ldquo;Data Frames&rdquo; (cont.)</h2></hgroup><article  id="data-frames-cont.">
+
+<ul>
+<li>Se puede visualizar con la función &ldquo;View&rdquo; o en zona de &ldquo;Enviroment&rdquo; de Rstudio</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>View(size.dat)</pre>
+
+<ul>
+<li>Se pueden previsualizar parte de los datos con:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>head(size.dat)     # primeras 6 observaciones
+tail(size.dat)     # últimas 6 observaciones</pre>
+
+<ul>
+<li>También podemos saber otro información útil</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>ncol(size.dat)     
+nrow(size.dat)     </pre>
+
+</article></slide><slide class=""><hgroup><h2>Nombres y dimensiones de objetos en R</h2></hgroup><article  id="nombres-y-dimensiones-de-objetos-en-r">
+
+<ul>
+<li>Hemos visto varias funciones para conocer las dimensiones de distintos objetos en R</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>length(vector)    # en matrices es el total de elementos
+                  # en listas y data.frame, el número de listas/variables
+dim(data.frame)
+dim(array)        # incluidas matrices pero no escalares ni vectores ni listas
+nrow(data.frame)  # idem  
+ncol(data.frame)</pre>
+
+<ul>
+<li>Y también los nombres</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>dimnames(size.dat)     
+colnames(size.dat)
+names(size.dat)        # solo para vectores
+rownames(size.dat)
+row.names(size.dat)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Inspeccionando objetos: &ldquo;str&rdquo;</h2></hgroup><article  id="inspeccionando-objetos-str">
+
+<ul>
+<li>Un comando útil para cualquier objeto de R es &ldquo;str&rdquo;: informa de la estructura</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>str(size.dat)     # para un data frame
+str(log)          # para una función
+str(newList)      # para lista</pre>
+
+<ul>
+<li>Esta información también está en el &ldquo;Environment&rdquo; (y otro lugares) de Rstudio</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Trabajando con &ldquo;Data Frames&rdquo;</h2></hgroup><article  id="trabajando-con-data-frames">
+
+<ul>
+<li>Podemos acceder a las variables por nombre con &ldquo;$&rdquo; y obtendremos un vector de R.</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>size.dat$Height</pre>
+
+<ul>
+<li><p>Notad que, como ya vimos con las listas, los sub-componentes de un &ldquo;data frame&rdquo; son un tipo de objetos diferentes del objeto original.</p></li>
+<li><p>También se puede usar notación como la de matrices</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>size.dat[,1]     # primera columna
+size.dat[2,]     # segunda fila
+size.dat[3,2]    # tercera entrada de la segunda columna
+size.dat[1:3,1:2]   </pre>
+
+</article></slide><slide class=""><hgroup><h2>Trabajando con &ldquo;Data Frames&rdquo; (cont.)</h2></hgroup><article  id="trabajando-con-data-frames-cont.">
+
+<ul>
+<li>Guardamos y manejamos las variables de un &ldquo;data frame&rdquo; como vectores</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>height.vect &lt;- size.dat$Height
+height.vect[1]
+size.dat$Height[1]</pre>
+
+<ul>
+<li>Podemos usar todos los tipos de accesos y filtros de sus elementos que ya hemos visto</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>sel1 &lt;- size.dat[size.dat$Height &gt; 165,]                       # es un data.frame
+sel2 &lt;- size.dat[size.dat$Height %in% c(177,178) , &quot;Weight&quot;]   # esto es un vector</pre></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

@@ -1,348 +1,502 @@
 <!DOCTYPE html>
+
 <html>
+
 <head>
-  <title>Tema 11 - Selección y regularización del modelo lineal</title>
 
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="chrome=1">
-  <meta name="generator" content="pandoc" />
-
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Prof.: Pedro Albarrán" />
+<meta name="author" content="Prof.: Alberto Pérez" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
 
-  <base target="_blank">
+<title>Tema 11 - Selección y regularización del modelo lineal</title>
 
-  <script type="text/javascript">
-    var SLIDE_CONFIG = {
-      // Slide settings
-      settings: {
-                title: 'Tema 11 - Selección y regularización del modelo lineal',
-                        useBuilds: true,
-        usePrettify: true,
-        enableSlideAreas: true,
-        enableTouch: true,
-                        favIcon: 'Tema11sl_files/logo.svg',
-              },
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 
-      // Author information
-      presenters: [
-            {
-        name:  'Prof.: Pedro Albarrán' ,
-        company: '',
-        gplus: '',
-        twitter: '',
-        www: '',
-        github: ''
-      },
-            {
-        name:  'Prof.: Alberto Pérez' ,
-        company: '',
-        gplus: '',
-        twitter: '',
-        www: '',
-        github: ''
-      },
-            ]
-    };
-  </script>
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
-  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
-  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
-  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
-  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
-  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
-  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
-  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
-  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
-  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
-  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
 
-  <style type="text/css">
 
-    b, strong {
-      font-weight: bold;
-    }
 
-    em {
-      font-style: italic;
-    }
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
 
-    summary {
-      display: list-item;
-    }
 
-    slides > slide {
-      -webkit-transition: all 0.4s ease-in-out;
-      -moz-transition: all 0.4s ease-in-out;
-      -o-transition: all 0.4s ease-in-out;
-      transition: all 0.4s ease-in-out;
-    }
 
-    .auto-fadein {
-      -webkit-transition: opacity 0.6s ease-in;
-      -webkit-transition-delay: 0.4s;
-      -moz-transition: opacity 0.6s ease-in 0.4s;
-      -o-transition: opacity 0.6s ease-in 0.4s;
-      transition: opacity 0.6s ease-in 0.4s;
-      opacity: 0;
-    }
-/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
-slide:not(.current) .plotly.html-widget{
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
   display: block;
 }
 
-    code{white-space: pre-wrap;}
-    span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
-            
-    slides > slide:not(.nobackground):before {
-      font-size: 12pt;
-      content: "";
-      position: absolute;
-      bottom: 20px;
-      left: 60px;
-      background: url(Tema11sl_files/logo.svg) no-repeat 0 50%;
-      -webkit-background-size: 30px 30px;
-      -moz-background-size: 30px 30px;
-      -o-background-size: 30px 30px;
-      background-size: 30px 30px;
-      padding-left: 40px;
-      height: 30px;
-      line-height: 1.9;
-    }
-  </style>
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
 
 
 </head>
 
-<body style="opacity: 0">
+<body>
 
-<slides class="layout-widescreen">
 
-  <slide class="title-slide segue nobackground">
-        <aside class="gdbar"><img src="Tema11sl_files/logo.svg"></aside>
-        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
-    <hgroup class="auto-fadein">
-      <h1 data-config-title><!-- populated from slide_config.json --></h1>
-      
-      <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">Universidad de Alicante, Curso 2020/21</p>
-          </hgroup>
-  </slide>
+<div class="container-fluid main-container">
 
-<slide class=""><hgroup><h2>Alternativas a Mínimos Cuadrados</h2></hgroup><article  id="alternativas-a-mínimos-cuadrados">
 
-<p>\[
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Big Data (UA)</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Introducción</a>
+</li>
+<li>
+  <a href="Contenidos.html">Contenidos</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Tema 11 - Selección y regularización del modelo lineal</h1>
+<h4 class="author">Prof.: Pedro Albarrán</h4>
+<h4 class="author">Prof.: Alberto Pérez</h4>
+<h4 class="date">Universidad de Alicante, Curso 2020/21</h4>
+
+</div>
+
+
+<div id="alternativas-a-mínimos-cuadrados" class="section level2">
+<h2>Alternativas a Mínimos Cuadrados</h2>
+<p><span class="math display">\[
 \small
 Y = \beta_0 + \beta_1 X_1 + \dots + \beta_k X_k + \varepsilon
-\]</p>
-
+\]</span></p>
 <ul>
 <li><p>¿Por qué?</p>
-
-<ol>
+<ol style="list-style-type: decimal">
 <li><p><strong>Precisión</strong>: <!--incluso si la verdadera relación es lineal,-->la varianza aumenta cuando crece el número de parámetros (=regresores) relativo al de observaciones</p>
-
 <ul>
-<li>con \(\small k&gt;n\) no existe una estimación única de mínimos cuadrados</li>
+<li>con <span class="math inline">\(\small k&gt;n\)</span> no existe una estimación única de mínimos cuadrados</li>
 </ul></li>
 <li><p><strong>Interpretación</strong>: un modelo con variables irrelevantes <!-- no asociadas a la de respuesta--> es más complejo y menos interpretable</p></li>
 </ol></li>
 <li><p>La <strong>restricción o reducción</strong> de los coeficientes estimados puede reducir la varianza (a costa de un aumento insignificante del sesgo)</p></li>
 <li><p>La <strong>selección</strong> de variables se utiliza para excluir variables irrelevantes y ajustar ese modelo reducido por mínimos cuadrados</p></li>
 </ul>
-
-</article></slide><slide class=""><hgroup><h2>Selección del Mejor Subconjunto</h2></hgroup><article  id="selección-del-mejor-subconjunto">
-
+</div>
+<div id="selección-del-mejor-subconjunto" class="section level2">
+<h2>Selección del Mejor Subconjunto</h2>
 <ul>
-<li><p>Debemos estimar \(\small 2^k\) modelos posibles con cada combinación de regresores (desde un solo regresor hasta todos a la vez)</p></li>
-<li><p>Usar SCR en entrenamiento lleva a elegir el modelo con \(\small k\) parámetros</p></li>
+<li><p>Debemos estimar <span class="math inline">\(\small 2^k\)</span> modelos posibles con cada combinación de regresores (desde un solo regresor hasta todos a la vez)</p></li>
+<li><p>Usar SCR en entrenamiento lleva a elegir el modelo con <span class="math inline">\(\small k\)</span> parámetros</p></li>
 <li><p>Procedimiento:</p>
-
-<ol>
-<li><p>Para cada \(\small p=1,\dots,k\), estimar todos los modelos con \(p\) parámetros y elegir aquel con menor error (ej., SCR): \(\small M^*_p\)</p></li>
-<li><p>Elegir entre los modelos \(\small M^*_1, \dots, M^*_k\) usando validación cruzada o similar</p></li>
+<ol style="list-style-type: decimal">
+<li><p>Para cada <span class="math inline">\(\small p=1,\dots,k\)</span>, estimar todos los modelos con <span class="math inline">\(p\)</span> parámetros y elegir aquel con menor error (ej., SCR): <span class="math inline">\(\small M^*_p\)</span></p></li>
+<li><p>Elegir entre los modelos <span class="math inline">\(\small M^*_1, \dots, M^*_k\)</span> usando validación cruzada o similar</p></li>
 </ol></li>
-<li><p>No validamos todos, pero estimarlos es prohibitivo para \(\small k\) moderada</p></li>
+<li><p>No validamos todos, pero estimarlos es prohibitivo para <span class="math inline">\(\small k\)</span> moderada</p></li>
 </ul>
-
-</article></slide><slide class=""><hgroup><h2>Selección paso a paso hacia adelante</h2></hgroup><article  id="selección-paso-a-paso-hacia-adelante">
-
+</div>
+<div id="selección-paso-a-paso-hacia-adelante" class="section level2">
+<h2>Selección paso a paso hacia adelante</h2>
 <ul>
-<li><p>Procedimiento: empezando por modelo sin regresores \(\small M_0\)</p>
-
-<ol>
-<li>Para cada \(\small p=0, 1,\dots,k-1\), estimar todos los modelos que añadan UN regresor a \(\small M^f_p\)</li>
-<li>Elegir como modelo \(\small M^f_{p+1}\) el que tiene menor SCR</li>
-<li>Elegir entre \(\small M_0, M^f_1, \dots, M^f_k\) con validación cruzada o similar</li>
+<li><p>Procedimiento: empezando por modelo sin regresores <span class="math inline">\(\small M_0\)</span></p>
+<ol style="list-style-type: decimal">
+<li>Para cada <span class="math inline">\(\small p=0, 1,\dots,k-1\)</span>, estimar todos los modelos que añadan UN regresor a <span class="math inline">\(\small M^f_p\)</span></li>
+<li>Elegir como modelo <span class="math inline">\(\small M^f_{p+1}\)</span> el que tiene menor SCR</li>
+<li>Elegir entre <span class="math inline">\(\small M_0, M^f_1, \dots, M^f_k\)</span> con validación cruzada o similar</li>
 </ol></li>
 </ul>
-
 <!--
 * Muchos menos modelos: $\small k-p$ por iteración, en total $\small 1+\frac{p(p+1)}{2}$
 -->
-
 <ul>
-<li><p>Solo \(\small 1+\frac{p(p+1)}{2}\) modelos</p></li>
-<li><p>Factible aunque \(\small k&gt;n\) pero para modelo \(M_0,\dots,M^f_{n-1}\)</p></li>
+<li><p>Solo <span class="math inline">\(\small 1+\frac{p(p+1)}{2}\)</span> modelos</p></li>
+<li><p>Factible aunque <span class="math inline">\(\small k&gt;n\)</span> pero para modelo <span class="math inline">\(M_0,\dots,M^f_{n-1}\)</span></p></li>
 <li><p>No se garantiza encontrar el mejor subconjunto, por eliminar pronto un regresor importante</p>
-
 <ul>
-<li>ej. el mejor \(\small M^*_2\) no usa el regresor de <!--del mejor modelo de un regresor--> \(\small M^f_1=M^*_1\)</li>
+<li>ej. el mejor <span class="math inline">\(\small M^*_2\)</span> no usa el regresor de <!--del mejor modelo de un regresor--> <span class="math inline">\(\small M^f_1=M^*_1\)</span></li>
 </ul></li>
 </ul>
-
-</article></slide><slide class=""><hgroup><h2>Selección paso a paso hacia atrás</h2></hgroup><article  id="selección-paso-a-paso-hacia-atrás">
-
+</div>
+<div id="selección-paso-a-paso-hacia-atrás" class="section level2">
+<h2>Selección paso a paso hacia atrás</h2>
 <ul>
-<li><p>Procedimiento: empezando por modelo con todos los regresores \(\small M_k\)</p>
-
-<ol>
-<li>Para cada \(\small p=k, k-1, \dots,1\), estimar todos los modelos que eliminan UN regresor a \(\small M^b_p\)</li>
-<li>Elegir como modelo \(\small M^b_{p-1}\) el que tiene menor SCR</li>
-<li>Elegir entre \(\small M_0, M^b_1, \dots, M^b_k\) usando validación cruzada o similar</li>
+<li><p>Procedimiento: empezando por modelo con todos los regresores <span class="math inline">\(\small M_k\)</span></p>
+<ol style="list-style-type: decimal">
+<li>Para cada <span class="math inline">\(\small p=k, k-1, \dots,1\)</span>, estimar todos los modelos que eliminan UN regresor a <span class="math inline">\(\small M^b_p\)</span></li>
+<li>Elegir como modelo <span class="math inline">\(\small M^b_{p-1}\)</span> el que tiene menor SCR</li>
+<li>Elegir entre <span class="math inline">\(\small M_0, M^b_1, \dots, M^b_k\)</span> usando validación cruzada o similar</li>
 </ol></li>
-<li><p>Solo \(\small 1+\frac{p(p+1)}{2}\) modelos</p></li>
-<li><p>Pero no factible si \(\small k&gt;n\) (no se puede ajustar \(M_{k}\))</p></li>
+<li><p>Solo <span class="math inline">\(\small 1+\frac{p(p+1)}{2}\)</span> modelos</p></li>
+<li><p>Pero no factible si <span class="math inline">\(\small k&gt;n\)</span> (no se puede ajustar <span class="math inline">\(M_{k}\)</span>)</p></li>
 <li><p>NADA garantiza acabar con el mejor subconjunto de regresores</p></li>
 </ul>
-
-</article></slide><slide class=""><hgroup><h2>Otros procedimientos</h2></hgroup><article  id="otros-procedimientos">
-
+</div>
+<div id="otros-procedimientos" class="section level2">
+<h2>Otros procedimientos</h2>
 <ul>
 <li><p><strong>Selección mixta</strong> de subconjuntos: en cada iteración se añaden variables de forma secuencial, pero también se eliminan las que ya no mejoren el ajuste</p>
-
 <ul>
 <li>simulan la selección de mejores subconjuntos, con las ventajas computacionales de selección por pasos.</li>
 </ul></li>
 <li><p>Estimar <em>directamente</em> el error de prueba mediante validación cruzada</p></li>
-<li><p>Estimar <em>indirectamente</em> el error de prueba mediante <strong>ajustes</strong> en el error de entrenamiento para tener en cuenta el sesgo por &ldquo;overfitting&rdquo;</p></li>
+<li><p>Estimar <em>indirectamente</em> el error de prueba mediante <strong>ajustes</strong> en el error de entrenamiento para tener en cuenta el sesgo por “overfitting”</p></li>
 <li><p>Todos estos métodos (y los anteriores de selección) se pueden usar también en regresión logística</p></li>
 </ul>
-
-</article></slide><slide class=""><hgroup><h2>Ajustes mediante penalización</h2></hgroup><article  id="ajustes-mediante-penalización">
-
+</div>
+<div id="ajustes-mediante-penalización" class="section level2">
+<h2>Ajustes mediante penalización</h2>
 <ul>
-<li><p>Sea \(\small n\) el número de observaciones, \(\small p\) el número de parámetros y \(\small \widehat{\sigma}^2\) un estimación de la varianza del error \(\small \varepsilon\)</p></li>
-<li><p>\(\small C_p\) de Mallow: \(C_p = \frac{1}{n}\left( SCR + 2 d \widehat{\sigma}^2 \right)\)</p></li>
-<li><p>Criterio de Información de Akaike \(AIC = - 2 log L + 2 d\)</p>
-
+<li><p>Sea <span class="math inline">\(\small n\)</span> el número de observaciones, <span class="math inline">\(\small p\)</span> el número de parámetros y <span class="math inline">\(\small \widehat{\sigma}^2\)</span> un estimación de la varianza del error <span class="math inline">\(\small \varepsilon\)</span></p></li>
+<li><p><span class="math inline">\(\small C_p\)</span> de Mallow: <span class="math inline">\(C_p = \frac{1}{n}\left( SCR + 2 d \widehat{\sigma}^2 \right)\)</span></p></li>
+<li><p>Criterio de Información de Akaike <span class="math inline">\(AIC = - 2 log L + 2 d\)</span></p>
 <ul>
-<li>\(\small L\)=valor maximizado de la función de verosimilitud</li>
+<li><span class="math inline">\(\small L\)</span>=valor maximizado de la función de verosimilitud</li>
 </ul></li>
-<li><p>En modelos lineales con errores normales \(C_p = AIC\)</p></li>
-<li><p>Criterio de Información Bayesiano: \(BIC = \frac{1}{n}\left( SCR + log(n) d \widehat{\sigma}^2 \right)\)</p>
-
+<li><p>En modelos lineales con errores normales <span class="math inline">\(C_p = AIC\)</span></p></li>
+<li><p>Criterio de Información Bayesiano: <span class="math inline">\(BIC = \frac{1}{n}\left( SCR + log(n) d \widehat{\sigma}^2 \right)\)</span></p>
 <ul>
-<li>\(\small n&gt;7 \Rightarrow log(n)&gt;2\), \(\small BIC\) penaliza más modelos con más parámetros</li>
+<li><span class="math inline">\(\small n&gt;7 \Rightarrow log(n)&gt;2\)</span>, <span class="math inline">\(\small BIC\)</span> penaliza más modelos con más parámetros</li>
 </ul></li>
-<li><p>\(R^2-ajustado = 1- \frac{SCR/(n-d-1)}{SCT/(n-1)}\) o \(SCR/(n-d-1)\)</p></li>
+<li><p><span class="math inline">\(R^2-ajustado = 1- \frac{SCR/(n-d-1)}{SCT/(n-1)}\)</span> o <span class="math inline">\(SCR/(n-d-1)\)</span></p></li>
 </ul>
-
-</article></slide><slide class=""><hgroup><h2>Ajustar o Validar</h2></hgroup><article  id="ajustar-o-validar">
-
+</div>
+<div id="ajustar-o-validar" class="section level2">
+<h2>Ajustar o Validar</h2>
 <ul>
 <li><p>Validación cruzada ofrece una estimación <strong>más directa</strong></p></li>
 <li><p>Los métodos de ajuste ofrecen una estimación indirecta a través de supuestos que pueden ser erróneos</p></li>
 <li><p>Validación cruzada es computacionalmente <strong>más costosa</strong></p></li>
-<li><p>Validación cruzada NO necesita estimar \(\widehat{\sigma}^2\) (puede ser difícil en algunos modelos)</p></li>
+<li><p>Validación cruzada NO necesita estimar <span class="math inline">\(\widehat{\sigma}^2\)</span> (puede ser difícil en algunos modelos)</p></li>
 <li><p><strong>Regla de parquedad paramétrica</strong> o <strong>de un error estándar</strong>: dado un conjunto de modelos igualmente buenos, es mejor elegir el modelo más simple</p>
-
 <ul>
 <li>seleccionar el modelo con menos variables que esté dentro de un error estándar del menor error de prueba estimado.</li>
 </ul></li>
 </ul>
-
-</article></slide><slide class=""><hgroup><h2>Métodos de regularización</h2></hgroup><article  id="métodos-de-regularización">
-
+</div>
+<div id="métodos-de-regularización" class="section level2">
+<h2>Métodos de regularización</h2>
 <ul>
 <li><p>Alternativa a mínimos cuadrados con selección de regresores</p></li>
 <li><p>Ajustar un modelo que contenga <strong>todos</strong> los regresores, PERO con una técnica que limite las estimaciones de los coeficientes, o las reduzca a cero.</p></li>
 <li><p>A priori, NO es obvio por qué esa restricción debería mejorar el ajuste, pero esto reduce su varianza</p></li>
 <li><p>Dos enfoques</p>
-
 <ul>
-<li>&ldquo;Ridge regression&rdquo;: se reducen los coeficientes</li>
-<li>LASSO (&ldquo;least absolute shrinkage and selection operator&rdquo;): selección automática de regresores</li>
+<li>“Ridge regression”: se reducen los coeficientes</li>
+<li>LASSO (“least absolute shrinkage and selection operator”): selección automática de regresores</li>
 </ul></li>
 <li><p>Regresión de red elástica, incorpora ambos</p></li>
 </ul>
-
-</article></slide><slide class=""><hgroup><h2>&ldquo;Ridge Regression&rdquo;</h2></hgroup><article  id="ridge-regression">
-
+</div>
+<div id="ridge-regression" class="section level2">
+<h2>“Ridge Regression”</h2>
 <ul>
-<li><p>En <em>MCO</em>: \(\small \min_{\beta}=SCR={\sum_{i=1}^{n}\left(y-\widehat{y}\right)^2}\)</p></li>
-<li><p>Añadir restricciones para prevenir &ldquo;overfitting&rdquo; \(\small \sum_{j=1}^{p}\beta_j^2 \leq c\)</p></li>
-<li><p>Se obtiene un coeficiente estimado \(\small \widehat{\beta}^R_{\lambda}\) que minimiza \[
+<li><p>En <em>MCO</em>: <span class="math inline">\(\small \min_{\beta}=SCR={\sum_{i=1}^{n}\left(y-\widehat{y}\right)^2}\)</span></p></li>
+<li><p>Añadir restricciones para prevenir “overfitting” <span class="math inline">\(\small \sum_{j=1}^{p}\beta_j^2 \leq c\)</span></p></li>
+<li><p>Se obtiene un coeficiente estimado <span class="math inline">\(\small \widehat{\beta}^R_{\lambda}\)</span> que minimiza <span class="math display">\[
 SCR + \lambda \sum_{j=1}^{p}\beta_j^2 = SCR + \lambda ||\beta||_2^2
-\]</p>
-
+\]</span></p>
 <ul>
-<li><p>\(||\beta||_2 = \sqrt{\sum_{j=1}^{p}\beta_j^2}\) es la norma L2 (\(\ell_2\)) del vector de coeficientes</p></li>
-<li><p>\(\lambda \geq 0\) es un parámetro de ajuste (&ldquo;tuning parameter&rdquo;)</p></li>
+<li><p><span class="math inline">\(||\beta||_2 = \sqrt{\sum_{j=1}^{p}\beta_j^2}\)</span> es la norma L2 (<span class="math inline">\(\ell_2\)</span>) del vector de coeficientes</p></li>
+<li><p><span class="math inline">\(\lambda \geq 0\)</span> es un parámetro de ajuste (“tuning parameter”)</p></li>
 </ul></li>
 </ul>
-
-</article></slide><slide class=""><hgroup><h2>&ldquo;Ridge Regression&rdquo;: penalización de contracción</h2></hgroup><article  id="ridge-regression-penalización-de-contracción">
-
-<p>\[\small
+</div>
+<div id="ridge-regression-penalización-de-contracción" class="section level2">
+<h2>“Ridge Regression”: penalización de contracción</h2>
+<p><span class="math display">\[\small
 \widehat{\beta}^R_{\lambda} = \arg \min_\beta SCR + \lambda \sum_{j=1}^{p}\beta_j^2 
-\]</p>
-
+\]</span></p>
 <ul>
 <li><p>Tratamos de ajustarnos a los datos minimizando SCR, PERO se recompensa a los coeficientes cercanos a cero: <strong>penalización de contracción</strong></p></li>
-<li><p>NO se penaliza a la constante (media de \(\small Y\)), solo el impacto de \(\small X\)</p></li>
-<li><p>\(\small \lambda\)= importancia de la penalización (cuanto se contraen los coeficientes)</p>
-
+<li><p>NO se penaliza a la constante (media de <span class="math inline">\(\small Y\)</span>), solo el impacto de <span class="math inline">\(\small X\)</span></p></li>
+<li><p><span class="math inline">\(\small \lambda\)</span>= importancia de la penalización (cuanto se contraen los coeficientes)</p>
 <ul>
-<li><p>\(\small \lambda \approx 0\), cercano a MCO</p></li>
-<li><p>\(\small \lambda &gt;&gt; 0\), todos los coeficientes se van a cero</p></li>
+<li><p><span class="math inline">\(\small \lambda \approx 0\)</span>, cercano a MCO</p></li>
+<li><p><span class="math inline">\(\small \lambda &gt;&gt; 0\)</span>, todos los coeficientes se van a cero</p></li>
 </ul></li>
-<li><p>Ventaja sobre la selección de regresores: SOLO necesitamos ajustar un modelo para cada valor de \(\small \lambda\)</p></li>
+<li><p>Ventaja sobre la selección de regresores: SOLO necesitamos ajustar un modelo para cada valor de <span class="math inline">\(\small \lambda\)</span></p></li>
 </ul>
-
-</article></slide><slide class=""><hgroup><h2>&ldquo;Ridge Regression&rdquo;: Advertencia</h2></hgroup><article  id="ridge-regression-advertencia">
-
+</div>
+<div id="ridge-regression-advertencia" class="section level2">
+<h2>“Ridge Regression”: Advertencia</h2>
 <ul>
-<li><p>En MCO los coeficientes estimados son equivariantes a la escala de los regresores. En &ldquo;Ridge Regression&rdquo;, NO.</p></li>
-<li><p>En MCO, si \(\small X_j\) por una constante, \(\small c\), el coeficiente estimado se reescala por \(\small 1/c\) y el valor predicho \(\widehat{\beta_j}X_j\) sigue siendo el mismo.</p></li>
-<li><p>\(SCR\) no cambia cuando se reescala un regresor, PERO la penalización SÍ</p></li>
-<li><p>Los coeficientes estimados de &ldquo;ridge regression&rdquo; pueden cambiar drásticamente después de reescalar cualquier variable</p></li>
-<li><p>Se recomienda ajustar &ldquo;ridge regression&rdquo; <strong>después de estandarizar</strong> los regresores: \[
+<li><p>En MCO los coeficientes estimados son equivariantes a la escala de los regresores. En “Ridge Regression”, NO.</p></li>
+<li><p>En MCO, si <span class="math inline">\(\small X_j\)</span> por una constante, <span class="math inline">\(\small c\)</span>, el coeficiente estimado se reescala por <span class="math inline">\(\small 1/c\)</span> y el valor predicho <span class="math inline">\(\widehat{\beta_j}X_j\)</span> sigue siendo el mismo.</p></li>
+<li><p><span class="math inline">\(SCR\)</span> no cambia cuando se reescala un regresor, PERO la penalización SÍ</p></li>
+<li><p>Los coeficientes estimados de “ridge regression” pueden cambiar drásticamente después de reescalar cualquier variable</p></li>
+<li><p>Se recomienda ajustar “ridge regression” <strong>después de estandarizar</strong> los regresores: <span class="math display">\[
 \small
 \widetilde{x}_{ij} = \frac{x_{ij}}{\sqrt{ \frac{1}{n}\sum_{i=1}^n(x_{ij}-\bar{x}_j)^2}}
-\]</p></li>
+\]</span></p></li>
 </ul>
-
-</article></slide><slide class=""><hgroup><h2>&ldquo;Ridge Regression&rdquo;: &ldquo;trade-off&rdquo; sesgo varianza</h2></hgroup><article  id="ridge-regression-trade-off-sesgo-varianza">
-
+</div>
+<div id="ridge-regression-trade-off-sesgo-varianza" class="section level2">
+<h2>“Ridge Regression”: “trade-off” sesgo varianza</h2>
 <ul>
-<li><p>¿Por qué &ldquo;ridge regression&rdquo; mejoraría el ajuste sobre MCO? Por el &ldquo;trade-off&rdquo; entre sesgo y varianza</p>
-
+<li><p>¿Por qué “ridge regression” mejoraría el ajuste sobre MCO? Por el “trade-off” entre sesgo y varianza</p>
 <ul>
-<li><p>\(\small \lambda\) aumenta (menos parecido a MCO), la flexibilidad disminuye: más sesgo, menos varianza</p></li>
-<li><p>\(\small \lambda\) disminuye, la flexibilidad aumenta: menos sesgo, más varianza</p></li>
+<li><p><span class="math inline">\(\small \lambda\)</span> aumenta (menos parecido a MCO), la flexibilidad disminuye: más sesgo, menos varianza</p></li>
+<li><p><span class="math inline">\(\small \lambda\)</span> disminuye, la flexibilidad aumenta: menos sesgo, más varianza</p></li>
 </ul></li>
-<li><p>&ldquo;Ridge regression&rdquo; funciona mejor cuando MCO tiene alta varianza: intercambia un poco más de sesgo por una gran reducción de la varianza</p></li>
+<li><p>“Ridge regression” funciona mejor cuando MCO tiene alta varianza: intercambia un poco más de sesgo por una gran reducción de la varianza</p></li>
 <li><p>Sin embargo, NO realiza selección de variables: sigue incluyendo <em>todos</em> los regresores</p>
-
 <ul>
 <li>puede complicar la interpretación con muchos, porque ninguno será exactamente cero</li>
 </ul></li>
 </ul>
-
-</article></slide><slide class=""><hgroup><h2>LASSO</h2></hgroup><article  id="lasso">
-
+</div>
+<div id="lasso" class="section level2">
+<h2>LASSO</h2>
 <ul>
-<li>Idea similar \(\small \min_{\beta}=SCR={\sum_{i=1}^{n}\left(y-\widehat{y}\right)^2}\), sujeto a \(\small \sum_{j=1}^{p}\beta_j^2 \leq c\)</li>
+<li>Idea similar <span class="math inline">\(\small \min_{\beta}=SCR={\sum_{i=1}^{n}\left(y-\widehat{y}\right)^2}\)</span>, sujeto a <span class="math inline">\(\small \sum_{j=1}^{p}\beta_j^2 \leq c\)</span></li>
 </ul>
-
 <!--
 * Selección de mejor conjunto impone restricción
 $\small \sum_{j=1}^{p} I(\beta_j \neq 0) \leq s$
@@ -351,58 +505,114 @@ Tampoco es factible: requiere considerar todos los modelso que tiene s regresore
 
 LASSO/ridge  más factibles computacionalmente: sustituyen unas restricciones intratablse por alternativas mucho más fáciles de resolver
 -->
-
-<p>\[
+<p><span class="math display">\[
 \widehat{\beta}^L_{\lambda} = \arg \min_\beta SCR + \lambda \sum_{j=1}^{p}|\beta_j| 
-\]</p>
-
+\]</span></p>
 <ul>
-<li><p>LASSO utiliza una penalización basada en la norma L1 (\(\small \ell_1\)): \[\small
+<li><p>LASSO utiliza una penalización basada en la norma L1 (<span class="math inline">\(\small \ell_1\)</span>): <span class="math display">\[\small
 ||\beta||_1 = \sum_{j=1}^{p} |\beta_j|
-\]</p></li>
-<li><p>También contrae los coeficientes estimados hacia cero, PERO obliga algunos a ser <strong>exactamente iguales a cero</strong> cuando \(\small \lambda\) es grande</p></li>
+\]</span></p></li>
+<li><p>También contrae los coeficientes estimados hacia cero, PERO obliga algunos a ser <strong>exactamente iguales a cero</strong> cuando <span class="math inline">\(\small \lambda\)</span> es grande</p></li>
 <li><p>LASSO realiza la selección de variables.</p></li>
 </ul>
-
-</article></slide><slide class=""><hgroup><h2>LASSO</h2></hgroup><article  id="lasso-1">
-
+</div>
+<div id="lasso-1" class="section level2">
+<h2>LASSO</h2>
 <center>
-
-<img width="90%" src='pic/lasso.png' title=''/>
-
+<img src="pic/lasso.png" style="width:90.0%" />
 </center>
-
-</article></slide><slide class=""><hgroup><h2>LASSO vs. &ldquo;Ridge Regression&rdquo;</h2></hgroup><article  id="lasso-vs.-ridge-regression">
-
+</div>
+<div id="lasso-vs.-ridge-regression" class="section level2">
+<h2>LASSO vs. “Ridge Regression”</h2>
 <ul>
 <li><p>Ambos reducen significativamente la varianza a expensas de un pequeño aumento del sesgo</p></li>
-<li><p>&ldquo;Ridge regression&rdquo; domina cuando hay muchos regresores igualmente importantes</p></li>
+<li><p>“Ridge regression” domina cuando hay muchos regresores igualmente importantes</p></li>
 <li><p>LASSO domina cuando hay un pequeño número de regresores importantes y muchos otros que no son útiles</p></li>
 <li><p>Generalización: Regresión de red elástica</p></li>
 </ul>
-
-<p>\[\small
+<p><span class="math display">\[\small
 \min_{\beta}=SCR+\lambda \big[ (1-\alpha)||\beta||_2^2/2 + \alpha||\beta||_1\big]
-\]</p>
-
-</article></slide><slide class=""><hgroup><h2>Eligiendo el parámetro de ajuste</h2></hgroup><article  id="eligiendo-el-parámetro-de-ajuste">
-
+\]</span></p>
+</div>
+<div id="eligiendo-el-parámetro-de-ajuste" class="section level2">
+<h2>Eligiendo el parámetro de ajuste</h2>
 <ul>
 <li><p>Necesitamos un método para determinar qué modelo es el mejor: validación cruzada.</p></li>
 <li><p>Un algoritmo general para seleccionar un parámetro de ajuste:</p>
-
-<ol>
-<li><p>Elegir un rango de valores para \(\small \lambda\)</p></li>
-<li><p>Calcular el error mediante validación cruzada para cada valor de \(\small \lambda\)</p></li>
+<ol style="list-style-type: decimal">
+<li><p>Elegir un rango de valores para <span class="math inline">\(\small \lambda\)</span></p></li>
+<li><p>Calcular el error mediante validación cruzada para cada valor de <span class="math inline">\(\small \lambda\)</span></p></li>
 <li><p>Seleccionar el valor con menor error</p></li>
 <li><p>Volver a ajustar el modelo usando todas las observaciones y el valor del parámetro de ajuste seleccionado.</p></li>
 </ol></li>
-</ul></article></slide>
+</ul>
+</div>
+<div id="glmnet" class="section level2">
+<h2><code>glmnet</code></h2>
+<ul>
+<li>Para regresión lineal</li>
+</ul>
+<pre class="r"><code>library(mosaicData)
+library(glmnet)
+x &lt;- model.matrix(volume ~ spring + summer + fall + weekday + poly(avgtemp, 6), data = RailTrail)
+
+fit.lmreg &lt;- glmnet(x = x, y = RailTrail$volume, family=&quot;gaussian&quot;,lambda=0.5, alpha=0.5)
+coef(fit.lmreg)
+
+set.seed(1)  # validación cruzada para elegir parámetro de regularización
+cv.glmnet(x,RailTrail$volume) %&gt;% plot()</code></pre>
+</div>
+<div id="glmnet-cont." class="section level2">
+<h2><code>glmnet</code> (cont.)</h2>
+<ul>
+<li>Para regresión logística</li>
+</ul>
+<pre class="r"><code>censo &lt;- read_csv(&quot;https://www.dropbox.com/s/6bqyjnkd2c638rm/census.csv?dl=1&quot;) %&gt;%
+  mutate(income = as.integer(factor(income))-1)
+x &lt;- model.matrix(income ~ education + relationship + poly(age,2) + workclass + occupation, 
+              family = &quot;binomial&quot;, data = censo)
+
+fit.glmreg &lt;- glmnet(x = x, y = censo$income, lambda=0.001, alpha=1)
+coef(fit.glmreg)
+
+set.seed(1)  # validación cruzada para elegir parámetro de regularización
+cv.glmnet(x, censo$income) %&gt;% plot()</code></pre>
+</div>
 
 
-  <slide class="backdrop"></slide>
 
-</slides>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
@@ -411,20 +621,6 @@ LASSO/ridge  más factibles computacionalmente: sustituyen unas restricciones in
     script.type = "text/javascript";
     script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
-
-<!-- map slide visiblity events into shiny -->
-<script>
-  (function() {
-    if (window.jQuery) {
-       window.jQuery(document).on('slideleave', function(e) {
-         window.jQuery(e.target).trigger('hidden');
-      });
-       window.jQuery(document).on('slideenter', function(e) {
-         window.jQuery(e.target).trigger('shown');
-      });
-    }
   })();
 </script>
 

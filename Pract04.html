@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Prof.: Pedro Albarrán" />
+<meta name="author" content="Prof.: Alberto Pérez" />
+
+
+<title>Practica 04 - ‘Web Scraping’ con rvest</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Big Data (UA)</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Introducción</a>
+</li>
+<li>
+  <a href="Contenidos.html">Contenidos</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Practica 04 - ‘Web Scraping’ con <code>rvest</code></h1>
+<h4 class="author">Prof.: Pedro Albarrán</h4>
+<h4 class="author">Prof.: Alberto Pérez</h4>
+<h4 class="date">Universidad de Alicante, Curso 2020/21</h4>
+
+</div>
+
+
+<div id="scraping-con-rvest" class="section level2">
+<h2><em>Scraping</em> con <code>rvest</code></h2>
+<p>Internet es un gran lugar para obtener datos. Podemos usar <code>rvest</code> para extraer (en inglés, <em>scrap</em> significa literalmente raspar o rascar una superficie) los datos en tablas HTML de la web, pero a menudo requerirá una limpieza extensa antes de que se puedan usar adecuadamente.</p>
+<p>Considerar la siguiente lista de los fines de semana de apertura de taquillas más grandes:</p>
+<p>(<a href="http://www.boxofficemojo.com/alltime/weekends/" class="uri">http://www.boxofficemojo.com/alltime/weekends/</a>)</p>
+<p>Usando <code>rvest</code> podemos traer esta tabla a R.</p>
+<pre class="r"><code>library(rvest)
+url &lt;- &quot;http://www.boxofficemojo.com/alltime/weekends/&quot;</code></pre>
+<p>Primero, necesitaremos leer el contenido de la página en HTML. La función <code>read_html()</code> proporcionada por <code>rvest</code> procesa el HTML:</p>
+<pre class="r"><code>html_bom &lt;- read_html(url)
+class(html_bom)
+html_bom</code></pre>
+<p>Desafortunadamente, esto no es muy legible. Lo que queremos es extraer los datos que están incrustados en las tablas HTML. Empecemos por tomar esas tablas que están dentro de los elementos del html llamados “table”. Para ello podemos utilizar <code>html_nodes()</code>:</p>
+<pre class="r"><code>tables &lt;- html_bom %&gt;%
+  html_nodes(&quot;table&quot;)
+tables</code></pre>
+<!--
+En este caso, había 6 elementos de tabla en esa página (la mayoría de ellos usados para crear los bordes). Sólo nos interesa el grande con todos los datos. Este es el quinto elemento de la lista (nota: averiguadpo por prueba y error).
+
+```r
+tables[[5]]
+```
+-->
+<p>En este caso, solo hay 1 elementos de tabla en esa página .</p>
+<pre class="r"><code>tables[[1]]</code></pre>
+<p>La función <code>html_table()</code> extraerá los datos de esta tabla y los convertirá en un <em>data frame</em>. La opción <code>header = TRUE</code> indica a R que queremos usar la primera fila como nuestros nombres de variable.</p>
+<pre class="r"><code>movies &lt;- tables[[1]] %&gt;%
+  html_table(header = TRUE)
+glimpse(movies)</code></pre>
+<p>En algunas ocasiones, existen más de una table en una página web. Si son pocas se puede determinar cuál nos interesa mediante prueba y error. En particular, en esta caso sabemos que los datos tienen 200 observaciones y 9 columnas; si lo que leemos tiene una dimensiones (obtenidas con <code>glimpse()</code> o <code>str()</code>) muy diferentes no debe ser la tabla que buscamos. En cualquier caso, con muchas tablas en la página web, necesitaremos nuevas herramientas de programación que veremos en breve.</p>
+<!--
+En este caso sólo teníamos 6 tablas, así que no fue demasiado difícil usar prueba y error para averiguar cuál era la que queríamos. Pero también podríamos ser un poco más sistemáticos.
+
+Usemos `lapply()` para extraer las 6 tablas, en un objeto de tipo lista con una longitud de 6:
+
+```r
+list_of_tables <- lapply(tables, html_table, fill = TRUE)
+class(list_of_tables)
+length(list_of_tables)
+str(list_of_tables)
+```
+
+Puesto que `html_table()` asigna las tablas HTML a *data frames* en R, cada uno de los seis elementos de la lista list_of_tables es un *data frame*. Sin embargo, algunas de las tablas son más grandes que otras.
+
+
+```r
+lapply(list_of_tables, class)
+lapply(list_of_tables, dim)
+```
+
+Es obvio desde la propia página web que la tabla que queremos tiene 9 variables y 214 filas. Sólo (el quinto elemento)[http://www.imdb.com/title/tt0119116/] de nuestra lista cumple con ese criterio.
+-->
+</div>
+<div id="limpieza-de-datos" class="section level2">
+<h2>Limpieza de datos</h2>
+<p>Si bien ahora tenemos los datos, podemos ver que son muy confusos:</p>
+<ul>
+<li><p>los nombres de las variables contienen caracteres especiales, como asteriscos, paréntesis y espacios. Esto puede causar problemas, así que queremos cambiarlos.</p></li>
+<li><p>la mayoría de las columnas se almacenan como vectores de caracteres, aunque contienen información cuantitativa. En particular, hay columnas para dólares, porcentajes y fechas que están en el formato equivocado.</p></li>
+</ul>
+<p>Debido a este desajuste, si intentamos dibujar los datos, esto no funcionará como se esperaba.</p>
+<pre class="r"><code>ggplot(
+  data = movies, 
+  aes(x = Date, y = Opening)
+) + 
+  geom_point(aes(size = `% of Total`))</code></pre>
+<p>Nota que cuando los nombres de la variables tienen caracteres “raros” se debe utilizar ` para marcar el inicio y el final del nombre. Esto incluye cualquier caracter no alfanumerico en cualquier posición del nombre de la variable y también los números al comienzo del nombre de una variable. Aquí esto sucede tanto por símbolo % como por el espacio. Otros caracteres no alfanumericos son cualquier simbolo de puntuación, barras o letras como la ñ.</p>
+<p>La función <code>parse_number()</code> del paquete <code>readr</code> es extremadamente útil para limpiar signos de dólar, comas y signos de porcentaje en los valores (Ojo, esto es diferente de los caracteres raros en el nombre mencionado antes). Usaremos esto en conjunción con el verbo <code>mutate()</code> para renombrar las columnas al mismo tiempo.</p>
+<pre class="r"><code>library(readr)
+movies &lt;- movies %&gt;%
+  mutate(opening = parse_number(Opening),
+         percent_total = parse_number(`% of Total`)/100)
+glimpse(movies)</code></pre>
+<p>Ahora, cuando dibujamos los datos cuantitativos, obtenemos algo que tiene más sentido.</p>
+<pre class="r"><code>ggplot(data = movies, aes(x = Date, y = opening)) + 
+  geom_point(aes(size = percent_total))</code></pre>
+<div id="ejercicio" class="section level3">
+<h3>Ejercicio</h3>
+<p>También crear una nueva variable llamada <code>num_theaters</code> que almacena el número de teatros como un entero, y otras dos más con el promedio y el total recaudado. Responde <a href="https://docs.google.com/forms/d/e/1FAIpQLScJhX5F219jttLOAReSpiT5Mg7aO7-clheg2170DFsprTTp5A/viewform">aquí</a></p>
+<p>Notad que es conveniente usar el tipo de datos enteros cuando estamos seguro de que la variable contiene ese tipo de valores porque se ahorra espacion de almacenamiento. Sin embargo, hay ciertos “límites” a los valores que se pueden representar como enteros: ver <code>help(integer)</code>.</p>
+</div>
+</div>
+<div id="fechas-con-lubridate" class="section level2">
+<h2>Fechas con <code>lubridate</code></h2>
+<p>Desafortunadamente, las fechas siguen siendo un problema. Echemos un vistazo a esas fechas:</p>
+<pre class="r"><code>movies %&gt;%
+  select(Date) %&gt;%
+  glimpse()</code></pre>
+<p>Vemos que las fechas están en formato mes/día/año. Ya hemos visto anterioreme el paquete <code>lubridate</code> que proporciona funcionalidad para trabajar con fechas. Podemos utilizar la función <code>mdy()</code> para convertir el vector de caracteres en una clase de fecha.</p>
+<pre class="r"><code>library(lubridate)
+movies &lt;- movies %&gt;%
+  mutate(release_date = mdy(Date))
+glimpse(movies)</code></pre>
+<pre class="r"><code>ggplot(data = movies, aes(x = release_date, y = opening)) + 
+  #queremos un gráfico de dispersión, y usaremos tanto el color como el tamaño para mostrar porcentaje total
+  geom_point(aes(color = percent_total, size = percent_total)) +
+  # truco para combinar color y tamaño en una sola leyenda 
+  guides(color = guide_legend(&quot;Porcentaje Total&quot;), 
+         size = guide_legend(&quot;Porcentaje Total&quot;)) +
+  # Formatear el eje y para mostrar la cantidad en $.
+  scale_y_continuous(name = &quot;Recaudación en el Día de Apertura&quot;, labels = scales::dollar) +
+  # etiquetamos tambien el ejer de las x (podemos omitir el argumento `name`)
+  scale_x_date(&quot;Fecha de estreno&quot;)</code></pre>
+<div id="mini-práctica" class="section level3">
+<h3>Mini-Práctica</h3>
+<ol style="list-style-type: decimal">
+<li><p>Repetir el ejercicio con la siguiente fuente de información: <a href="http://www.the-numbers.com/movie/records/Biggest-Opening-Weekend-at-the-Box-Office">http://www.the-numbers.com/movie/records/Biggest-Opening-Weekend-at-the-Box-Office</a>. Es decir, debéis extraer los datos relevantes de la web, limpiarlos y dejarlos preparados para trabajar; también realizar un gráfico (a vuestra elección) similar al anterior.</p>
+<p>Debéis enviar un archivo de guión .R respondiendo a <a href="https://docs.google.com/forms/d/e/1FAIpQLSfl1vrJhI_fXjbkLv_OJxgJezCycNC_PF-tiUMfnuAepx_NGA/viewform">este formulario</a>. Como es habitual, el nombre del archivo debe empezar con vuestro número de DNI (el resto es libre): ej., 12345678_P04.R.</p></li>
+</ol>
+<!--
+    a. Extraer los datos relevantes de la web, limpiar/transformar los datos en brutos y dejarlos "cargados" para su posterior análisis. Este es un ejemplo "simple" de lo que se conoce como [ETL](https://es.wikipedia.org/wiki/Extract,_transform_and_load). 
+    b. Realizar un gráfico (a vuestra elección) similar al anterior.\newline\newline
+    
+    Debéis enviar un archivo de guión .R respondiendo a [este formulario](https://docs.google.com/forms/d/e/1FAIpQLSfl1vrJhI_fXjbkLv_OJxgJezCycNC_PF-tiUMfnuAepx_NGA/viewform). Como es habitual, el nombre del archivo debe empezar con vuestro número de DNI (el resto es libre): ej., 12345678_P04.R.
+-->
+<ol start="2" style="list-style-type: decimal">
+<li><p>Partiendo de la tabla de datos obtenida en el apartado 1, realizar un BREVE análisis exploratorio de los datos siguiendo las pautas generales<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> vistas en la Práctica 03 de la asignatura.</p>
+<p>Debéis enviar un archivo de R Markdown y el resultado de renderizarlo (en .html, .docx o .pdf, a vuestra elección) respondiendo a <a href="https://docs.google.com/forms/d/e/1FAIpQLSfcYTZtomecawRE2lt1Dclm_r4zIoBwG0Gxn0C1uKhsf3NA-g/viewform">este formulario</a>. Como es habitual, los nombres de los archivos debe empezar con vuestro número de DNI (el resto es libre): ej., 12345678_P04.Rmd y 12345678_P04.html.</p>
+<p>NOTA: no os compliquéis mucho: hay pocas variables (podéis querer generar alguna) y no hay mucha información para extraer “grandes” conclusiones. Centraros en practicar lo que se discutió en la práctica, describiendo la variación de (algunas) las variables y de las posibles relaciones entre ellas que consideréis más relevantes.</p></li>
+</ol>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Recordad no existe un conjunto cerrado y sistemático de pasos para el análisis exploratorio de datos.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

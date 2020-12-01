@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tema 06B - Programación con bucles</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Tema 06B - Programación con bucles',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                        favIcon: 'Tema06Bsl_files/logo.svg',
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Prof.: Pedro Albarrán' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            {
+        name:  'Prof.: Alberto Pérez' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    code.sourceCode { white-space: pre-wrap; }
+    code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+        
+    slides > slide:not(.nobackground):before {
+      font-size: 12pt;
+      content: "";
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      background: url(Tema06Bsl_files/logo.svg) no-repeat 0 50%;
+      -webkit-background-size: 30px 30px;
+      -moz-background-size: 30px 30px;
+      -o-background-size: 30px 30px;
+      background-size: 30px 30px;
+      padding-left: 40px;
+      height: 30px;
+      line-height: 1.9;
+    }
+  </style>
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+        <aside class="gdbar"><img src="Tema06Bsl_files/logo.svg"></aside>
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Universidad de Alicante, Curso 2020/21</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>Bucles</h2></hgroup><article  id="bucles">
+
+<ul>
+<li><p>Las funciones reducen la duplicación identificando patrones repetidos de código</p></li>
+<li><p>La iteración también ayuda cuando se necesita repetir la misma operación con múltiples entradas</p></li>
+<li><p>Dos paradigmas de iteración:</p>
+
+<ul>
+<li><p>programación imperativa: bucles <code>for</code> y <code>while</code></p></li>
+<li><p>programación funcional: <code>map</code> y <code>lapply</code></p></li>
+</ul></li>
+<li><p>Los bucles <code>for</code> (y <code>while</code>) son una forma adecuada de entender cómo funcionan las iteraciones porque hacen explícitas las iteraciones</p></li>
+<li><p>Los bucles de programación funcional son más claros (menos código y menos propensos a errores)</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Una iteración simple con <code>for</code></h2></hgroup><article  id="una-iteración-simple-con-for">
+
+<pre class = 'prettyprint lang-r'>print(1)
+print(2)
+print(3)</pre>
+
+<ul>
+<li><p>Estamos repitiendo lo mismo <code>print()</code> con 3 entradas diferentes</p></li>
+<li><p>Con un bucle <code>for</code>, una variable <code>x</code> itera sobre los valores de una secuencia</p></li>
+</ul>
+
+<div style="display: flex;">
+<div>
+<pre class = 'prettyprint lang-r'>for (x in 1:3) {
+  print(x)
+}</pre></div>
+
+<div>
+<p>\(\hspace{2cm}\)</p></div>
+
+<div>
+<pre class = 'prettyprint lang-r'>x &lt;- 1
+print(x)
+x &lt;- 2
+print(x)
+x &lt;- 3
+print(x)</pre></div></div>
+
+<ul>
+<li>La secuencia puede ser muy general: <code>1:20</code>, <code>c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot; )</code>, <code>c(1,15, 100, 200, 500)</code></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Elementos en la estructura de un bucle</h2></hgroup><article  id="elementos-en-la-estructura-de-un-bucle">
+
+<!--
+* Ej., calcular la mediana de cuatro variables con un bucle
+-->
+
+<!-- 
+iris[[1]] & iris[,1] son vector: pq iris es data.frame
+iris2 <- as_tibble(iris)  
+iris2[[1]] es vector,
+iris2[,1] & select(iris2,1) es tibble
+-->
+
+<pre class = 'prettyprint lang-r'>output &lt;- vector(&quot;double&quot;, 4)         # 1. resultado
+for (i in 1:4) {                      # 2. secuencia
+  output[[i]] &lt;- median(iris[[i]])    # 3. cuerpo
+}
+output                                # mediana de cada variable</pre>
+
+<ul>
+<li><p><em>Antes de empezar</em>, se reserva espacio para el <strong>resultado</strong>: nuevo objeto con <code>vector()</code>, especificando tipo y longitud</p>
+
+<ul>
+<li>También se puede modificar un objeto ya existente</li>
+</ul></li>
+<li><p>La <strong>secuencia</strong> se puede iterar sobre índice numérico obtenido, p.e., usando <code>seq_along(x)</code> <!-- (más limpio que `1:length(x)` para `x` vacio) --></p>
+
+<ul>
+<li>Accedemos a los elementos con <code>x[[i]]</code>: son listas, <em>data frame</em> o aclarara que son un sólo elemento de un vector</li>
+</ul>
+
+<!--
++ En bucles, solemos acceder a los elementos con `x[[i]]`, en lugar de con `[`, porque se suele modificar listas o *data frame* 
+
++ Y con los vectores para aclarar que se trabaja con un solo elemento -->
+
+<ul>
+<li>También se puede iterar sobre elementos <code>for (i in x)</code> o nombres <code>for (i in names(x))</code></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Elementos en la estructura de un bucle (cont.)</h2></hgroup><article  id="elementos-en-la-estructura-de-un-bucle-cont.">
+
+<ul>
+<li>Si no conocemos la longitud de la secuencia, trabajar con listas (vacias) y colapsar a vector es más rápido que concatenar con <code>c()</code></li>
+</ul>
+
+<div style="display: flex;">
+<div>
+<!-- vector("double") = double() -->
+
+<!-- double() tambien se puede asignar como list() -->
+
+<pre class = 'prettyprint lang-r'>x &lt;- iris[,1:4]
+output &lt;- vector(&quot;double&quot;)    
+for (i in seq_along(x)) {
+  output &lt;- c(output, mean(x[[i]]))
+}</pre></div>
+
+<div>
+<p>\(\hspace{1cm}\)</p></div>
+
+<div>
+<!-- list() = vector("list") -->
+
+<!-- alterntiva a unlist():  purrr::flatten_dbl() -->
+
+<pre class = 'prettyprint lang-r'>x &lt;- iris[,1:4]
+output &lt;- list()    
+for (i in seq_along(x)) {
+  output[[i]] &lt;- mean(x[[i]])
+}
+output %&gt;% unlist() </pre></div></div>
+
+<!--
+* Para cadena larga, en lugar de `paste()` en cada iteración, guardar en vector y combinar al final `paste(output, collapse = "")`
+
+* Para una gran tabla de datos, en lugar de `rbind()`, guardar la tabla de cada iteración en una lista y al final usar `dplyr::bind_rows(output)`
+-->
+
+<ul>
+<li><p>Igualmente, NO ir pegando caracteres (<code>paste()</code>) NI añadiendo filas (<code>rbind()</code>) a una tabla sino hacerlo al final</p>
+
+<ul>
+<li><p><code>paste(output, collapse = &quot;&quot;)</code></p></li>
+<li><p><code>dplyr::bind_rows(output)</code></p></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2><code>while</code>: longitud de la secuencia desconocida</h2></hgroup><article  id="while-longitud-de-la-secuencia-desconocida">
+
+<ul>
+<li>Un bucle <code>while</code> solo tiene dos componentes: se ejecuta el <strong>cuerpo</strong> mientras se cumpla una <strong>condición</strong></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>while (condición) {
+  # cuerpo
+}</pre>
+
+<ul>
+<li><p>Se suele usar en simulaciones y otras situaciones en la que no se sabe cuantas veces se debe ejecutar un código</p></li>
+<li><p>En ocasiones <code>for</code> y <code>while</code> son equivalentes</p></li>
+</ul>
+
+<div style="display: flex;">
+<div>
+<pre class = 'prettyprint lang-r'>for (i in seq_along(x)) {
+  # cuerpo
+}</pre></div>
+
+<div>
+<p>\(\hspace{2cm}\)</p></div>
+
+<div>
+<pre class = 'prettyprint lang-r'>i &lt;- 1
+while (i &lt;= length(x)) {
+  # cuerpo
+  i &lt;- i + 1 
+}</pre></div></div>
+
+</article></slide><slide class=""><hgroup><h2>Operaciones vectorizadas</h2></hgroup><article  id="operaciones-vectorizadas">
+
+<ul>
+<li><p>R es un lenguaje de <a href='https://es.wikipedia.org/wiki/Programaci%C3%B3n_funcional' title=''>programación funcional</a>, en particular gracias a <code>purrr</code></p></li>
+<li><p>Como alternativa a los bucles, se centra en descomponer los problemas en piezas independientes</p></li>
+</ul>
+
+<div style="display: flex;">
+<div>
+<ol>
+<li>buscar la solución para un elemento: el cuerpo de un bucle se envuelve en una función</li>
+<li>pasar una lista de elementos a la función</li>
+</ol></div>
+
+<div>
+<center>
+
+<img src='pic/mapping.png' title=''/>
+
+</center></div></div>
+
+<ul>
+<li><p>Además un problema complejo se descompone en pasos más pequeños (a través de la tubería): filosofía <a href='https://es.wikipedia.org/wiki/MapReduce' title=''>MapReduce</a></p>
+
+<ul>
+<li><code>map()</code>+<code>reduce()</code></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Las funciones <code>map()</code></h2></hgroup><article  id="las-funciones-map">
+
+<div style="display: flex;">
+<div>
+<ul>
+<li><p>El proceso de &ldquo;mapeo&rdquo; consiste en</p>
+
+<ol>
+<li>toma un vector como entrada</li>
+<li>aplica una función a cada elemento</li>
+<li>devuelve un nuevo vector de la misma longitud (y nombres) que la entrada</li>
+</ol></li>
+</ul></div>
+
+<div>
+<p>\(\hspace{1cm}\)</p></div>
+
+<div>
+<center>
+
+<img width="95%" src='pic/map.png' title=''/>
+
+</center></div></div>
+
+<ul>
+<li>El tipo de vector de salida está determinado por el sufijo de <code>map()</code>.</li>
+</ul>
+
+<div style="display: flex;">
+<div>
+<ul>
+<li><code>map()</code>: lista</li>
+<li><code>map_dfr()</code>: <em>data frame</em></li>
+<li><code>map_lgl()</code>: vector lógico</li>
+</ul></div>
+
+<div>
+<p>\(\hspace{1cm}\)</p></div>
+
+<div>
+<ul>
+<li><code>map_int()</code>: vector entero</li>
+<li><code>map_dbl()</code>: vector doble</li>
+<li><code>map_chr()</code>: vector de caracteres</li>
+</ul></div></div>
+
+<ul>
+<li>Similares a <code>lapply()</code> y familia de R base</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Usando funciones <code>map()</code></h2></hgroup><article  id="usando-funciones-map">
+
+<!--
+* Primer argumento: un vector (lista, *data frame*), que se puede pasar por `%>%`
+
+* Segundo argumento: una función, como fórmula, caracter o entero 
+
+* Tercer argumento `...`: para pasar argumentos adiccionales
+-->
+
+<pre class = 'prettyprint lang-r'>mis_coches &lt;- c(&quot;corolla&quot;, &quot;civic&quot;)             # 1. Vector (o lista o data frame)
+
+show_cars &lt;- function(mod = &quot;civic&quot;, n = 6)  {  # 2. Función
+  mpg %&gt;% filter(model == mod) %&gt;% head(n)
+}
+
+map(mis_coches, show_cars)                      #3.Resultado, como lista
+mis_coches %&gt;% map_dfr(show_cars)               #             como df</pre>
+
+<ul>
+<li>Se usa <code>...</code> para pasar argumentos adicionales</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>iris %&gt;% select(1:4) %&gt;% 
+  map_dbl(mean, na.rm=TRUE)     </pre>
+
+<ul>
+<li><p>Notad que se mantienen los nombres</p></li>
+<li><p>Veremos que el argumento función puede ser también una formula, nombre o índice</p></li>
+</ul>
+
+<!--
+## Usando funciones `map()` (cont.)
+
+* Se puede usar una *fórmula* como una función "anónima" dentro de `map()`
+
+(en lugar de `function(df) lm(mpg ~ wt, data = df)`)
+
+
+```r
+models <- mtcars %>% 
+  split(.$cyl) %>%                  # divide por valores de un factor
+  map(~lm(mpg ~ wt, data = .))      # . = lo que se ha pasado por tubería
+```
+
+:::: {style="display: flex;"}
+
+::: {}
+
+
+```r
+models <- mtcars %>% 
+  split(.$cyl) %>% 
+  map(function(df) lm(mpg ~ wt, data = df))
+```
+
+:::
+
+::: {}
+
+$\hspace{2cm}$
+
+:::
+
+::: {}
+
+
+
+```r
+models <- mtcars %>% 
+  split(.$cyl) %>% 
+  map(~lm(mpg ~ wt, data = .))
+```
+
+:::
+
+::::
+
+* La misma idea permite acceder a elementos o hacerlo por nombre 
+
+
+```r
+models %>%  map(summary) %>% map_dbl(~.$r.squared)
+models %>%  map(summary) %>% map_dbl("r.squared")
+```
+
+* También se puede acceder por nombre o por índice de posición
+
+
+```r
+x <- list(list(1, 2, 3), list(4, 5, 6), list(7, 8, 9))
+x %>% map_dbl(2)
+```
+
+-->
+
+</article></slide><slide class=""><hgroup><h2>Múltiples argumentos: <code>map2()</code> y <code>pmap()</code></h2></hgroup><article  id="múltiples-argumentos-map2-y-pmap">
+
+<ul>
+<li><code>map2()</code> permite pasar dos vectores a una función</li>
+</ul>
+
+<div style="display: flex;">
+<div>
+<pre class = 'prettyprint lang-r'>mu    &lt;- list(5, 10, -3)
+sigma &lt;- list(1, 5, 10)
+map2(mu, sigma, rnorm, n = 5) %&gt;% glimpse()</pre></div>
+
+<div>
+<p>\(\hspace{1cm}\)</p></div>
+
+<div>
+<center>
+
+<img width="98%" src='pic/lists-map2.png' title=''/>
+
+</center></div></div>
+
+<ul>
+<li><code>pmap()</code> pasa múltiples argumentos</li>
+</ul>
+
+<div style="display: flex;">
+<div>
+<pre class = 'prettyprint lang-r'>n &lt;- list(1, 3, 5)
+args1 &lt;- list(n, mu, sigma)
+args1 %&gt;% pmap(rnorm) %&gt;% glimpse()</pre></div>
+
+<div>
+<p>\(\hspace{1cm}\)</p></div>
+
+<div>
+<center>
+
+<img width="95%" src='pic/lists-pmap-unnamed.png' title=''/>
+
+</center></div></div>
+
+<ul>
+<li>Mejor pasarlos como lista con nombres o directamente como <em>data frame</em></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Otras funciones de <code>purrr</code></h2></hgroup><article  id="otras-funciones-de-purrr">
+
+<ul>
+<li><code>walk()</code>, <code>walk2()</code> y <code>pwalk()</code> para funciones que realizan una acción (ej., <code>print()</code>, <code>ggsave()</code>)</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>list(1, &quot;a&quot;, 3)  %&gt;% walk(print)</pre>
+
+<ul>
+<li><code>keep()</code> y <code>discard()</code> para funciones que devuelven <code>TRUE</code>/<code>FALSE</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>iris %&gt;% keep(is.factor)</pre>
+
+<!--  + también, `some()`, `every()`, `detect_*()`-->
+
+<ul>
+<li><p><code>safely()</code>, <code>possibly()</code>, <code>quietly()</code> para &ldquo;capturar&rdquo; errores</p></li>
+<li><p><code>reduce()</code> para funciones que reducen dos listas a una (uniones, intersecciones)</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>list(1:30, seq(5,40,4), 25:45) %&gt;% reduce(intersect)</pre>
+
+<!--
+* `accumulate()` similar pero manteniendo resultados intermedio
+
+    + ej., suma acumulada: `1:10 %>% accumulate(`+`)`
+-->
+
+<ul>
+<li>Una chuleta completa <a href='https://github.com/rstudio/cheatsheets/raw/master/translations/spanish/purrr_COrtega_Spanish.pdf' title=''>aquí</a></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Recordando <code>group_by()</code></h2></hgroup><article  id="recordando-group_by">
+
+<ul>
+<li><p><code>group_by()</code> crea un copia por grupos de la tabla</p></li>
+<li><p>Combinado con <code>summarize()</code> ofrece resultados para cada valor del grupo</p>
+
+<p>(nueva tabla con los valores del grupo como observaciones)</p></li>
+</ul>
+
+<center>
+
+<img width="90%" src='pic/groupby1.png' title=''/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Funciones con <code>group_by()</code> al estilo <code>purrr</code></h2></hgroup><article  id="funciones-con-group_by-al-estilo-purrr">
+
+<ul>
+<li><code>group_map()</code>, <code>group_modify()</code> y <code>group_walk()</code> se pueden usar para iterar sobre &ldquo;tibbles&rdquo; agrupados</li>
+</ul>
+
+<!--
+    + existen alternativas con funciones de `purrr` y otras bibliotecas
+-->
+
+<ol>
+<li><p>Se toma un <code>tibble</code> y se agrupa</p></li>
+<li><p>Se aplica un función que toma un <code>tibble</code> y devuelve un <code>tibble</code></p></li>
+<li><p>Devuelve un <code>tibble</code> agrupado (o lista) de la función aplicada a cada grupo del <code>tibble</code></p></li>
+</ol>
+
+<center>
+
+<img width="45%" src='pic/do.png' title=''/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Iterando sobre grupos de un <em>data frame</em></h2></hgroup><article  id="iterando-sobre-grupos-de-un-data-frame">
+
+<ul>
+<li>Devuelve una lista de <em>data frames</em></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>mtcars %&gt;%
+  group_by(cyl) %&gt;%
+  group_map(head, n = 2)   </pre>
+
+<ul>
+<li>Devuelve una lista de <em>data frames</em></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>mtcars %&gt;%
+  group_by(cyl) %&gt;%
+  group_modify(head, n = 2) </pre>
+
+</article></slide><slide class=""><hgroup><h2>Iterando sobre grupos de un <em>data frame</em> (cont.)</h2></hgroup><article  id="iterando-sobre-grupos-de-un-data-frame-cont.">
+
+<ul>
+<li>Regresión sobre grupos de un <em>data frame</em></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>mtcars %&gt;%
+  group_by(cyl) %&gt;%
+  group_modify(~broom::tidy(lm(mpg ~ disp, data = .x))) # devuelve &quot;data frame&quot; agrupado</pre>
+
+<ul>
+<li><p>Se ha definido una función &ldquo;anónima&rdquo; para crear la regresión</p></li>
+<li><p><code>.x</code> (o <code>.</code>) indica lo que se ha pasado por la tubería</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Un ejemplo general</h2></hgroup><article  id="un-ejemplo-general">
+
+<ul>
+<li>La misma idea permite acceder a elementos o hacerlo por nombre</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>models &lt;- mtcars %&gt;%
+            group_by(cyl) %&gt;%
+            group_map(~lm(mpg ~ wt, data = .)) 
+
+models %&gt;%  
+  map(summary) %&gt;% 
+  map_dbl(~.$r.squared)
+
+models %&gt;%  map(summary) %&gt;% map_dbl(&quot;r.squared&quot;)</pre>
+
+<ul>
+<li>Las funciones `map()´ también permiten acceder por índice de posición</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>x &lt;- list(list(1, 2, 3), list(4, 5, 6), list(7, 8, 9))
+x %&gt;% map_dbl(2)</pre></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

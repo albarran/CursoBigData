@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Contenidos</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Big Data (UA)</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Introducción</a>
+</li>
+<li>
+  <a href="Contenidos.html">Contenidos</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Contenidos</h1>
+
+</div>
+
+
+<div id="datos" class="section level2">
+<h2>Datos</h2>
+<ul>
+<li><p>En las clases utilizaremos <a href="https://drive.google.com/file/d/1_oeCFuxeu_11qFuBGgI6YhfqfYcMDT7W/view?usp=sharing">este conjunto de datos</a></p>
+<!-- (https://github.com/albarran/CursoBigData/tree/master/data) -->
+<ul>
+<li>descargad este fichero comprimido .zip</li>
+<li>descomprimid todo el contenido en un subdirectorio llamado <strong>data</strong> de vuestro directorio de trabajo para poder usarlos en el futuro</li>
+</ul></li>
+</ul>
+<hr />
+<div style="display: flex;">
+<div>
+<h2 id="semana-1" class="columns-2">Semana 1</h2>
+<p>(14-Sept. a 18-Sept.)</p>
+<ul>
+<li><a href="0Intro.html">Introducción</a></li>
+<li><a href="Tema01.html">Tema 01 - Introducción a R y a RStudio</a></li>
+</ul>
+</div>
+<div>
+<h2 id="semana-2">Semana 2</h2>
+<p>(21-Sept. a 25-Sept.)</p>
+<ul>
+<li><a href="Tema02.html">Tema 02 - Más R</a></li>
+<li><a href="Pract01.html">Práctica 01 - Introducción a RMarkdown</a></li>
+<li>Entregar <a href="https://docs.google.com/forms/d/e/1FAIpQLScxZ3PuU3y58buOupBmtpNhoIprMKgTydX4wH_WdontaEo9Mg/viewform">aquí</a> certificado del curso de Datacamp
+<ul>
+<li>Fecha: vie. 25-Sept. 23:55</li>
+</ul></li>
+</ul>
+</div>
+<div>
+<h2 id="semana-3">Semana 3</h2>
+<p>(28-Sept. a 2-Oct.)</p>
+<ul>
+<li><a href="Pract02.html">Práctica 02 - Visualización de Datos</a></li>
+</ul>
+</div>
+</div>
+<div style="display: flex;">
+<div>
+<h2 id="semana-4">Semana 4</h2>
+<p>(5-Oct. a 8-Oct.)</p>
+<ul>
+<li><p><a href="Tema03sl.html">Tema 03 - Manipulación de Datos</a></p></li>
+<li><p><a href="Ejerc01.html">Ejercicio 01 sobre R</a></p></li>
+<li><p><a href="Ejerc02.html">Ejercicio 02 sobre R Markdown</a></p></li>
+<li><p>Los ejercicios se deben entregar el lunes 19 de octubre</p></li>
+</ul>
+</div>
+<div>
+<h2 id="semana-5">Semana 5</h2>
+<p>(12-Oct. a 16-Oct.)</p>
+<ul>
+<li><a href="PregT03.Ejerc.html">Tema 03 - Mini-Práctica</a></li>
+<li><a href="Ejerc03.html">Ejercicio 03 sobre Visualización de Datos</a>
+<ul>
+<li>Entregar el lunes 26 de octubre (Economía) / 3 de noviembre (ADE)</li>
+</ul></li>
+</ul>
+</div>
+<div>
+<h2 id="semana-6">Semana 6</h2>
+<p>(19-Oct. a 24-Oct.)</p>
+<ul>
+<li><a href="Tema04sl.html">Tema 04 - Manipulación de Datos Relaciones</a></li>
+<li><a href="Pract03.html">Práctica 03 - Análisis Exploratorio de Datos</a></li>
+</ul>
+</div>
+</div>
+<div style="display: flex;">
+<div>
+<h2 id="semana-7">Semana 7</h2>
+<p>(26-Oct. a 31-Oct.)</p>
+<ul>
+<li><a href="Pract04.html">Práctica 04 - Web scraping</a>
+<ul>
+<li>Entrega (apartado 2)- ECO: 9 de Noviembre</li>
+<li>Entrega (apartado 2)- ADE: 23 de Noviembre</li>
+</ul></li>
+</ul>
+</div>
+<div>
+<h2 id="semana-8">Semana 8</h2>
+<p>(2-Nov. a 6-Nov.)</p>
+<ul>
+<li><p><a href="Tema05sl.html">Tema 05 - Datos Ordenados</a></p></li>
+<li><p><a href="EjercT05.html">Ejercicio del Tema 05</a></p></li>
+<li><p><a href="Tema06Asl.html">Tema 06A - Funciones</a></p></li>
+<li><p><a href="EjercT06A.html">Ejercicio del Tema 06A</a></p></li>
+</ul>
+</div>
+<div>
+<h2 id="semana-9">Semana 9</h2>
+<p>(9-Nov. a 13-Nov.)</p>
+<ul>
+<li><a href="Tema06Bsl.html">Tema 06B - Bucles</a></li>
+<li><a href="EjercT06B.html">Ejercicio del Tema 06B</a></li>
+</ul>
+</div>
+</div>
+<div style="display: flex;">
+<div>
+<h2 id="semana-10">Semana 10</h2>
+<p>(16-Nov. a 20-Nov.)</p>
+<ul>
+<li><a href="Tema07sl.html">Tema 07 - Fundamentos estadísticos</a></li>
+<li><a href="EjercT07.html">Ejercicio del Tema 07</a>
+<ul>
+<li>Entrega ECO: 24-nov.</li>
+<li>Entrega ADE: 4-dic.</li>
+</ul></li>
+</ul>
+</div>
+<div>
+<h2 id="semana-11">Semana 11</h2>
+<p>(23-Nov. a 27-Nov.)</p>
+<ul>
+<li><p><a href="Tema08sl.html">Tema 08 - Aprendizaje estadístico</a></p></li>
+<li><p><a href="Tema09sl.html">Tema 09 - Regresión Lineal</a></p></li>
+</ul>
+</div>
+<div>
+<h2 id="semana-11-1">Semana 11</h2>
+<p>(30-Nov. a 04-Dic.)</p>
+<ul>
+<li><p><a href="Tema10sl.html">Tema 10 - Regresión Logística</a></p></li>
+<li><p><a href="Tema11sl.html">Tema 11 - Selección y regularización</a></p></li>
+<li><p><a href="Pract05A.html">Practica 05A - Proceso de Modelización"</a></p></li>
+<li><p><a href="Pract05A.html">Practica 05B - “Tidymodels”</a></p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
