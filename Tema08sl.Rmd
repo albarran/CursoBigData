@@ -136,7 +136,7 @@ RailTrail %>% ggplot(aes(x = avgtemp, y = volume)) +
 ```{r}
 RailTrail.fit <- RailTrail %>% 
   mutate(
-    lm.fit = lm(volume ~ poly(avgtemp,2), data = .)$fitted) 
+    lm.fit = lm(volume ~ poly(avgtemp,3), data = .)$fitted) 
 head(select(RailTrail.fit, volume, lm.fit, avgtemp))
 ```
 

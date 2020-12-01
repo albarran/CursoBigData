@@ -327,7 +327,7 @@ RailTrail %&gt;% ggplot(aes(x = avgtemp, y = volume)) +
 
 <pre class = 'prettyprint lang-r'>RailTrail.fit &lt;- RailTrail %&gt;% 
   mutate(
-    lm.fit = lm(volume ~ poly(avgtemp,2), data = .)$fitted) 
+    lm.fit = lm(volume ~ poly(avgtemp,3), data = .)$fitted) 
 head(select(RailTrail.fit, volume, lm.fit, avgtemp))</pre>
 
 <!--

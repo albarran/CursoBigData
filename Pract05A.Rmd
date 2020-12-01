@@ -1,0 +1,147 @@
+---
+#subtitle: "Técnicas para 'Big Data' en Economía"
+#subtitle: "Muestreo y Análisis de Datos"
+title    :  "Practica 05A - El proceso de modelización y `tidymodels`"
+author: 
+  - "Prof.: Pedro Albarrán"
+  - "Prof.: Alberto Pérez"
+job: "Universidad de Alicante" 
+date: "Universidad de Alicante, Curso 2020/21"  
+output:
+#  html_document:
+#    toc: true
+#     toc_float: true
+  ioslides_presentation: 
+    widescreen: yes
+    logo: pic/by-nc-sa.eu.svg
+#  html_document: default
+#  beamer_presentation: 
+#      slide_level: 2
+#widescreen: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, eval = TRUE, echo = TRUE, results = "hide", fig.show="hide")
+
+library(tidyverse)
+library(dlookr)
+#setwd("/home/albarran/Dropbox/MAD/00.TEC")
+library(rmarkdown)
+#render("filename.Rmd")     
+#browseURL("filename.html")
+```
+
+## Modelización: regresión lineal
+
+* Hemos visto que debemos dividir los datos en entrenamiento y prueba
+```{r}
+library(mosaicData)
+set.seed(1001)     # semilla para replicar resultados
+entren <- RailTrail %>% sample_frac(size = 0.7)
+prueba <- RailTrail %>% setdiff(entren)
+```
+
+* Estimamos un modelo en los datos de entrenamientos
+
+```{r}
+mod1 <- lm(volume ~ spring + summer + fall + weekday + poly(avgtemp, 3), data = entren)
+```
+
+* Definimos la función de la métrica de error
+```{r}
+rmse <- function(yobs, ypred) {
+  sqrt(sum((yobs - ypred)^2)/length(yobs))
+}
+```
+
+## Modelización: regresión lineal (cont.)
+
+* Evaluamos el modelo en los datos de prueba
+```{r}
+mod1.pred.prueba <- predict(mod1, newdata = prueba)
+rmse(prueba$volume, mod1.pred.prueba)
+```
+
+* ¿Sería preferible otro modelo?
+```{r}
+mod2 <- lm(volume ~ spring + summer + fall + weekday + poly(avgtemp, 6), data = entren)
+mod2.pred.prueba <- predict(mod2, newdata = prueba)
+rmse(prueba$volume, mod2.pred.prueba)
+```
+
+* ¿La conclusión sería la misma con datos de entrenamiento?
+```{r}
+rmse(entren$volume, predict(mod1, newdata = entren))
+rmse(entren$volume, predict(mod2, newdata = entren))
+```
+
+```{r}
+list(mod1, mod2) %>% map(~rmse(entren$volume, predict(., newdata = entren)))
+```
+
+## Validación cruzada en regresión lineal   
+
+<!--
+* Creamos los grupos de validación cruzada
+-->
+```{r, echo=FALSE, eval=FALSE}
+set.seed(12345)
+RailTrail <- RailTrail %>% mutate(orig = row_number()) %>%
+  arrange(runif(nrow(RailTrail))) %>% 
+  mutate(grupo.vc = cut(1:nrow(RailTrail), breaks = 10, labels=F))
+```
+
+```{r}
+set.seed(12345)
+RailTrail <- RailTrail %>%  arrange(runif(nrow(RailTrail))) %>% 
+  mutate(grupo.vc = cut(1:nrow(RailTrail), breaks = 10, labels=F))
+```
+
+
+```{r, echo=FALSE}
+table(RailTrail$grupo.vc)
+```
+
+```{r}
+rmse.mod <- list()
+for (pol in c(3,6)) {
+  form <- volume ~ spring + summer + fall + weekday + poly(avgtemp, pol)
+  rmse.vc <- vector("double",10)
+  for (k in 1:10) {
+    pruebas  <- RailTrail %>% filter(grupo.vc == k)
+    mod <- lm(form, data = setdiff(RailTrail, pruebas))
+    rmse.vc[[k]] <- rmse(pruebas$volume, predict(mod, newdata=pruebas))
+  }
+  rmse.mod[[pol/3]] <- rmse.vc
+}
+rmse.mod %>% map_dbl(mean)
+```
+
+* En algunas particiones llegaríamos a conclusiones erróneas
+
+## Modelización: regresión logística
+
+```{r}
+censo <- read_csv("https://www.dropbox.com/s/6bqyjnkd2c638rm/census.csv?dl=1") %>%
+  mutate(income = as.integer(factor(income))-1)
+set.seed(1001)     # semilla para replicar resultados
+entren <- censo %>% sample_frac(size = 0.7)
+prueba <- censo %>% setdiff(entren)
+```
+
+* Definimos dos modelos
+
+```{r}
+logit1 <- glm(income ~ education + race + poly(age,2) + occupation, 
+              data = entren, family = "binomial" )
+logit2 <- glm(income ~ education + relationship + poly(age,2) + workclass + occupation, 
+              data = entren, family = "binomial" )
+```
+
+* La tasa de observaciones correctamente clasificadas con un umbral de 0.5
+
+```{r}
+mean(prueba$income == (predict(logit1, newdata = prueba)>0.5))
+mean(prueba$income == (predict(logit2, newdata = prueba)>0.5))
+```
+
