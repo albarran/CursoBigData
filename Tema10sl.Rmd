@@ -121,7 +121,7 @@ cbind(Default$default, logit$fitted, predict(logit), predict(logit, type="respon
 * También se puede predecir usando una muestra distinta de la usada para estimar o con valores concretos de los regresores
 
 ```{r}
-predict(logit, tibble(balance=c(0,100)), type="response")
+predict(logit, newdata = tibble(balance=c(0,100)), type="response")
 ```
 
 

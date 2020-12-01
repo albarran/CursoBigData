@@ -274,7 +274,7 @@ logit &lt;- glm(data = Default, default ~ balance, family = &quot;binomial&quot;
 <li>También se puede predecir usando una muestra distinta de la usada para estimar o con valores concretos de los regresores</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>predict(logit, tibble(balance=c(0,100)), type=&quot;response&quot;)</pre>
+<pre class = 'prettyprint lang-r'>predict(logit, newdata = tibble(balance=c(0,100)), type=&quot;response&quot;)</pre>
 
 </article></slide><slide class=""><hgroup><h2>Variables explicativas</h2></hgroup><article  id="variables-explicativas">
 
