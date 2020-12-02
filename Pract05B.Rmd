@@ -81,13 +81,305 @@ install.packages("tidymodels")
 
 * Otros paquetes "similares" a `tidymodels`: `mlr3`, `caret`, `H2O`
 
-## d
-d
-## sig
+## Pre-procesado
 
-https://hansjoerg.me/2020/02/09/tidymodels-for-machine-learning/
+* Transformar los datos para que sean adecuados para la modelización
+
+* Aunque se puede utilizar `dplyr` o `tidyverse`, cuando el desarrollo del modelo es complejo `tidymodels` facilita el proceso
+
+* Particionar los datos en muestra y entrenamiento: `initial_split()`
+```{r}
+library(mosaicData)
+library(tidymodels)
+set.seed(9753)
+datos_partidos <- RailTrail %>% initial_split(prop = .8)
+```
+* Las funciones `training()` y `testing()` acceden a cada submuestra
+
+```{r}
+entren <- datos_partidos %>% training()
+prueb  <- datos_partidos %>% testing()
+intersect(entren, prueb)
+```
+## Pre-procesado: recetas
+
+* `recipe()`: define transformaciones a aplicar (similar a `ggplot()`); su principal argumento es una **fórmula**
+
+* `prep()`: ejecuta transformaciones sobre uno datos <!--(típicamente, los datos de entrenamiento)-->
+
+* Cada transformación es un paso `step_`
+
+    + `step_corr()`: elimina variables con alta correlaciones con otras
+    
+    + `step_center()`: normaliza datos numéricos para tener media cero
+
+    + `step_scale()`: ídem para tener una desviación estándar de uno
+
+
+* Los pasos pueden aplicarse a todas o solo a un subconjunto de variables usando por ejemplo `all_outocomes()` y `all_predictors()`  
+
+    + Por ejemplo, `step_corr(all_predictors())` solo aplica `step_corr()` a regresores
+    
+## Pre-procesado: recetas (cont.)
+
+* Poniendo todo junto se crea un objeto de receta
+
+```{r}
+receta_especif1 <- training(datos_partidos) %>%
+  recipe(volume ~ cloudcover + precip + avgtemp) %>%
+  step_poly(avgtemp, degree = 3) %>% 
+  step_corr(all_predictors()) %>%
+  step_center(all_predictors(), -all_outcomes()) %>%
+  step_scale(all_predictors(), -all_outcomes()) %>%
+  prep()
+```
+
+
+* Los datos procesados de entrenamiento se extraen de la receta con `juice()`
+```{r}
+especif1_entrena <- receta_especif1 %>% juice()
+```
+
+* Y el preprocesado se aplica a la muestra de prueba con `bake()`
+```{r}
+especif1_prueba <- receta_especif1 %>% bake(testing(datos_partidos))
+```
+
+
+
+## Entrenamiento del modelo
+
+* Varios paquete de R estiman el mismo tipo de modelo, con su propia interfaz y nombres de argumentos
+
+    + Una regresión lineal se puede estimar con `lm` y con `glmnet`
+
+* `tidymodels` proporciona un único conjunto de funciones y argumentos para definir un modelo
+
+    + `linear_reg()` para cualquier regresión lineal
+    +  siempre el mismo nombre de argumentos para los paquetes que lo usen y los llaman de forma distinta
+
+* Se determina el paquete de R con `set_engine()` 
+
+* Finalmente se ejecuta el modelo con `fit()` cuyos argumentos son
+    + una fórmula
+    + los datos de entrenamiento (`juiced`)
+
+
+## Entrenamiento del modelo (cont.)
+    
+```{r}
+modelo.lm <- linear_reg(mode= "regression", penalty = 0) %>%
+                set_engine("lm") %>% 
+                fit(volume ~ ., data = especif1_entrena)
+modelo.lm %>% broom::tidy()
+```
+
+* Podemos reutilizar la receta con otro paquete
+
+```{r}
+
+modelo.glmnet <- linear_reg(mode= "regression", penalty = 0) %>%
+                     set_engine("glmnet") %>% 
+                      fit(volume ~ ., data = especif1_entrena)
+modelo.glmnet %>% broom::tidy()
+```
+
+* El modelo no se define en una única y gran función con muchos argumentos: se separa en funciones más pequeñas
+
+* La interfaz es más flexible y más fácil de aprender
+
+## Entrenamiento del modelo: resultados
+
+* Para presentar los resultados de la estimación en formato de `tibble` se utiliza `broom::tidy()`
+
+* E
+
+```{r}
+modelo.lm %>% broom::glance()
+```
+
+
+<!--
+
+Finally, augment() can be used to get model predictions, residuals, etc.
+
+```{r, echo=FALSE, eval=FALSE}
+
+lm_predicted <- augment(lm_fit1$fit, data = dia_juiced) %>% 
+    rowid_to_column()
+select(lm_predicted, rowid, price, .fitted:.std.resid)
+```
+-->
+
+## Entrenamiento del modelo: clasificación
+
+* El proceso es similar para un problema de clasificación
+
+```{r}
+censo <- read_csv("https://www.dropbox.com/s/6bqyjnkd2c638rm/census.csv?dl=1") 
+set.seed(7482)
+censo_partidos <- censo %>% initial_split(prop = .8)
+
+receta_logit1 <- training(censo_partidos) %>%
+  recipe(income ~ age + education + race + sex + capital_gain) %>%
+  prep()
+
+logit1_entrena <- receta_logit1 %>% juice()
+logit1_prueba  <- receta_logit1 %>% bake(testing(censo_partidos))
+
+modelo.logit1 <- logistic_reg(mode= "classification", penalty = 0) %>%
+                    set_engine("glm") %>% 
+                    fit(income ~ ., data = logit1_entrena)
+modelo.logit1 %>% broom::tidy()
+```
+
+
+
+## Predicción
+
+* La función `predict()` en `parsnip` devuelve un `tibble` (no un vector): facilita usar `bind_cols()` para añadir la predicción a los datos originales
+
+```{r}
+modelo.lm %>% predict(especif1_prueba) %>% 
+  bind_cols(especif1_prueba) %>%  glimpse()
+```
+
+* Para regresión, la variable predicha llamada `.pred` 
+
+* Para clasificación, por defecto se predice la clase como `.pred_class`
+
+```{r}
+modelo.logit1 %>% predict(logit1_prueba) %>% 
+  bind_cols(logit1_prueba) %>%  glimpse()
+```
+
+* Pero también se pueden predecir las probabilidades de cada categoría
+
+```{r}
+modelo.logit1 %>% predict(logit1_prueba, type = "prob") %>% 
+  bind_cols(logit1_prueba) %>%  glimpse()
+```
+
+
+## Validación del Modelo
+
+* La función `metrics()` mide el ajuste de un modelo, seleccionando automáticamente la métrica adecuada
+
+* Espera un `tibble` con el valor observado (*truth*) y el predicho (*estimate*)
+
+```{r}
+modelo.lm %>% predict(especif1_prueba) %>% 
+  bind_cols(especif1_prueba) %>%  
+  metrics(truth=volume, estimate= .pred)
+```
+
+* La interfaz unificada de `tidymodels` permite medir las mismas métricas para otro modelo simplemente cambiando el objeto del modelo
+
+    + otro preprocesado (distintas variables, transformaciones)
+    + otro método de estimación, etc
+
+* ¿Cuáles serían las métricas para un modelo con la variable dependiente en logaritmos?
+
+## Validación del Modelo: Clasificación
+
+* Las métricas para clasificación incluyen las derivadas de la matriz de confusión
+
+```{r}
+modelo.logit1 %>% predict(logit1_prueba) %>% 
+  bind_cols(logit1_prueba) %>%  
+  metrics(truth=income, estimate= .pred_class)
+```
+
+
+* Si predecimos probabilidades
+```{r}
+logit1_probs <- modelo.logit1 %>% predict(logit1_prueba, type = "prob") %>% 
+  bind_cols(logit1_prueba) 
+```
+
+* Podemos usarlas para represetar la curva ROC
+
+<!--
+o la curvas de ganancias
+```{r}
+logit1_probs %>%
+  gain_curve(income, `.pred_<=50K`) %>%
+  autoplot()
+```
+-->
+
+
+```{r}
+logit1_probs %>%
+  roc_curve(income, `.pred_<=50K`) %>%
+  autoplot()
+```
+
+## Validación del Modelo: Clasificación (cont.)
+
+* Finalmente si combinamos las dos, podemos obtener también la AUC
+
+```{r}
+modelo.logit1 %>% predict(logit1_prueba) %>% 
+  bind_cols(logit1_prueba) %>%  
+  bind_cols(logit1_probs %>% select(1:2)) %>% 
+  metrics(truth=income, `.pred_<=50K`, estimate= .pred_class)
+```
+* La extensión a problemas con más de clases es simple:
+
+  + *accuracy* sigue teniendo la misma interpretación
+  
+  + para la curva ROC y la AUC en lugar de una sola columna, se incluyen las probabilidades predichas de todas las clases
+
+<!--
+
+## Validación cruzada
+
+* Creamos las particiones con `vfold_cv()` en los datos sin procesar
+```{r}
+set.seed(9753)
+datos_cv <- RailTrail %>% vfold_cv(v=10)
+```
+
+* Se define el modelo sin `fit()`
+
+```{r}
+modelo.lm.cv <- linear_reg(mode= "regression", penalty = 0) %>%
+                set_engine("lm")
+```
+
+* Se define una receta sin `prep()`
+
+```{r}
+receta.cv <- function(dataset){
+  recipe(volume ~ cloudcover + precip + avgtemp, data = dataset) %>%
+  step_poly(avgtemp, degree = 3) %>% 
+  step_corr(all_predictors()) %>%
+  step_center(all_predictors(), -all_outcomes()) %>%
+  step_scale(all_predictors(), -all_outcomes()) %>%
+  prep()
+}
+```
+
+
+* Se ajusta el modelo con `fit_resamples`
+
+```{r, eval =FALSE}
+validacion.fit <- fit_resamples(
+                    object       = modelo.lm.cv,
+                    preprocessor = receta.cv,
+                    resamples    = datos_cv,
+                    metrics      = metric_set(rmse, mae),
+                    control      = control_resamples(save_pred = TRUE)
+                  )
+```
+
+
+<!--
 
 https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/
+
+https://hansjoerg.me/2020/02/09/tidymodels-for-machine-learning/
 
 https://www.gmudatamining.com/lesson-10-r-tutorial.html
 
@@ -96,3 +388,4 @@ http://www.rebeccabarter.com/blog/2020-03-25_machine_learning/
 https://rpubs.com/Joaquin_AR/598171
 
 https://www.tidymodels.org/start/
+-->

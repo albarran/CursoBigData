@@ -250,21 +250,316 @@ slide:not(.current) .plotly.html-widget{
 <li>Otros paquetes &ldquo;similares&rdquo; a <code>tidymodels</code>: <code>mlr3</code>, <code>caret</code>, <code>H2O</code></li>
 </ul>
 
-</article></slide><slide class=""><hgroup><h2>d</h2></hgroup><article  id="d">
+</article></slide><slide class=""><hgroup><h2>Pre-procesado</h2></hgroup><article  id="pre-procesado">
 
-<p>d ## sig</p>
+<ul>
+<li><p>Transformar los datos para que sean adecuados para la modelización</p></li>
+<li><p>Aunque se puede utilizar <code>dplyr</code> o <code>tidyverse</code>, cuando el desarrollo del modelo es complejo <code>tidymodels</code> facilita el proceso</p></li>
+<li><p>Particionar los datos en muestra y entrenamiento: <code>initial_split()</code></p></li>
+</ul>
 
-<p><a href='https://hansjoerg.me/2020/02/09/tidymodels-for-machine-learning/' title=''>https://hansjoerg.me/2020/02/09/tidymodels-for-machine-learning/</a></p>
+<pre class = 'prettyprint lang-r'>library(mosaicData)
+library(tidymodels)
+set.seed(9753)
+datos_partidos &lt;- RailTrail %&gt;% initial_split(prop = .8)</pre>
 
-<p><a href='https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/' title=''>https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/</a></p>
+<ul>
+<li>Las funciones <code>training()</code> y <code>testing()</code> acceden a cada submuestra</li>
+</ul>
 
-<p><a href='https://www.gmudatamining.com/lesson-10-r-tutorial.html' title=''>https://www.gmudatamining.com/lesson-10-r-tutorial.html</a></p>
+<pre class = 'prettyprint lang-r'>entren &lt;- datos_partidos %&gt;% training()
+prueb  &lt;- datos_partidos %&gt;% testing()
+intersect(entren, prueb)</pre>
 
-<p><a href='http://www.rebeccabarter.com/blog/2020-03-25_machine_learning/' title=''>http://www.rebeccabarter.com/blog/2020-03-25_machine_learning/</a></p>
+</article></slide><slide class=""><hgroup><h2>Pre-procesado: recetas</h2></hgroup><article  id="pre-procesado-recetas">
 
-<p><a href='https://rpubs.com/Joaquin_AR/598171' title=''>https://rpubs.com/Joaquin_AR/598171</a></p>
+<ul>
+<li><p><code>recipe()</code>: define transformaciones a aplicar (similar a <code>ggplot()</code>); su principal argumento es una <strong>fórmula</strong></p></li>
+<li><p><code>prep()</code>: ejecuta transformaciones sobre uno datos <!--(típicamente, los datos de entrenamiento)--></p></li>
+<li><p>Cada transformación es un paso <code>step_</code></p>
 
-<p><a href='https://www.tidymodels.org/start/' title=''>https://www.tidymodels.org/start/</a></p></article></slide>
+<ul>
+<li><p><code>step_corr()</code>: elimina variables con alta correlaciones con otras</p></li>
+<li><p><code>step_center()</code>: normaliza datos numéricos para tener media cero</p></li>
+<li><p><code>step_scale()</code>: ídem para tener una desviación estándar de uno</p></li>
+</ul></li>
+<li><p>Los pasos pueden aplicarse a todas o solo a un subconjunto de variables usando por ejemplo <code>all_outocomes()</code> y <code>all_predictors()</code></p>
+
+<ul>
+<li>Por ejemplo, <code>step_corr(all_predictors())</code> solo aplica <code>step_corr()</code> a regresores</li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Pre-procesado: recetas (cont.)</h2></hgroup><article  id="pre-procesado-recetas-cont.">
+
+<ul>
+<li>Poniendo todo junto se crea un objeto de receta</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>receta_especif1 &lt;- training(datos_partidos) %&gt;%
+  recipe(volume ~ cloudcover + precip + avgtemp) %&gt;%
+  step_poly(avgtemp, degree = 3) %&gt;% 
+  step_corr(all_predictors()) %&gt;%
+  step_center(all_predictors(), -all_outcomes()) %&gt;%
+  step_scale(all_predictors(), -all_outcomes()) %&gt;%
+  prep()</pre>
+
+<ul>
+<li>Los datos procesados de entrenamiento se extraen de la receta con <code>juice()</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>especif1_entrena &lt;- receta_especif1 %&gt;% juice()</pre>
+
+<ul>
+<li>Y el preprocesado se aplica a la muestra de prueba con <code>bake()</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>especif1_prueba &lt;- receta_especif1 %&gt;% bake(testing(datos_partidos))</pre>
+
+</article></slide><slide class=""><hgroup><h2>Entrenamiento del modelo</h2></hgroup><article  id="entrenamiento-del-modelo">
+
+<ul>
+<li><p>Varios paquete de R estiman el mismo tipo de modelo, con su propia interfaz y nombres de argumentos</p>
+
+<ul>
+<li>Una regresión lineal se puede estimar con <code>lm</code> y con <code>glmnet</code></li>
+</ul></li>
+<li><p><code>tidymodels</code> proporciona un único conjunto de funciones y argumentos para definir un modelo</p>
+
+<ul>
+<li><code>linear_reg()</code> para cualquier regresión lineal</li>
+<li>siempre el mismo nombre de argumentos para los paquetes que lo usen y los llaman de forma distinta</li>
+</ul></li>
+<li><p>Se determina el paquete de R con <code>set_engine()</code></p></li>
+<li><p>Finalmente se ejecuta el modelo con <code>fit()</code> cuyos argumentos son</p>
+
+<ul>
+<li>una fórmula</li>
+<li>los datos de entrenamiento (<code>juiced</code>)</li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Entrenamiento del modelo (cont.)</h2></hgroup><article  id="entrenamiento-del-modelo-cont.">
+
+<pre class = 'prettyprint lang-r'>modelo.lm &lt;- linear_reg(mode= &quot;regression&quot;, penalty = 0) %&gt;%
+                set_engine(&quot;lm&quot;) %&gt;% 
+                fit(volume ~ ., data = especif1_entrena)
+modelo.lm %&gt;% broom::tidy()</pre>
+
+<ul>
+<li>Podemos reutilizar la receta con otro paquete</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>modelo.glmnet &lt;- linear_reg(mode= &quot;regression&quot;, penalty = 0) %&gt;%
+                     set_engine(&quot;glmnet&quot;) %&gt;% 
+                      fit(volume ~ ., data = especif1_entrena)
+modelo.glmnet %&gt;% broom::tidy()</pre>
+
+<ul>
+<li><p>El modelo no se define en una única y gran función con muchos argumentos: se separa en funciones más pequeñas</p></li>
+<li><p>La interfaz es más flexible y más fácil de aprender</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Entrenamiento del modelo: resultados</h2></hgroup><article  id="entrenamiento-del-modelo-resultados">
+
+<ul>
+<li><p>Para presentar los resultados de la estimación en formato de <code>tibble</code> se utiliza <code>broom::tidy()</code></p></li>
+<li><p>E</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>modelo.lm %&gt;% broom::glance()</pre>
+
+<!--
+
+Finally, augment() can be used to get model predictions, residuals, etc.
+
+
+-->
+
+</article></slide><slide class=""><hgroup><h2>Entrenamiento del modelo: clasificación</h2></hgroup><article  id="entrenamiento-del-modelo-clasificación">
+
+<ul>
+<li>El proceso es similar para un problema de clasificación</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>censo &lt;- read_csv(&quot;https://www.dropbox.com/s/6bqyjnkd2c638rm/census.csv?dl=1&quot;) 
+set.seed(7482)
+censo_partidos &lt;- censo %&gt;% initial_split(prop = .8)
+
+receta_logit1 &lt;- training(censo_partidos) %&gt;%
+  recipe(income ~ age + education + race + sex + capital_gain) %&gt;%
+  prep()
+
+logit1_entrena &lt;- receta_logit1 %&gt;% juice()
+logit1_prueba  &lt;- receta_logit1 %&gt;% bake(testing(censo_partidos))
+
+modelo.logit1 &lt;- logistic_reg(mode= &quot;classification&quot;, penalty = 0) %&gt;%
+                    set_engine(&quot;glm&quot;) %&gt;% 
+                    fit(income ~ ., data = logit1_entrena)
+modelo.logit1 %&gt;% broom::tidy()</pre>
+
+</article></slide><slide class=""><hgroup><h2>Predicción</h2></hgroup><article  id="predicción">
+
+<ul>
+<li>La función <code>predict()</code> en <code>parsnip</code> devuelve un <code>tibble</code> (no un vector): facilita usar <code>bind_cols()</code> para añadir la predicción a los datos originales</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>modelo.lm %&gt;% predict(especif1_prueba) %&gt;% 
+  bind_cols(especif1_prueba) %&gt;%  glimpse()</pre>
+
+<ul>
+<li><p>Para regresión, la variable predicha llamada <code>.pred</code></p></li>
+<li><p>Para clasificación, por defecto se predice la clase como <code>.pred_class</code></p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>modelo.logit1 %&gt;% predict(logit1_prueba) %&gt;% 
+  bind_cols(logit1_prueba) %&gt;%  glimpse()</pre>
+
+<ul>
+<li>Pero también se pueden predecir las probabilidades de cada categoría</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>modelo.logit1 %&gt;% predict(logit1_prueba, type = &quot;prob&quot;) %&gt;% 
+  bind_cols(logit1_prueba) %&gt;%  glimpse()</pre>
+
+</article></slide><slide class=""><hgroup><h2>Validación del Modelo</h2></hgroup><article  id="validación-del-modelo">
+
+<ul>
+<li><p>La función <code>metrics()</code> mide el ajuste de un modelo, seleccionando automáticamente la métrica adecuada</p></li>
+<li><p>Espera un <code>tibble</code> con el valor observado (<em>truth</em>) y el predicho (<em>estimate</em>)</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>modelo.lm %&gt;% predict(especif1_prueba) %&gt;% 
+  bind_cols(especif1_prueba) %&gt;%  
+  metrics(truth=volume, estimate= .pred)</pre>
+
+<ul>
+<li><p>La interfaz unificada de <code>tidymodels</code> permite medir las mismas métricas para otro modelo simplemente cambiando el objeto del modelo</p>
+
+<ul>
+<li>otro preprocesado (distintas variables, transformaciones)</li>
+<li>otro método de estimación, etc</li>
+</ul></li>
+<li><p>¿Cuáles serían las métricas para un modelo con la variable dependiente en logaritmos?</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Validación del Modelo: Clasificación</h2></hgroup><article  id="validación-del-modelo-clasificación">
+
+<ul>
+<li>Las métricas para clasificación incluyen las derivadas de la matriz de confusión</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>modelo.logit1 %&gt;% predict(logit1_prueba) %&gt;% 
+  bind_cols(logit1_prueba) %&gt;%  
+  metrics(truth=income, estimate= .pred_class)</pre>
+
+<ul>
+<li>Si predecimos probabilidades</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>logit1_probs &lt;- modelo.logit1 %&gt;% predict(logit1_prueba, type = &quot;prob&quot;) %&gt;% 
+  bind_cols(logit1_prueba) </pre>
+
+<ul>
+<li>Podemos usarlas para represetar la curva ROC</li>
+</ul>
+
+<!--
+o la curvas de ganancias
+
+```r
+logit1_probs %>%
+  gain_curve(income, `.pred_<=50K`) %>%
+  autoplot()
+```
+-->
+
+<pre class = 'prettyprint lang-r'>logit1_probs %&gt;%
+  roc_curve(income, `.pred_&lt;=50K`) %&gt;%
+  autoplot()</pre>
+
+</article></slide><slide class=""><hgroup><h2>Validación del Modelo: Clasificación (cont.)</h2></hgroup><article  id="validación-del-modelo-clasificación-cont.">
+
+<ul>
+<li>Finalmente si combinamos las dos, podemos obtener también la AUC</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>modelo.logit1 %&gt;% predict(logit1_prueba) %&gt;% 
+  bind_cols(logit1_prueba) %&gt;%  
+  bind_cols(logit1_probs %&gt;% select(1:2)) %&gt;% 
+  metrics(truth=income, `.pred_&lt;=50K`, estimate= .pred_class)</pre>
+
+<ul>
+<li><p>La extensión a problemas con más de clases es simple:</p>
+
+<ul>
+<li><p><em>accuracy</em> sigue teniendo la misma interpretación</p></li>
+<li><p>para la curva ROC y la AUC en lugar de una sola columna, se incluyen las probabilidades predichas de todas las clases</p></li>
+</ul></li>
+</ul>
+
+<!--
+
+## Validación cruzada
+
+* Creamos las particiones con `vfold_cv()` en los datos sin procesar
+
+```r
+set.seed(9753)
+datos_cv <- RailTrail %>% vfold_cv(v=10)
+```
+
+* Se define el modelo sin `fit()`
+
+
+```r
+modelo.lm.cv <- linear_reg(mode= "regression", penalty = 0) %>%
+                set_engine("lm")
+```
+
+* Se define una receta sin `prep()`
+
+
+```r
+receta.cv <- function(dataset){
+  recipe(volume ~ cloudcover + precip + avgtemp, data = dataset) %>%
+  step_poly(avgtemp, degree = 3) %>% 
+  step_corr(all_predictors()) %>%
+  step_center(all_predictors(), -all_outcomes()) %>%
+  step_scale(all_predictors(), -all_outcomes()) %>%
+  prep()
+}
+```
+
+
+* Se ajusta el modelo con `fit_resamples`
+
+
+```r
+validacion.fit <- fit_resamples(
+                    object       = modelo.lm.cv,
+                    preprocessor = receta.cv,
+                    resamples    = datos_cv,
+                    metrics      = metric_set(rmse, mae),
+                    control      = control_resamples(save_pred = TRUE)
+                  )
+```
+
+
+<!--
+
+https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/
+
+https://hansjoerg.me/2020/02/09/tidymodels-for-machine-learning/
+
+https://www.gmudatamining.com/lesson-10-r-tutorial.html
+
+http://www.rebeccabarter.com/blog/2020-03-25_machine_learning/
+
+https://rpubs.com/Joaquin_AR/598171
+
+https://www.tidymodels.org/start/
+--></article></slide>
 
 
   <slide class="backdrop"></slide>
