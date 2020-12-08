@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Prof.: Pedro Albarrán" />
+<meta name="author" content="Prof.: Alberto Pérez" />
+
+
+<title>Información - Evaluación y Proyecto Final</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Big Data (UA)</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Introducción</a>
+</li>
+<li>
+  <a href="Contenidos.html">Contenidos</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Información - Evaluación y Proyecto Final</h1>
+<h4 class="author">Prof.: Pedro Albarrán</h4>
+<h4 class="author">Prof.: Alberto Pérez</h4>
+<h4 class="date">Universidad de Alicante, Curso 2020/21</h4>
+
+</div>
+
+
+<div id="evaluación" class="section level1">
+<h1>Evaluación</h1>
+<p>La nota final depende de tres componentes:</p>
+<ul>
+<li><p>Ejercicios prácticos <strong>(P)</strong> entregados durante el periodo de clases</p></li>
+<li><p>Examen final online <strong>(E)</strong></p></li>
+<li><p>Trabajo empírico final <strong>(T)</strong></p></li>
+</ul>
+<p>Cada uno de estos componentes se evaluará entre 0 y 10. La nota final será la <em>máxima</em> de las siguientes dos medias ponderadas:</p>
+<ol style="list-style-type: lower-roman">
+<li><p><span class="math inline">\(\small 0.30*P + 0.25*E + 0.45*T\)</span></p></li>
+<li><p><span class="math inline">\(\small 0.50*E + 0.50*T\)</span></p></li>
+</ol>
+<p>Por tanto, la nota final también estará entre 0 y 10.</p>
+<p>Este cálculo generaliza las dos opciones mencionadas a principio de curso. La nota de quienes opten por la evaluación no continua será la media del examen final (E) y el trabajo empírico (T), dado que será mayor que con la primera opción. Si alguien hubiera entregado estos ejercicios, pero su nota fuera mejor con la segunda opción también sería esa su nota final.</p>
+<p>La nota de los ejercicios se calculará como la media de los ejercicios entregados, excluyendo el 20% de notas más bajas. Por ejemplo, con 10 ejercicios entregados, no se incluyen en el cálculo de la media de esta parte las dos notas menores, incluidos los 0 por no entregar. Posteriormente se sumarán hasta dos puntos a esa nota en función de la asistencia y <em>participación</em> (respondiendo preguntas en clase).</p>
+<p>El examen final se realizará online en la fecha asignada oficialmente y constará de dos partes. La primera será tipo test con preguntas breves de múltiples opciones. La segunda será un examen oral por videoconferencia sobre dos preguntas a desarrollar <em>brevemente</em> acerca de los conceptos principales discutidos en el curso. En la web de la asignatura, tenéis disponibles ejemplos de ambas partes. Os daré información sobre la hora concreta, los vínculos para realizar ambas partes y otros detalles más adelante, con suficiente antelación.</p>
+<p>Finalmente, el resto de este documento os ofrece información sobre el trabajo empírico final.</p>
+</div>
+<div id="trabajo-empírico-final" class="section level1">
+<h1>Trabajo empírico final</h1>
+<div id="objetivos" class="section level2">
+<h2>Objetivos</h2>
+<p>Para realizar este proyecto final, existen dos opciones:</p>
+<ol style="list-style-type: lower-alpha">
+<li><p>podéis proponer un tema de estudio, usando datos de que dispongáis por trabajo, contactos, busqueda propia, etc.</p></li>
+<li><p>podéis elegir entre los temas y datos que os propongo a continuación</p></li>
+</ol>
+<p>En ambos casos, el resultado final debe ser un proyecto de análisis de datos que tenga sentido en el ámbito de economía, empresa, negocios, finanzas, etc. Se aplicarán los conocimientos adquiridos en el curso, quedando claras todas las etapas del análisis según el conocido flujo</p>
+<center>
+<img src="pic/model.png" />
+</center>
+<p>Pero también debe explicarse <em>brevemente</em> qué cuestión se analiza y su importanacia, por qué con esos datos y la utilidad de las conclusiones para tomar decisiones, planificar, etc. El trabajo debe, en mayor o menor medida, tratar los siguientes puntos</p>
+<ol style="list-style-type: decimal">
+<li><p>Objetivo del análisis y qué datos utilizar,</p></li>
+<li><p>El procedimiento de importación, limpieza y transformación,</p></li>
+<li><p>Análisis exploratorio de datos</p></li>
+<li><p>Cómo la visualización y el análisis exploratorio de datos ayudan a especificar los modelos útiles para el objetivo del análisis</p></li>
+<li><p>Validación de distintos modelos y especificaciones</p></li>
+<li><p>Selección del modelo final y su validación</p></li>
+<li><p>Comunicar de manera efectiva mediante gráficos, resultados de estimación, etc. las implicaciones de los resultados obtenidos en el análisis para un problema económico financiero o decisión de empresa.</p></li>
+</ol>
+<p>Notad que estos puntos son orientativos sobre las cuestiones a abordar en el trabajo, NO un esquema de los apartados del trabajo. Cada trabajo es <strong>distinto</strong>. Algunos conjuntos de datos serán muy grandes y otros no. En algunos casos, la limpieza de datos será un proceso que lleve mucho tiempo y en otros los datos estarán casi listos para trabajar. Como ya se ha comentado, el análisis exploratorio nos hará considerar transformaciones adicionales de los datos para facilitar la especificaión de los modelos. <!--Esta es la realidad: los trabajos repetitivos que se pueden realizar siguiendo un simple esquema NO los haréis vosotros/as (o no tendréis un salario muy alto, dado que una máquina cobra menos).--></p>
+</div>
+<div id="resultado-final" class="section level2">
+<h2>Resultado final</h2>
+<p>Se debe crear un informe con R Markdown, con un título adecuado, vuestro nombre completo en el campo de autor, etc. El trabajo también incluirá secciones, listas, codigo, resultados, gráficos, etc. según consideréis necesario. Por favor, intentad que el trabajo sea <strong>mínimamente presentable</strong> y profesional; tenéis la capacidades de estos años en la Universidad y las herramientas para que vuestro trabajo sea un mini-informe que presentariáis si estuvieséis trabajando. Sin perder excesivo tiempo en una forma perfecta de presentación, no produzcáis un documento con tablas y gráficos difíciles de leer o poco informativos, con una estructura inconexa, etc. No se trata de “amontonar” resultados, sino de presentar una historia que los datos nos cuentas.</p>
+<p>Como es habitual, deberéis entregar un archivo .Rmd y un archivo resultados de su renderización (.html, .pdf, etc.). También se adjuntarán otros archivos que fueran necesarios para REPRODUCIR totalmente el documento o archivos complementarios que consideréis importantes (archivos de código R adicionales, archivos de datos complementarios, etc.).</p>
+<p>Los nombres de los TODOS archivos DEBEN EMPEZAR con vuestro número de DNI (el resto es libre): ej.,</p>
+<ul>
+<li><p>12345678_miFinal.Rmd</p></li>
+<li><p>12345678_miFinal.html</p></li>
+</ul>
+</div>
+<div id="plazos" class="section level2">
+<h2>Plazos</h2>
+<!--
+* Tan PRONTO como sea posible y no más tarde del **domingo, 22 de diciembre de 2019** (hora límite 23:55h de la noche) debéis enviarme una propuesta de tema para el proyecto cumplimentando este [FORMULARIO](https://docs.google.com/forms/d/e/1FAIpQLSfPM7rf2ESujlETo4ZXNnaCVlV--N6omfGl3g1xuDl0yL0_5Q/viewform). 
+  
+    + Dos estudiantes diferentes NO pueden hacer el mismo trabajo; los datos pueden ser los mismos, pero NO con el mismo objetivo.
+    
+    + Antes de comenzar, debéis esperar a que os dé mi visto bueno sobre vuestra propuesta.
+
+<!--
+  * Como muy tarde, el **jueves, 17 de enero de 2019** (hora límite 23:55h de la noche) debéis enviarme una versión con trabajo ya iniciado. Puede ser una mezcla de partes ya "terminadas" y puntos pendientes por desarrollar que aparezcan de manera esquemática. Esta primera "versión" tiene como objetivo mostrar qué estáis haciendo y qué pensáis hacer; de esta manera, os podré indicar si tenéis que cambiar, añadir, rectificar, etc.
+-->
+<ul>
+<li><p>Tan PRONTO como os sea posible debéis enviarme una propuesta de tema para el proyecto mediante tutoría en UACloud o por <a href="albarran@ua.es">email</a>. Debéis indicarme qué datos utilizarías, tipo de análisis (regresión, clasificación) y los objetivos/utilidad de hacer ese análisis. Aunque no pondré plazo formal para este paso, os recomiendo que lo hagáis no más tarde del <strong>miércoles, 23 de diciembre de 2020</strong>. Cuanto antes tengáis definido esto, antes podéis empezar a trabajar.</p></li>
+<li><p>El día asignado para el examen de la asignatura deberéis realizar una <strong>breve presentación</strong> del estado de vuestro proyecto. Nuevamente cada situación será distinta: lo habitual será tener sólo resultados del análisis exploratorio, pero en otros casos iréis más avanzados (ya se habrán estimado y validado modelos) o menos. Independientemente de la fase, es importante explicar claramente qué se ha hecho, qué se va a hacer, cómo y por qué. Podéis ayudaros para esto con una presentación muy simple o lo que consideréis apropiado para que todo quede claro. Os daré más detalles con la información sobre el examen (con suficiente antelación)</p></li>
+<li><p>El trabajo en su formato final deberá entregarse antes del <strong>sábado, 6 de febrero de 2020</strong> (hora límite 23:55h de la noche) por medio de este <a href="https://docs.google.com/forms/d/e/1FAIpQLSdmJlPI-mwJub9IZfxluYbNUUHBEFZd9PZ95Ib6mzNei92I3A/viewform">FORMULARIO</a></p></li>
+<li><p>En cualquier momento podéis consultarme dudas relativas al trabajo. Si fuera necesario, en enero podemos tener tutorías (quizás coordinadas entre varios, si las dudas son similares).</p></li>
+</ul>
+</div>
+<div id="propuestas-de-datos-y-temas" class="section level2">
+<h2>Propuestas de Datos y Temas</h2>
+<p>Notad que en la nota de trabajo se valorará la complejidad de todo el proceso del análisis. Algunos datos requieren una limpieza o transformación profunda, complementarse con otras fuentes, o tienen mayor complejidad por número de observaciones o variables, etc. Si una parte (ej. limpieza) requiere más trabajo que la media, otras partes pueden ser algo menos completas. Y al revés: con unos datos que no requieren mucha limpieza, se puede obtener una nota la máxima nota si otras partes están muy bien desarrolladas.</p>
+<!--
+Dado lo que cada conjunto de datos ofrece, se valorará lo que hagáis según lo 
+
+ hacer los más básico visto en clase con unos datos similares a lo visto es clase es válido, pero incluso estando perfecto no podéis esperar una gran nota.
+-->
+<ol style="list-style-type: decimal">
+<li><strong>Ventas de “Big Mart”</strong>. Se han recopilado datos de ventas de 1.559 productos para el 2013 en 10 tiendas en diferentes ciudades para la cadena de tiendas americana “Big Mart”. Además, se han definido determinados atributos de cada producto y tienda. El objetivo es construir un modelo predictivo o de clasificación para conocer las ventas de cada producto en una tienda concreta. Con este modelo, se intentará comprender las propiedades de los productos y tiendas que juegan un papel clave en las ventas. Los datos están <a href="https://www.dropbox.com/s/mwoy9uhtalj10bi/01Bigmart.csv?dl=0">aquí</a></li>
+</ol>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>Black Friday</strong>. “ABC Private Limited” quiere comprender el comportamiento de compra para varios productos de diferentes categorías. Se dispone de un resumen de compras de varios clientes y sus datos demográficos. Un modelo para predecir comprar o clasificar compras de gran volumen del cliente ayudará a crear una oferta personalizada para los clientes. Los datos <a href="https://www.dropbox.com/s/37m2nynxxjzmxta/02black.csv?dl=0">aquí</a></li>
+</ol>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>Concesión de préstamos I</strong>. “Dream Housing Finance” desea automatizar el proceso de elegibilidad del préstamo a partir de datos del cliente proporcionados al llenar el formulario de solicitud en línea. Para automatizar este proceso, han planteado un problema a la hora de identificar los segmentos de clientes, que son susceptibles de recibir préstamos para poder dirigirse específicamente a estos clientes. Los datos y su descripción <a href="https://www.dropbox.com/s/5h7g2vped3qpbkk/03loan.zip?dl=0">aquí</a></li>
+</ol>
+<ol start="4" style="list-style-type: decimal">
+<li><strong>Concesión de préstamos II</strong>. Datos de concesión de préstamos de la empresa “Lending club”. Información y descarga, previo regristro, <a href="https://www.lendingclub.com/info/download-data.action">aquí</a></li>
+</ol>
+<ol start="5" style="list-style-type: decimal">
+<li><strong>Servicio de bicicletas</strong>. La empresa “Capital BikeShare” ofrece un servicio de bicicletas compartidas. Quiere saber a dónde van sus usuarios, cuándo viajan, qué paradas son las más populares, en qué días de la semana se realizan más viajes. Información <a href="https://www.capitalbikeshare.com/system-data">aquí</a></li>
+</ol>
+<!--
+6. **Renta de los individuos**. Con información del Censo de EE.UU. sobre varias características demográficas de una persona, queremos construir un modelo predictivo para determinar su nivel de renta (mayor o menor de 50 mil dólares anuales). El modelo se usará para detectar fraude. Datos [aquí](https://www.dropbox.com/s/vho16xw59qczqpa/06census.zip?dl=0).
+
+  [//]: # (https://www.analyticsvidhya.com/blog/2016/10/17-ultimate-data-science-projects-to-boost-your-knowledge-and-skills/)
+  
+  [//]: # (https://cloudxlab.com/blog/predicting-income-level-case-study-r/)
+  [//]: # (http://archive.ics.uci.edu/ml/machine-learning-databases/adult/)
+  
+  [//]: # (otra fuente de datos similares)
+  [//]: # (http://archive.ics.uci.edu/ml/machine-learning-databases/census-income-mld/census-income.html)
+  [//]: # (http://archive.ics.uci.edu/ml/machine-learning-databases/census-income-mld/census-income.html)
+
+-->
+<ol start="6" style="list-style-type: decimal">
+<li><strong>Precios de las casas en Iowa</strong>. Disponemos de información describiendo (casi) todos los aspectos de las casas residenciales en Ames, Iowa, para predecir el precio final de cada casa. Datos y descripción <a href="https://www.dropbox.com/s/zvvfs88xn8dt4no/07houses.zip?dl=0">aquí</a>.</li>
+</ol>
+<ol start="7" style="list-style-type: decimal">
+<li><strong>Valor de los pisos en California y Pennsylvania</strong>. Datos extraídos de la <em>American Community Survey</em> de 2011 con información sobre el parque de viviendas y las circunstancias económicas de cada área en California y Pennsylvania. Datos e información <a href="https://www.dropbox.com/s/qic1yskj2gurcu3/08calif.zip?dl=0">aquí</a>.</li>
+</ol>
+<ol start="8" style="list-style-type: decimal">
+<li><p><strong>Delitos</strong>. Tenemos información de los crímenes cometidos en Chicago desde 2001. Se puede utilizar para predecir el tipo de crimen, incidencia de crímenes por tipo y zona, etc. Datos e información <a href="https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-present/ijzp-q8t2">aquí</a>. Esta información se puede complementar con otras fuentes del mismo portal de datos de Chicago. En particular, datos de socioeconomicos.</p></li>
+<li><p><strong>Delitos II</strong>. También existe información para Boston <a href="https://data.boston.gov/dataset/crime-incident-reports-august-2015-to-date-source-new-system/resource/12cb3883-56f5-47de-afa5-3b1cf61b257b">aquí</a> y más información en el mismo sitio. Por ejemplo, datos socioeconomicos de censo: <a href="https://data.boston.gov/dataset/boston-neighborhoods/resource/7cb46a0a-2d13-446e-b04a-f555930a9b0d" class="uri">https://data.boston.gov/dataset/boston-neighborhoods/resource/7cb46a0a-2d13-446e-b04a-f555930a9b0d</a></p></li>
+</ol>
+<ol start="10" style="list-style-type: decimal">
+<li><strong>Propinas en taxis de NY</strong>. Analizar los determinantes de que la propina sea alta, en función del lugar de origen, destino, etc. Los datos <a href="https://www.dropbox.com/s/zaptbme1txrhdhi/10taxis.zip?dl=0">aquí</a>.</li>
+</ol>
+<ol start="11" style="list-style-type: decimal">
+<li><strong>Airbnb</strong>. En este <a href="http://tomslee.net/airbnb-data-collection-get-the-data">enlace</a> están disponibles conjuntos de datos obtenidos de la web de Airbnb para diferentes ciudades (Alicante no está incluida, pero podéis hacer el “web scraping” si queréis…). Entre otras cosas, se puede analizar los determinantes de la satisfación de los usuarios. Notad que esta fuente da para varios trabajos, tanto por usar distintas ciudades (cuidado con trabajos “demasiado” similares) como porque, como con otros datos, se pueden analizar más de una cosa.</li>
+</ol>
+<ol start="12" style="list-style-type: decimal">
+<li><strong>Precio de las acciones</strong>. Usando información sobre fundamentales de las acciones, se puede predecir el valor o determinar (clasificar) si están sobrevaloradas o infravaloradas. Podéis utilizar <a href="http://www.usfundamentals.com/download/">estos datos</a> o buscar vuestros propios datos de otras empresas (por ejemplo, españolas).</li>
+</ol>
+<ol start="13" style="list-style-type: decimal">
+<li><strong>Predicción de Respuesta del Cliente</strong> y maximización de beneficios. Datos de una campaña de “mailing” directo a clientes con información sobre características demográficas de los clientes y su historial. El objetivo es predecir la respuesta de los clientes en caso de ser contactados para fines de donación. Al clasificar a los clientes, se puede maximizar el importe de la donación. Datos y descripción <a href="https://www.dropbox.com/s/9hfftmdbgrerv6h/13respuesta.zip?dl=0">aquí</a>.</li>
+</ol>
+<ol start="14" style="list-style-type: decimal">
+<li><strong>Stock pairs</strong> es un estrategia de “trading” desarrollada por “Morgan Stanley” en los años 1980 (ver <a href="https://en.wikipedia.org/wiki/Pairs_trade">aquí</a>). Si dos precios de acciones o índices bursátiles como Dow Jones y S&amp;P 500 están históricamente correlados, la ratio de precios tiene un valor estable. Si la ratio de precio se desvía significativamente de ese valor indica que una está infravalorada y deberá subir. El objetivo es desarrollar un modelo que prediga una subida en función de valores pasados de la ratio. Se podrían utilizar dos series de precios de acciones cualquiera, PERO este trabajo es más complejo de lo que parece: se requiere información adicional de fundamentales, una modelización ARIMA apropiada, etc. Consultad conmigo ANTES de elegir esto.</li>
+</ol>
+<ol start="15" style="list-style-type: decimal">
+<li><p><a href="https://github.com/datawookie/trundler">Este paquete</a> de R acceso a los datos de productos y precios históricos de una serie de minoristas en línea.</p></li>
+<li><p><a href="https://www.kaggle.com/aungpyaeap/supermarket-sales">Este conjunto de datos</a> contiene información sobre las ventas históricas de una compañía de supermercados.</p></li>
+<li><p>Se pueden utilizar encuestas oficiales para <strong>predecir la pobreza</strong> de los hogares. Si os interesa, preguntadme.</p></li>
+</ol>
+<p>Se pueden encontrar otras fuentes con información sobre datos en Internet. Por ejemplos, distintas organizaciones y empresas celebran “hackatones” de análisis de datos y aprendizaje automático; por ejemplo, <a href="https://www.zaratalent.com/data.html">aquí</a>. <!--y [aquí](https://hackathonspain.com/calendario/hackathon-inditex/)), BBVA (entre otros, [aquí](https://openinnovation.bbva.com/es/evento/hackathon-bbva-2020) y [aquí]())
+
+  * 
+  
+  * https://openinnovation.bbva.com/es/evento/hackathon-bbva-2020
+--> Otras fuentes generales son:</p>
+<ul>
+<li><p><a href="https://www.kaggle.com/datasets" class="uri">https://www.kaggle.com/datasets</a></p></li>
+<li><p><a href="https://github.com/caesar0301/awesome-public-datasets" class="uri">https://github.com/caesar0301/awesome-public-datasets</a></p></li>
+<li><p><a href="https://www.kdnuggets.com/datasets/index.html" class="uri">https://www.kdnuggets.com/datasets/index.html</a></p></li>
+<li><p><a href="https://github.com/rfordatascience/tidytuesday" class="uri">https://github.com/rfordatascience/tidytuesday</a></p></li>
+<li><p><a href="https://www.data.gov/" class="uri">https://www.data.gov/</a></p></li>
+<li><p><a href="https://data.worldbank.org/" class="uri">https://data.worldbank.org/</a></p></li>
+<li><p><a href="https://github.com/fivethirtyeight/data" class="uri">https://github.com/fivethirtyeight/data</a></p></li>
+<li><p><a href="https://aws.amazon.com/datasets/" class="uri">https://aws.amazon.com/datasets/</a></p></li>
+<li><p><a href="https://cloud.google.com/bigquery/public-data/" class="uri">https://cloud.google.com/bigquery/public-data/</a></p></li>
+<li><p><a href="https://www.quandl.com/" class="uri">https://www.quandl.com/</a></p></li>
+<li><p><a href="https://www.gapminder.org/data/" class="uri">https://www.gapminder.org/data/</a></p></li>
+</ul>
+</div>
+<div id="importante-plagio" class="section level2">
+<h2>IMPORTANTE: plagio</h2>
+<p>No es la primera vez que estos datos u otros que me propongáis vosotros se han utilizado. Seguro que podéis encontrar análisis ya realizados sobre vuestra propuesta, en internet o de estudiantes de cursos anteriores. Yo también. Probablemente sabéis que la Universidad para una (carísima) licencia para que podamos usar la mejor aplicación de detección de plagio. Yo utilizo adicionalmente otras aplicaciones y algoritmos propios, por ser específicos para detectar variantes de código o porque implementan formas de detección diferentes a las de la aplicación comercial. Por supuesto podéis “colármela” dado que ningún sistema es perfecto (ya sabéis, Error de Tipo I y Error de Tipo II). Evaluar bien las probabilidades y realizar el análisis coste-beneficio con toda la información disponible. Si lo conseguís, enhorabuena. Sabed que la detección de plagio supondrá automáticamente el suspenso en todas las convocatorias de la asignatura en este curso académico y la posibilidad de iniciar la apertura de un expediente.</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

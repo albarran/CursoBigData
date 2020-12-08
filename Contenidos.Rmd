@@ -19,6 +19,15 @@ knitr::opts_chunk$set(echo = TRUE)
   - descomprimid todo el contenido en un subdirectorio llamado **data** de vuestro directorio de trabajo para poder usarlos en el futuro
 
 ***
+## Evaluación y Proyecto Final
+
+* Información sobre la evaluación el proyecto final [aquí](Info01.html)
+
+* Ejemplo de preguntas tipo test para el examen, [aquí](https://www.dropbox.com/s/37hjc8wm8ufma03/ExamTest.pdf?dl=0)
+
+* Ejemplo de preguntas para el examen a desarrollar (brevemente), [aquí](https://www.dropbox.com/s/urfj3jbq7x4wx8g/ExamPreg.pdf?dl=0)
+
+***
 
 :::: {style="display: flex;"}
 
