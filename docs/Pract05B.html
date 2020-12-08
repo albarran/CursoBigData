@@ -220,6 +220,8 @@ slide:not(.current) .plotly.html-widget{
 
 <pre class = 'prettyprint lang-r'>install.packages(&quot;tidymodels&quot;)</pre>
 
+<pre class = 'prettyprint lang-r'>library(tidymodels)</pre>
+
 <center>
 
 <img width="90%" src='pic/tidymodels_process.png' title=''/>
@@ -253,81 +255,108 @@ slide:not(.current) .plotly.html-widget{
 </article></slide><slide class=""><hgroup><h2>Pre-procesado</h2></hgroup><article  id="pre-procesado">
 
 <ul>
-<li><p>Transformar los datos para que sean adecuados para la modelización</p></li>
-<li><p>Aunque se puede utilizar <code>dplyr</code> o <code>tidyverse</code>, cuando el desarrollo del modelo es complejo <code>tidymodels</code> facilita el proceso</p></li>
-<li><p>Particionar los datos en muestra y entrenamiento: <code>initial_split()</code></p></li>
+<li><p>Con <code>dplyr</code> (<code>tidyverse</code>) se pueden <strong>transformar los datos</strong> para que sean adecuados para la modelización, pero <code>tidymodels</code> facilita algunas partes del proceso cuando el desarrollo del modelo es complejo</p></li>
+<li><p><code>initial_split()</code>: particionar los datos en muestra y entrenamiento.</p></li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>library(mosaicData)
-library(tidymodels)
 set.seed(9753)
-datos_partidos &lt;- RailTrail %&gt;% initial_split(prop = .8)</pre>
+RailTrail_part &lt;- RailTrail %&gt;% initial_split(prop = .8)</pre>
+
+<!-- Ver el objeto -->
+
+<ul>
+<li>Más flexibilidad y opciones que la partición con <code>sample_frac()</code> (ver ayuda)</li>
+</ul>
+
+<!-- Ej. strata -->
 
 <ul>
 <li>Las funciones <code>training()</code> y <code>testing()</code> acceden a cada submuestra</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>entren &lt;- datos_partidos %&gt;% training()
-prueb  &lt;- datos_partidos %&gt;% testing()
-intersect(entren, prueb)</pre>
+<pre class = 'prettyprint lang-r'>RailTrail_entren &lt;- RailTrail_part %&gt;% training()
+RailTrail_prueb  &lt;- RailTrail_part %&gt;% testing()
+intersect(RailTrail_entren, RailTrail_prueb)</pre>
 
 </article></slide><slide class=""><hgroup><h2>Pre-procesado: recetas</h2></hgroup><article  id="pre-procesado-recetas">
 
-<ul>
-<li><p><code>recipe()</code>: define transformaciones a aplicar (similar a <code>ggplot()</code>); su principal argumento es una <strong>fórmula</strong></p></li>
-<li><p><code>prep()</code>: ejecuta transformaciones sobre uno datos <!--(típicamente, los datos de entrenamiento)--></p></li>
-<li><p>Cada transformación es un paso <code>step_</code></p>
+<ol>
+<li><p><code>recipe()</code>: define transformaciones a aplicar.</p></li>
+<li><p><code>prep()</code>: ejecuta transformaciones sobre unos datos <!--(típicamente, los datos de entrenamiento)--></p></li>
+</ol>
 
 <ul>
-<li><p><code>step_corr()</code>: elimina variables con alta correlaciones con otras</p></li>
-<li><p><code>step_center()</code>: normaliza datos numéricos para tener media cero</p></li>
-<li><p><code>step_scale()</code>: ídem para tener una desviación estándar de uno</p></li>
-</ul></li>
-<li><p>Los pasos pueden aplicarse a todas o solo a un subconjunto de variables usando por ejemplo <code>all_outocomes()</code> y <code>all_predictors()</code></p>
+<li><code>recipe()</code> es &ldquo;similar&rdquo; a <code>ggplot()</code>: su principal argumento es una <em>fórmula</em> (define el rol de las variables) y se van añadiendo <em>pasos</em> con <code>step_</code>
 
 <ul>
-<li>Por ejemplo, <code>step_corr(all_predictors())</code> solo aplica <code>step_corr()</code> a regresores</li>
+<li><code>step_corr()</code>: elimina variables con alta correlaciones con otras</li>
+<li><code>step_scale()</code>: ídem para tener una desviación estándar de uno</li>
 </ul></li>
+</ul>
+
+<!--    
+    + `step_center()`: normaliza datos numéricos para tener media cero
+
+    + step_rm()
+
+Ver ayuda de recipes, ej. recipes::Roles
+-->
+
+<ul>
+<li><p>Los pasos se aplican a todas las variable, una sola o a un subconjunto con <code>all_outcomes()</code>, <code>all_predictors()</code>, <code>all_numeric()</code>, <code>all_nominal()</code>, <code>contains()</code>, etc.</p>
+
+<ul>
+<li><code>step_dummy(all_predictors(), -all_numeric())</code></li>
+</ul></li>
+</ul>
+
+<!--
+    + `step_corr(all_predictors())` <!--solo aplica `step_corr()` a regresores-->
+
+<ul>
+<li>También hay pasos de control como <code>check_missing()</code></li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Pre-procesado: recetas (cont.)</h2></hgroup><article  id="pre-procesado-recetas-cont.">
 
 <ul>
-<li>Poniendo todo junto se crea un objeto de receta</li>
+<li>Se combina todo en un objeto de receta y se prepara (<code>prep()</code>)</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>receta_especif1 &lt;- training(datos_partidos) %&gt;%
+<pre class = 'prettyprint lang-r'>receta_lm1 &lt;- training(RailTrail_part) %&gt;%            # Datos: NO crucial
   recipe(volume ~ cloudcover + precip + avgtemp) %&gt;%
-  step_poly(avgtemp, degree = 3) %&gt;% 
-  step_corr(all_predictors()) %&gt;%
+  step_poly(avgtemp, degree = 6) %&gt;% 
+  step_corr(all_predictors(), threshold = 0.9) %&gt;%
   step_center(all_predictors(), -all_outcomes()) %&gt;%
-  step_scale(all_predictors(), -all_outcomes()) %&gt;%
-  prep()</pre>
+  step_scale(all_predictors(), -all_outcomes())
+receta_lm1_prep &lt;- receta_lm1 %&gt;%  prep()</pre>
+
+<!-- los datos de la receta NO son importantes: se definirán al usarla luego -->
 
 <ul>
-<li>Los datos procesados de entrenamiento se extraen de la receta con <code>juice()</code></li>
+<li>Los datos procesados en la receta se extraen con <code>juice()</code></li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>especif1_entrena &lt;- receta_especif1 %&gt;% juice()</pre>
+<pre class = 'prettyprint lang-r'>lm1_entrena &lt;- receta_lm1_prep %&gt;% juice()</pre>
 
 <ul>
-<li>Y el preprocesado se aplica a la muestra de prueba con <code>bake()</code></li>
+<li>El preprocesado se aplica a otra muestra con <code>bake()</code></li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>especif1_prueba &lt;- receta_especif1 %&gt;% bake(testing(datos_partidos))</pre>
+<pre class = 'prettyprint lang-r'>lm1_prueba &lt;- receta_lm1_prep %&gt;% bake(testing(RailTrail_part))</pre>
 
 </article></slide><slide class=""><hgroup><h2>Entrenamiento del modelo</h2></hgroup><article  id="entrenamiento-del-modelo">
 
 <ul>
-<li><p>Varios paquete de R estiman el mismo tipo de modelo, con su propia interfaz y nombres de argumentos</p>
+<li><p>Varios paquete de R estiman el mismo tipo de modelo, con su propia interfaz y argumentos: ej., una regresión lineal con <code>lm</code> y con <code>glmnet</code></p></li>
+<li><p><code>tidymodels</code> define un modelo con las mismas funciones y argumentos</p></li>
+</ul>
+
+<ol>
+<li><p>Tipo de modelo: ej., <code>linear_reg()</code> para cualquier regresión lineal</p>
 
 <ul>
-<li>Una regresión lineal se puede estimar con <code>lm</code> y con <code>glmnet</code></li>
-</ul></li>
-<li><p><code>tidymodels</code> proporciona un único conjunto de funciones y argumentos para definir un modelo</p>
-
-<ul>
-<li><code>linear_reg()</code> para cualquier regresión lineal</li>
 <li>siempre el mismo nombre de argumentos para los paquetes que lo usen y los llaman de forma distinta</li>
 </ul></li>
 <li><p>Se determina el paquete de R con <code>set_engine()</code></p></li>
@@ -335,134 +364,204 @@ intersect(entren, prueb)</pre>
 
 <ul>
 <li>una fórmula</li>
-<li>los datos de entrenamiento (<code>juiced</code>)</li>
+<li>los datos de entrenamiento <!--(sacados de `juice()`)--></li>
 </ul></li>
-</ul>
+</ol>
 
 </article></slide><slide class=""><hgroup><h2>Entrenamiento del modelo (cont.)</h2></hgroup><article  id="entrenamiento-del-modelo-cont.">
 
-<pre class = 'prettyprint lang-r'>modelo.lm &lt;- linear_reg(mode= &quot;regression&quot;, penalty = 0) %&gt;%
-                set_engine(&quot;lm&quot;) %&gt;% 
-                fit(volume ~ ., data = especif1_entrena)
-modelo.lm %&gt;% broom::tidy()</pre>
+<pre class = 'prettyprint lang-r'>modelo_lm1     &lt;- linear_reg(mode= &quot;regression&quot;, penalty = 0) %&gt;%
+                    set_engine(&quot;lm&quot;) 
+modelo_lm1_est &lt;- modelo_lm1 %&gt;% 
+                    fit(volume ~ ., data = lm1_entrena)</pre>
 
 <ul>
 <li>Podemos reutilizar la receta con otro paquete</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>modelo.glmnet &lt;- linear_reg(mode= &quot;regression&quot;, penalty = 0) %&gt;%
-                     set_engine(&quot;glmnet&quot;) %&gt;% 
-                      fit(volume ~ ., data = especif1_entrena)
-modelo.glmnet %&gt;% broom::tidy()</pre>
+<pre class = 'prettyprint lang-r'>modelo_glmnet1     &lt;- linear_reg(penalty = 0) %&gt;% 
+                        set_engine(&quot;glmnet&quot;) %&gt;% 
+                        set_mode(&quot;regression&quot;)
+modelo_glmnet1_est &lt;- modelo_glmnet1 %&gt;% 
+                        fit(volume ~ ., data = lm1_entrena)</pre>
 
 <ul>
-<li><p>El modelo no se define en una única y gran función con muchos argumentos: se separa en funciones más pequeñas</p></li>
-<li><p>La interfaz es más flexible y más fácil de aprender</p></li>
+<li>El modelo se define en pequeños pasos en lugar de una única función con muchos argumentos (más flexible y fácil de aprender)</li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Entrenamiento del modelo: resultados</h2></hgroup><article  id="entrenamiento-del-modelo-resultados">
 
 <ul>
-<li><p>Para presentar los resultados de la estimación en formato de <code>tibble</code> se utiliza <code>broom::tidy()</code></p></li>
-<li><p>E</p></li>
+<li>Para presentar los resultados de la estimación en formato de <code>tibble</code> se utiliza <code>broom::tidy()</code></li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>modelo.lm %&gt;% broom::glance()</pre>
+<pre class = 'prettyprint lang-r'>modelo_lm1_est %&gt;% broom::tidy()</pre>
 
-<!--
+<ul>
+<li>Podemos obtener otros detalles de la estimación con <code>glance()</code></li>
+</ul>
 
-Finally, augment() can be used to get model predictions, residuals, etc.
+<pre class = 'prettyprint lang-r'>modelo_lm1_est %&gt;% broom::glance()</pre>
 
+<ul>
+<li>Finalmente, <code>augment()</code> puede ser usado para obtener predicciones del modelo, residuos, etc.</li>
+</ul>
 
--->
+<pre class = 'prettyprint lang-r'>augment(modelo_lm1_est$fit) %&gt;% select(volume, .fitted:.std.resid)</pre>
 
 </article></slide><slide class=""><hgroup><h2>Entrenamiento del modelo: clasificación</h2></hgroup><article  id="entrenamiento-del-modelo-clasificación">
 
-<ul>
-<li>El proceso es similar para un problema de clasificación</li>
-</ul>
-
 <pre class = 'prettyprint lang-r'>censo &lt;- read_csv(&quot;https://www.dropbox.com/s/6bqyjnkd2c638rm/census.csv?dl=1&quot;) 
 set.seed(7482)
-censo_partidos &lt;- censo %&gt;% initial_split(prop = .8)
+censo_part &lt;- censo %&gt;% initial_split(prop = .8)
 
-receta_logit1 &lt;- training(censo_partidos) %&gt;%
-  recipe(income ~ age + education + race + sex + capital_gain) %&gt;%
-  prep()
+receta_logit1 &lt;- training(censo_part) %&gt;%
+  recipe(income ~ age + education + race + sex + capital_gain)
 
-logit1_entrena &lt;- receta_logit1 %&gt;% juice()
-logit1_prueba  &lt;- receta_logit1 %&gt;% bake(testing(censo_partidos))
+receta_logit1_prep &lt;- receta_logit1 %&gt;%  prep()
 
-modelo.logit1 &lt;- logistic_reg(mode= &quot;classification&quot;, penalty = 0) %&gt;%
-                    set_engine(&quot;glm&quot;) %&gt;% 
-                    fit(income ~ ., data = logit1_entrena)
-modelo.logit1 %&gt;% broom::tidy()</pre>
+logit1_entrena &lt;- receta_logit1_prep %&gt;% juice()
+logit1_prueba  &lt;- receta_logit1_prep %&gt;% bake(testing(censo_part))
+
+modelo_logit1 &lt;- logistic_reg(mode= &quot;classification&quot;, penalty = 0) %&gt;%
+                    set_engine(&quot;glm&quot;)
+
+modelo_logit1_est &lt;- modelo_logit1 %&gt;% 
+                        fit(income ~ ., data = logit1_entrena)
+modelo_logit1_est %&gt;% broom::tidy()</pre>
 
 </article></slide><slide class=""><hgroup><h2>Predicción</h2></hgroup><article  id="predicción">
 
 <ul>
-<li>La función <code>predict()</code> en <code>parsnip</code> devuelve un <code>tibble</code> (no un vector): facilita usar <code>bind_cols()</code> para añadir la predicción a los datos originales</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>modelo.lm %&gt;% predict(especif1_prueba) %&gt;% 
-  bind_cols(especif1_prueba) %&gt;%  glimpse()</pre>
+<li><p>La función <code>predict()</code> en <code>parsnip</code> predice valores numéricos, clases, probabilidad de cada categoría, intervalos de confianza, etc.</p>
 
 <ul>
-<li><p>Para regresión, la variable predicha llamada <code>.pred</code></p></li>
-<li><p>Para clasificación, por defecto se predice la clase como <code>.pred_class</code></p></li>
+<li>por defecto, según el modo de modelo (tipo de variable de respuesta) o fijándolo explícitamente</li>
+</ul></li>
+<li><p>Devuelve un <code>tibble</code> (no un vector), lo que permite añadir la predicción a los datos originales con <code>bind_cols()</code></p></li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>modelo.logit1 %&gt;% predict(logit1_prueba) %&gt;% 
-  bind_cols(logit1_prueba) %&gt;%  glimpse()</pre>
+<pre class = 'prettyprint lang-r'>modelo_lm1_est %&gt;% predict(new_data = lm1_prueba) %&gt;% 
+  bind_cols(lm1_prueba) %&gt;%  glimpse()                # Variable predicha .pred
+
+modelo_logit1_est %&gt;% 
+  predict(logit1_prueba) %&gt;% glimpse()     # clase predicha .pred_class
+
+modelo_logit1_est %&gt;% 
+  predict(logit1_prueba, type = &quot;prob&quot;) %&gt;% 
+  glimpse()                                 # probabilidades de cada categoría</pre>
+
+</article></slide><slide class=""><hgroup><h2>Flujos de trabajo: <code>workflows()</code></h2></hgroup><article  id="flujos-de-trabajo-workflows">
 
 <ul>
-<li>Pero también se pueden predecir las probabilidades de cada categoría</li>
+<li>Combina preprocesado y entrenamiento en un único objeto de flujos</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>modelo.logit1 %&gt;% predict(logit1_prueba, type = &quot;prob&quot;) %&gt;% 
-  bind_cols(logit1_prueba) %&gt;%  glimpse()</pre>
+<pre class = 'prettyprint lang-r'>lm1_flujo &lt;- workflow() %&gt;%
+  add_recipe(receta_lm1) %&gt;%       # add_formula() si no procesamos los datos
+  add_model(modelo_lm1)</pre>
+
+<ul>
+<li>Se <code>prep()</code>ara la receta y entrena el modelo en una única llamada de <code>fit()</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>lm1_flujo_est &lt;- lm1_flujo %&gt;% fit(data = RailTrail_part %&gt;% training()) </pre>
+
+<ul>
+<li>Este objeto contiene tanto la receta preparada como el modelo estimado</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>lm1_flujo_est %&gt;% pull_workflow_prepped_recipe()  # aprox. receta_lm1_prep
+lm1_flujo_est %&gt;% pull_workflow_fit()             # = modelo_lm1_est
+
+lm1_flujo_est %&gt;% pull_workflow_fit() %&gt;% tidy()  # o glance() o # augment() </pre>
+
+</article></slide><slide class=""><hgroup><h2>Flujos de trabajo: <code>workflows()</code> (cont.)</h2></hgroup><article  id="flujos-de-trabajo-workflows-cont.">
+
+<ul>
+<li>Los objetos de flujos se pueden usar para predecir o procesar datos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>lm1_flujo_est %&gt;% predict(RailTrail_entren)
+lm1_flujo_est %&gt;% predict(RailTrail_prueb)
+
+lm1_flujo_est  %&gt;% pull_workflow_prepped_recipe() %&gt;% bake(RailTrail_prueb)
+lm1_flujo_est  %&gt;% pull_workflow_prepped_recipe() %&gt;% bake(RailTrail_entren)
+# lm1_flujo_est  %&gt;% pull_workflow_prepped_recipe() %&gt;% juice()</pre>
+
+<!-- juice() necesitaría otra opción adicional -->
+
+<ul>
+<li>Los flujos de trabajo existentes se modifican con <code>update_recipe()</code> / <code>update_model()</code>, <code>remove_recipe()</code> / <code>remove_model()</code>, <code>add_formula()</code> / <code>update_formula()</code>, etc.</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>lm2_flujo &lt;- lm1_flujo %&gt;% 
+                update_recipe( receta_lm1 %&gt;% 
+                    step_log(volume, skip=TRUE)  )</pre>
 
 </article></slide><slide class=""><hgroup><h2>Validación del Modelo</h2></hgroup><article  id="validación-del-modelo">
 
 <ul>
-<li><p>La función <code>metrics()</code> mide el ajuste de un modelo, seleccionando automáticamente la métrica adecuada</p></li>
-<li><p>Espera un <code>tibble</code> con el valor observado (<em>truth</em>) y el predicho (<em>estimate</em>)</p></li>
+<li><code>metrics()</code> proporciona (automáticamente) las métricas a partir de un <code>tibble</code> con el valor observado (<em>truth</em>) y el predicho (<em>estimate</em>)</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>modelo.lm %&gt;% predict(especif1_prueba) %&gt;% 
-  bind_cols(especif1_prueba) %&gt;%  
-  metrics(truth=volume, estimate= .pred)</pre>
+<pre class = 'prettyprint lang-r'>lm1_flujo_est %&gt;% predict(RailTrail_prueb) %&gt;% 
+  bind_cols(RailTrail_prueb) %&gt;%  
+  metrics(truth=volume, estimate= .pred)         #   mae(truth=volume, estimate= .pred)</pre>
 
 <ul>
-<li><p>La interfaz unificada de <code>tidymodels</code> permite medir las mismas métricas para otro modelo simplemente cambiando el objeto del modelo</p>
+<li>Se puede obtener varias métricas de forma separada con <code>mae()</code>, <code>rmse()</code>, etc. o definir las que queremos con <code>metric_set()</code> (ver más adelante)</li>
+</ul>
+
+<!-- ver ayuda de p.e. rsq() y accuracy() para ver las disponibles -->
+
+<ul>
+<li><p>La interfaz unificada de <code>tidymodels</code> permite medir las mismas métricas para otro modelo con mínimos cambios <!--cambiando el objeto del modelo--></p>
 
 <ul>
 <li>otro preprocesado (distintas variables, transformaciones)</li>
 <li>otro método de estimación, etc</li>
 </ul></li>
-<li><p>¿Cuáles serían las métricas para un modelo con la variable dependiente en logaritmos?</p></li>
+<li><p>¿Cuáles serían para un modelo con la variable dependiente en logaritmos?</p></li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Validación del Modelo: Clasificación</h2></hgroup><article  id="validación-del-modelo-clasificación">
 
 <ul>
-<li>Las métricas para clasificación incluyen las derivadas de la matriz de confusión</li>
+<li>Con la predicción de clases, se puede obtener la matriz de confusión</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>modelo.logit1 %&gt;% predict(logit1_prueba) %&gt;% 
+<pre class = 'prettyprint lang-r'>modelo_logit1_est %&gt;% predict(logit1_prueba) %&gt;% 
   bind_cols(logit1_prueba) %&gt;%  
-  metrics(truth=income, estimate= .pred_class)</pre>
+  conf_mat(truth=income, estimate= .pred_class)</pre>
 
 <ul>
-<li>Si predecimos probabilidades</li>
+<li>Y varias métricas derivadas</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>logit1_probs &lt;- modelo.logit1 %&gt;% predict(logit1_prueba, type = &quot;prob&quot;) %&gt;% 
-  bind_cols(logit1_prueba) </pre>
+<pre class = 'prettyprint lang-r'>mis_metricas &lt;- metric_set(accuracy, spec, sens)
+modelo_logit1_est %&gt;% predict(logit1_prueba) %&gt;% 
+  bind_cols(logit1_prueba) %&gt;%
+  mis_metricas(truth=income, estimate= .pred_class)</pre>
 
 <ul>
-<li>Podemos usarlas para represetar la curva ROC</li>
+<li>Nota: para predecir clases se utiliza por defecto la clase con mayor probabilidad predicha (la más probable); es decir, en el caso binario un umbral de \(\small 0.5\)</li>
 </ul>
+
+</article></slide><slide class=""><hgroup><h2>Validación del Modelo: Clasificación (cont.)</h2></hgroup><article  id="validación-del-modelo-clasificación-cont.">
+
+<ul>
+<li>Si predecimos probabilidades, se pueden obtener la curva ROC y la AUC</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>logit1_probs &lt;- modelo_logit1_est %&gt;% predict(logit1_prueba, type = &quot;prob&quot;) %&gt;%
+                      bind_cols(logit1_prueba) 
+
+logit1_probs %&gt;%
+  roc_curve(income, `.pred_&lt;=50K`) %&gt;%  autoplot()</pre>
+
+<pre class = 'prettyprint lang-r'>logit1_probs %&gt;%
+  roc_auc(income, `.pred_&lt;=50K`) </pre>
 
 <!--
 o la curvas de ganancias
@@ -474,92 +573,199 @@ logit1_probs %>%
 ```
 -->
 
-<pre class = 'prettyprint lang-r'>logit1_probs %&gt;%
-  roc_curve(income, `.pred_&lt;=50K`) %&gt;%
-  autoplot()</pre>
-
-</article></slide><slide class=""><hgroup><h2>Validación del Modelo: Clasificación (cont.)</h2></hgroup><article  id="validación-del-modelo-clasificación-cont.">
-
 <ul>
-<li>Finalmente si combinamos las dos, podemos obtener también la AUC</li>
+<li>Se pueden combinar clases y probabilidades predichas</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>modelo.logit1 %&gt;% predict(logit1_prueba) %&gt;% 
+<pre class = 'prettyprint lang-r'>modelo_logit1_est %&gt;% predict(logit1_prueba) %&gt;% 
   bind_cols(logit1_prueba) %&gt;%  
   bind_cols(logit1_probs %&gt;% select(1:2)) %&gt;% 
   metrics(truth=income, `.pred_&lt;=50K`, estimate= .pred_class)</pre>
 
-<ul>
-<li><p>La extensión a problemas con más de clases es simple:</p>
+</article></slide><slide class=""><hgroup><h2>Validación del Modelo: Clasificación con más de dos clases</h2></hgroup><article  id="validación-del-modelo-clasificación-con-más-de-dos-clases">
 
 <ul>
-<li><p><em>accuracy</em> sigue teniendo la misma interpretación</p></li>
-<li><p>para la curva ROC y la AUC en lugar de una sola columna, se incluyen las probabilidades predichas de todas las clases</p></li>
+<li><p>Se predice la probabilidad de cada clase</p></li>
+<li><p>La clase predicha es la más frecuente</p></li>
+<li><p>La matriz de confusión se obtiene de manera similar, pero sus dimensiones son \(\small k \times k\)</p></li>
+<li><p>La <em>accuracy</em> sigue teniendo la misma interpretación</p></li>
+<li><p>Paras la curva ROC y la AUC</p>
+
+<ul>
+<li>se incluyen las probabilidades predichas de todas las clases</li>
+<li>se obtien una curva ROC y su AUC para cada clase</li>
 </ul></li>
 </ul>
 
+</article></slide><slide class=""><hgroup><h2>Validación cruzada (VC)</h2></hgroup><article  id="validación-cruzada-vc">
+
+<ul>
+<li><p>Las particiones para VC se realizan en la <strong>muestra de entrenamiento</strong></p></li>
+<li><p>De forma similar a la división de entrenamiento/prueba, un subconjunto de los datos se utiliza para analizar el modelo y otro diferente para evaluarlo</p></li>
+</ul>
+
+<center>
+
+<img width="65%" src='pic/resampling.svg' title=''/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>El proceso de validación cruzada</h2></hgroup><article  id="el-proceso-de-validación-cruzada">
+
+<ul>
+<li><p><code>vfold_cv()</code> crea particiones en los datos de entrenamiento sin procesar</p>
+
+<ul>
+<li>ver ayuda para opciones adicionales (ej. <em>estratos</em>)</li>
+</ul></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>set.seed(9753)
+RailTrail_cv &lt;- RailTrail_entren %&gt;% vfold_cv(v=10)</pre>
+
+<ul>
+<li>El objeto de validación cruzada contiene cada una de los 10 grupos</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>RailTrail_cv</pre>
+
+<ul>
+<li>Se puede acceder a los datos de entrenamento y prueba de cada uno de ellos con <code>analysis()</code> y <code>assessment()</code>, respectivamente</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>RailTrail_cv$splits[[1]] %&gt;% analysis() %&gt;% dim()
+RailTrail_cv$splits[[1]] %&gt;% assessment() %&gt;% dim()</pre>
+
+</article></slide><slide class=""><hgroup><h2>El proceso de validación cruzada (cont.)</h2></hgroup><article  id="el-proceso-de-validación-cruzada-cont.">
+
+<ul>
+<li><code>fit_resamples()</code>, similar a <code>fit()</code>, sobre un flujo de trabajo ya definido …</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>lm1_flujo_cv_est &lt;- lm1_flujo  %&gt;% 
+                        fit_resamples(RailTrail_cv)</pre>
+
+<ul>
+<li>… crea un objeto con los valores de las métricas</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>lm1_flujo_cv_est %&gt;% collect_metrics()      # promedio sobre 10 iteraciones
+lm1_flujo_cv_est$.metrics %&gt;% bind_rows()   # valores en cada iteración</pre>
+
+<ul>
+<li>Se pueden cambiar varias opciones del proceso</li>
+</ul>
+
+<!-- como las métricas calculadas y otros elementos de control -->
+
+<pre class = 'prettyprint lang-r'>lm1_flujo_cv_est &lt;- lm1_flujo  %&gt;% 
+                        fit_resamples(
+                          resamples = RailTrail_cv, 
+                          metrics   = metric_set(rmse, mae),
+                          control   = control_resamples(save_pred = TRUE)
+                        )</pre>
+
+</article></slide><slide class=""><hgroup><h2>Selección de hiperparámetros: <em>tuning</em></h2></hgroup><article  id="selección-de-hiperparámetros-tuning">
+
+<ul>
+<li><p>Algunos parámetros, denominados <strong>hiperparámetros</strong>, no pueden aprenderse directamente durante el entrenamiento del modelo (ej., \(\small \lambda\) en LASSO)</p></li>
+<li><p>Proceso de <strong>ajuste</strong> (<em>tuning</em>): se estima el mejor valor entrenando muchos modelos y explorando su funcionamiento mediante validación cruzada</p></li>
+<li><p>Al definir el modelo, se identifican los hiperparámetros a ajustar</p></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>modelo_LASSO &lt;- linear_reg(mode= &quot;regression&quot;, 
+                           penalty = tune() ) %&gt;%
+                    set_engine(&quot;glmnet&quot;) </pre>
+
+<ul>
+<li>Se establecen las combinaciones de valores sobre las que se buscará con <code>grid_random()</code>, <code>grid_max_entropy()</code> o <code>grid_regular()</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>LASSO_grid &lt;- grid_regular(penalty(range = c(0, 15), trans = NULL),     # rango
+                          levels = 50)                     # número de valores</pre>
+
 <!--
 
-## Validación cruzada
+Tres estrategias 
 
-* Creamos las particiones con `vfold_cv()` en los datos sin procesar
+* `grid_regular()` : combinaciones están igualmente espaciadas para cada hiperparámetro 
 
-```r
-set.seed(9753)
-datos_cv <- RailTrail %>% vfold_cv(v=10)
-```
+* `grid_random()` :  los valores son aleatorios dentro de unos límites preestablecidos
 
-* Se define el modelo sin `fit()`
+* `grid_max_entropy()`: los valores son aleatorios pero intentan cubrir todo lo posible el espacio de búsqueda
 
+-->
 
-```r
-modelo.lm.cv <- linear_reg(mode= "regression", penalty = 0) %>%
-                set_engine("lm")
-```
+</article></slide><slide class=""><hgroup><h2>Flujo de trabajo para <em>tuning</em></h2></hgroup><article  id="flujo-de-trabajo-para-tuning">
 
-* Se define una receta sin `prep()`
+<ul>
+<li>Se define el flujo de trabajo</li>
+</ul>
 
+<pre class = 'prettyprint lang-r'>flujo_LASSO_tuning &lt;- workflow() %&gt;%
+  add_recipe(receta_lm1) %&gt;% 
+  add_model(modelo_LASSO)</pre>
 
-```r
-receta.cv <- function(dataset){
-  recipe(volume ~ cloudcover + precip + avgtemp, data = dataset) %>%
-  step_poly(avgtemp, degree = 3) %>% 
-  step_corr(all_predictors()) %>%
-  step_center(all_predictors(), -all_outcomes()) %>%
-  step_scale(all_predictors(), -all_outcomes()) %>%
-  prep()
-}
-```
+<ul>
+<li>Se usa <code>tune_grid()</code> de forma a similar a <code>fit_resamples()</code></li>
+</ul>
 
+<!-- alternativa: tune_bayesian() -->
 
-* Se ajusta el modelo con `fit_resamples`
+<pre class = 'prettyprint lang-r'>LASSO_tuned &lt;- flujo_LASSO_tuning %&gt;% 
+                tune_grid(
+                  resamples = RailTrail_cv, 
+                  metrics   = metric_set(rmse, mae),
+                  grid      = LASSO_grid
+                )</pre>
 
+<ul>
+<li>NOTA: tanto valicación cruzada como el proceso de <em>tuning</em> son computacionalmente intensivos por lo que se suelen realizar mediante computación en paralelo</li>
+</ul>
 
-```r
-validacion.fit <- fit_resamples(
-                    object       = modelo.lm.cv,
-                    preprocessor = receta.cv,
-                    resamples    = datos_cv,
-                    metrics      = metric_set(rmse, mae),
-                    control      = control_resamples(save_pred = TRUE)
-                  )
-```
+</article></slide><slide class=""><hgroup><h2>Resultados del ajuste</h2></hgroup><article  id="resultados-del-ajuste">
 
+<ul>
+<li>Podemos explorar visualmente los resultados del ajuste y seleccionar el mejor resultado</li>
+</ul>
 
-<!--
+<pre class = 'prettyprint lang-r'>penalty &lt;- LASSO_tuned %&gt;% collect_metrics() %&gt;% filter(.metric == &quot;rmse&quot;)
 
-https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/
+penalty %&gt;% ggplot(aes(x=penalty, y=mean)) + 
+              geom_line() + geom_point(color=&quot;red&quot;) + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color=&quot;gray&quot;) +
+              scale_x_log10() </pre>
 
-https://hansjoerg.me/2020/02/09/tidymodels-for-machine-learning/
+<ul>
+<li>Podemos ver los cinco mejores candidatos o el mejor de todos</li>
+</ul>
 
-https://www.gmudatamining.com/lesson-10-r-tutorial.html
+<pre class = 'prettyprint lang-r'>LASSO_tuned %&gt;% show_best(&quot;rmse&quot;)
+mejor_lambda &lt;- LASSO_tuned %&gt;% select_best(&quot;rmse&quot;)</pre>
 
-http://www.rebeccabarter.com/blog/2020-03-25_machine_learning/
+</article></slide><slide class=""><hgroup><h2>Finalizando el modelo</h2></hgroup><article  id="finalizando-el-modelo">
 
-https://rpubs.com/Joaquin_AR/598171
+<ul>
+<li>Podemos actualizar el flujo de trabajo con los valores de <code>select_best()</code></li>
+</ul>
 
-https://www.tidymodels.org/start/
---></article></slide>
+<pre class = 'prettyprint lang-r'>flujo_final &lt;- flujo_LASSO_tuning %&gt;% 
+                 finalize_workflow(mejor_lambda)</pre>
+
+<ul>
+<li>Y ver los resultados de este modelo en los datos completos de entrenamiento</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>flujo_final %&gt;%  fit(data = RailTrail_entren) %&gt;%  broom::tidy()</pre>
+
+<ul>
+<li>Finalmente, podemos usar <code>last_fit()</code>: ajusta al modelo finalizado en los datos de entrenamiento y lo evalúa en los de prueba.</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>final_fit &lt;- flujo_final %&gt;% last_fit(RailTrail_part)
+
+final_fit %&gt;% collect_metrics()
+final_fit %&gt;% collect_predictions()</pre></article></slide>
 
 
   <slide class="backdrop"></slide>

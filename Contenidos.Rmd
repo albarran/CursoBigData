@@ -134,7 +134,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ::::
 
 
-
 :::: {style="display: flex;"}
 
 ::: {}
@@ -163,14 +162,45 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ::: {}
 
-## Semana 11
+## Semana 12
 (30-Nov. a 04-Dic.)
 
   * [Tema 10 - Regresión Logística](Tema10sl.html)
   * [Tema 11 - Selección y regularización](Tema11sl.html)
 
   * [Practica 05A - Proceso de Modelización"](Pract05A.html) 
-  * [Practica 05B - "Tidymodels"](Pract05A.html) 
+
+
+::: 
+
+::::
+
+
+:::: {style="display: flex;"}
+
+::: {}
+## Semana 13
+(07-Dic. a 11-Dic.)
+
+  * [Practica 05B - "Tidymodels"](Pract05B.html) 
+
+::: 
+
+
+::: {}
+
+## Semana 14
+(14-Dic. a 18-Dic.)
+
+
+::: 
+
+
+::: {}
+
+## Semana 15
+(21-Dic. a 23-Dic.)
+
 
 
 ::: 

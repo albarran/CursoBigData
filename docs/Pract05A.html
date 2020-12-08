@@ -257,7 +257,9 @@ rmse(entren$volume, predict(mod2, newdata = entren))</pre>
 -->
 
 <pre class = 'prettyprint lang-r'>set.seed(12345)
-RailTrail &lt;- RailTrail %&gt;%  arrange(runif(nrow(RailTrail))) %&gt;% 
+RailTrail$a &lt;- runif(nrow(RailTrail))
+RailTrail &lt;- RailTrail %&gt;% mutate(orig = row_number()) %&gt;% 
+  arrange(a) %&gt;% 
   mutate(grupo.vc = cut(1:nrow(RailTrail), breaks = 10, labels=F))</pre>
 
 <pre class = 'prettyprint lang-r'>rmse.mod &lt;- list()

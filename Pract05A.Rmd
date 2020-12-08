@@ -29,6 +29,7 @@ library(dlookr)
 library(rmarkdown)
 #render("filename.Rmd")     
 #browseURL("filename.html")
+rm(list=ls())
 ```
 
 ## Modelización: regresión lineal
@@ -91,15 +92,24 @@ RailTrail <- RailTrail %>% mutate(orig = row_number()) %>%
   mutate(grupo.vc = cut(1:nrow(RailTrail), breaks = 10, labels=F))
 ```
 
-```{r}
+```{r echo=FALSE, eval=FALSE}
 set.seed(12345)
-RailTrail <- RailTrail %>%  arrange(runif(nrow(RailTrail))) %>% 
+RailTrail <- RailTrail %>% mutate(orig = row_number()) %>% 
+  arrange(runif(1)) %>% 
   mutate(grupo.vc = cut(1:nrow(RailTrail), breaks = 10, labels=F))
 ```
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 table(RailTrail$grupo.vc)
+```
+
+```{r}
+set.seed(12345)
+RailTrail$a <- runif(nrow(RailTrail))
+RailTrail <- RailTrail %>% mutate(orig = row_number()) %>% 
+  arrange(a) %>% 
+  mutate(grupo.vc = cut(1:nrow(RailTrail), breaks = 10, labels=F))
 ```
 
 ```{r}

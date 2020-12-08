@@ -1,3 +1,5 @@
+
+
 ---
 #subtitle: "Técnicas para 'Big Data' en Economía"
 #subtitle: "Muestreo y Análisis de Datos"
@@ -29,6 +31,8 @@ library(dlookr)
 library(rmarkdown)
 #render("filename.Rmd")     
 #browseURL("filename.html")
+
+rm(list=ls())
 ```
 
 
@@ -55,6 +59,11 @@ install.packages("tidymodels")
 ```{r, eval=FALSE}
 install.packages("tidymodels")
 ```
+
+```{r}
+library(tidymodels)
+```
+
 
 <center>
 ![](pic/tidymodels_process.png){width=90%}
@@ -83,221 +92,322 @@ install.packages("tidymodels")
 
 ## Pre-procesado
 
-* Transformar los datos para que sean adecuados para la modelización
+* Con `dplyr` (`tidyverse`) se pueden **transformar los datos** para que sean adecuados para la modelización, pero `tidymodels` facilita algunas partes del proceso cuando el desarrollo del modelo es complejo
 
-* Aunque se puede utilizar `dplyr` o `tidyverse`, cuando el desarrollo del modelo es complejo `tidymodels` facilita el proceso
-
-* Particionar los datos en muestra y entrenamiento: `initial_split()`
+* `initial_split()`: particionar los datos en muestra y entrenamiento.
 ```{r}
 library(mosaicData)
-library(tidymodels)
 set.seed(9753)
-datos_partidos <- RailTrail %>% initial_split(prop = .8)
+RailTrail_part <- RailTrail %>% initial_split(prop = .8)
 ```
+
+<!-- Ver el objeto -->
+
+* Más flexibilidad y opciones que la partición con `sample_frac()` (ver ayuda)
+
+<!-- Ej. strata -->
+
 * Las funciones `training()` y `testing()` acceden a cada submuestra
 
 ```{r}
-entren <- datos_partidos %>% training()
-prueb  <- datos_partidos %>% testing()
-intersect(entren, prueb)
+RailTrail_entren <- RailTrail_part %>% training()
+RailTrail_prueb  <- RailTrail_part %>% testing()
+intersect(RailTrail_entren, RailTrail_prueb)
 ```
+
 ## Pre-procesado: recetas
 
-* `recipe()`: define transformaciones a aplicar (similar a `ggplot()`); su principal argumento es una **fórmula**
+1. `recipe()`: define transformaciones a aplicar.
 
-* `prep()`: ejecuta transformaciones sobre uno datos <!--(típicamente, los datos de entrenamiento)-->
+2. `prep()`: ejecuta transformaciones sobre unos datos <!--(típicamente, los datos de entrenamiento)-->
 
-* Cada transformación es un paso `step_`
-
+* `recipe()` es "similar" a `ggplot()`: su principal argumento es una *fórmula* (define el rol de las variables) y se van añadiendo *pasos* con  `step_` 
     + `step_corr()`: elimina variables con alta correlaciones con otras
-    
-    + `step_center()`: normaliza datos numéricos para tener media cero
-
     + `step_scale()`: ídem para tener una desviación estándar de uno
 
+<!--    
+    + `step_center()`: normaliza datos numéricos para tener media cero
 
-* Los pasos pueden aplicarse a todas o solo a un subconjunto de variables usando por ejemplo `all_outocomes()` y `all_predictors()`  
+    + step_rm()
 
-    + Por ejemplo, `step_corr(all_predictors())` solo aplica `step_corr()` a regresores
-    
+Ver ayuda de recipes, ej. recipes::Roles
+-->
+
+
+* Los pasos se aplican a todas las variable, una sola o a un subconjunto  con `all_outcomes()`, `all_predictors()`, `all_numeric()`, `all_nominal()`, `contains()`, etc.
+
+    + `step_dummy(all_predictors(), -all_numeric())`
+
+<!--
+    + `step_corr(all_predictors())` <!--solo aplica `step_corr()` a regresores-->
+
+
+* También hay pasos de control como `check_missing()`
+
 ## Pre-procesado: recetas (cont.)
 
-* Poniendo todo junto se crea un objeto de receta
+* Se combina todo en un objeto de receta y se prepara (`prep()`)
 
 ```{r}
-receta_especif1 <- training(datos_partidos) %>%
+receta_lm1 <- training(RailTrail_part) %>%            # Datos: NO crucial
   recipe(volume ~ cloudcover + precip + avgtemp) %>%
-  step_poly(avgtemp, degree = 3) %>% 
+  step_poly(avgtemp, degree = 6) %>% 
+  step_corr(all_predictors(), threshold = 0.9) %>%
+  step_center(all_predictors(), -all_outcomes()) %>%
+  step_scale(all_predictors(), -all_outcomes())
+receta_lm1_prep <- receta_lm1 %>%  prep()
+```
+
+
+<!-- los datos de la receta NO son importantes: se definirán al usarla luego -->
+
+```{r, echo=FALSE, eval=FALSE}
+receta_lm1 <- recipe(volume ~ cloudcover + precip + avgtemp, data = RailTrail) %>%
+  step_poly(avgtemp, degree = 6) %>% 
   step_corr(all_predictors()) %>%
   step_center(all_predictors(), -all_outcomes()) %>%
-  step_scale(all_predictors(), -all_outcomes()) %>%
-  prep()
+  step_scale(all_predictors(), -all_outcomes())
+receta_lm1_prep <- receta_lm1 %>%  prep(training(RailTrail_part))
 ```
 
-
-* Los datos procesados de entrenamiento se extraen de la receta con `juice()`
+* Los datos procesados en la receta se extraen con `juice()`
 ```{r}
-especif1_entrena <- receta_especif1 %>% juice()
+lm1_entrena <- receta_lm1_prep %>% juice()
 ```
 
-* Y el preprocesado se aplica a la muestra de prueba con `bake()`
+* El preprocesado se aplica a otra muestra con `bake()`
 ```{r}
-especif1_prueba <- receta_especif1 %>% bake(testing(datos_partidos))
+lm1_prueba <- receta_lm1_prep %>% bake(testing(RailTrail_part))
 ```
-
 
 
 ## Entrenamiento del modelo
 
-* Varios paquete de R estiman el mismo tipo de modelo, con su propia interfaz y nombres de argumentos
+* Varios paquete de R estiman el mismo tipo de modelo, con su propia interfaz y argumentos: ej., una regresión lineal con `lm` y con `glmnet`
 
-    + Una regresión lineal se puede estimar con `lm` y con `glmnet`
+* `tidymodels` define un modelo con las mismas funciones y argumentos
 
-* `tidymodels` proporciona un único conjunto de funciones y argumentos para definir un modelo
+1. Tipo de modelo: ej., `linear_reg()` para cualquier regresión lineal
 
-    + `linear_reg()` para cualquier regresión lineal
     +  siempre el mismo nombre de argumentos para los paquetes que lo usen y los llaman de forma distinta
 
-* Se determina el paquete de R con `set_engine()` 
+2. Se determina el paquete de R con `set_engine()` 
 
-* Finalmente se ejecuta el modelo con `fit()` cuyos argumentos son
+3. Finalmente se ejecuta el modelo con `fit()` cuyos argumentos son
     + una fórmula
-    + los datos de entrenamiento (`juiced`)
+    + los datos de entrenamiento <!--(sacados de `juice()`)-->
 
 
 ## Entrenamiento del modelo (cont.)
     
 ```{r}
-modelo.lm <- linear_reg(mode= "regression", penalty = 0) %>%
-                set_engine("lm") %>% 
-                fit(volume ~ ., data = especif1_entrena)
-modelo.lm %>% broom::tidy()
+modelo_lm1     <- linear_reg(mode= "regression", penalty = 0) %>%
+                    set_engine("lm") 
+modelo_lm1_est <- modelo_lm1 %>% 
+                    fit(volume ~ ., data = lm1_entrena)
 ```
 
 * Podemos reutilizar la receta con otro paquete
 
 ```{r}
-
-modelo.glmnet <- linear_reg(mode= "regression", penalty = 0) %>%
-                     set_engine("glmnet") %>% 
-                      fit(volume ~ ., data = especif1_entrena)
-modelo.glmnet %>% broom::tidy()
+modelo_glmnet1     <- linear_reg(penalty = 0) %>% 
+                        set_engine("glmnet") %>% 
+                        set_mode("regression")
+modelo_glmnet1_est <- modelo_glmnet1 %>% 
+                        fit(volume ~ ., data = lm1_entrena)
 ```
 
-* El modelo no se define en una única y gran función con muchos argumentos: se separa en funciones más pequeñas
-
-* La interfaz es más flexible y más fácil de aprender
+* El modelo se define en pequeños pasos en lugar de una única función con muchos argumentos (más flexible y fácil de aprender)
 
 ## Entrenamiento del modelo: resultados
 
 * Para presentar los resultados de la estimación en formato de `tibble` se utiliza `broom::tidy()`
 
-* E
+```{r}
+modelo_lm1_est %>% broom::tidy()
+```
+
+
+* Podemos obtener otros detalles de la estimación con `glance()`
 
 ```{r}
-modelo.lm %>% broom::glance()
+modelo_lm1_est %>% broom::glance()
 ```
 
+* Finalmente, `augment()` puede ser usado para obtener predicciones del modelo, residuos, etc.
 
-<!--
-
-Finally, augment() can be used to get model predictions, residuals, etc.
-
-```{r, echo=FALSE, eval=FALSE}
-
-lm_predicted <- augment(lm_fit1$fit, data = dia_juiced) %>% 
-    rowid_to_column()
-select(lm_predicted, rowid, price, .fitted:.std.resid)
+```{r}
+augment(modelo_lm1_est$fit) %>% select(volume, .fitted:.std.resid)
 ```
--->
+
 
 ## Entrenamiento del modelo: clasificación
-
-* El proceso es similar para un problema de clasificación
 
 ```{r}
 censo <- read_csv("https://www.dropbox.com/s/6bqyjnkd2c638rm/census.csv?dl=1") 
 set.seed(7482)
-censo_partidos <- censo %>% initial_split(prop = .8)
+censo_part <- censo %>% initial_split(prop = .8)
 
-receta_logit1 <- training(censo_partidos) %>%
-  recipe(income ~ age + education + race + sex + capital_gain) %>%
-  prep()
+receta_logit1 <- training(censo_part) %>%
+  recipe(income ~ age + education + race + sex + capital_gain)
 
-logit1_entrena <- receta_logit1 %>% juice()
-logit1_prueba  <- receta_logit1 %>% bake(testing(censo_partidos))
+receta_logit1_prep <- receta_logit1 %>%  prep()
 
-modelo.logit1 <- logistic_reg(mode= "classification", penalty = 0) %>%
-                    set_engine("glm") %>% 
-                    fit(income ~ ., data = logit1_entrena)
-modelo.logit1 %>% broom::tidy()
+logit1_entrena <- receta_logit1_prep %>% juice()
+logit1_prueba  <- receta_logit1_prep %>% bake(testing(censo_part))
+
+modelo_logit1 <- logistic_reg(mode= "classification", penalty = 0) %>%
+                    set_engine("glm")
+
+modelo_logit1_est <- modelo_logit1 %>% 
+                        fit(income ~ ., data = logit1_entrena)
+modelo_logit1_est %>% broom::tidy()
 ```
-
 
 
 ## Predicción
 
-* La función `predict()` en `parsnip` devuelve un `tibble` (no un vector): facilita usar `bind_cols()` para añadir la predicción a los datos originales
+* La función `predict()` en `parsnip` predice valores numéricos, clases, probabilidad de cada categoría, intervalos de confianza, etc.
+
+    + por defecto, según el modo de modelo (tipo de variable de respuesta) o fijándolo explícitamente
+
+* Devuelve un `tibble` (no un vector), lo que permite añadir la predicción a los datos originales con `bind_cols()` 
 
 ```{r}
-modelo.lm %>% predict(especif1_prueba) %>% 
-  bind_cols(especif1_prueba) %>%  glimpse()
+modelo_lm1_est %>% predict(new_data = lm1_prueba) %>% 
+  bind_cols(lm1_prueba) %>%  glimpse()                # Variable predicha .pred
+
+modelo_logit1_est %>% 
+  predict(logit1_prueba) %>% glimpse()     # clase predicha .pred_class
+
+modelo_logit1_est %>% 
+  predict(logit1_prueba, type = "prob") %>% 
+  glimpse()                                 # probabilidades de cada categoría
 ```
 
-* Para regresión, la variable predicha llamada `.pred` 
 
-* Para clasificación, por defecto se predice la clase como `.pred_class`
+## Flujos de trabajo: `workflows()`
+
+* Combina preprocesado y entrenamiento en un único objeto de flujos
 
 ```{r}
-modelo.logit1 %>% predict(logit1_prueba) %>% 
-  bind_cols(logit1_prueba) %>%  glimpse()
+lm1_flujo <- workflow() %>%
+  add_recipe(receta_lm1) %>%       # add_formula() si no procesamos los datos
+  add_model(modelo_lm1)
 ```
 
-* Pero también se pueden predecir las probabilidades de cada categoría
+* Se `prep()`ara la receta  y entrena el modelo en una única llamada de `fit()`
 
 ```{r}
-modelo.logit1 %>% predict(logit1_prueba, type = "prob") %>% 
-  bind_cols(logit1_prueba) %>%  glimpse()
+lm1_flujo_est <- lm1_flujo %>% fit(data = RailTrail_part %>% training()) 
+```
+
+* Este objeto contiene tanto la receta preparada como el modelo estimado 
+
+```{r}
+lm1_flujo_est %>% pull_workflow_prepped_recipe()  # aprox. receta_lm1_prep
+lm1_flujo_est %>% pull_workflow_fit()             # = modelo_lm1_est
+
+lm1_flujo_est %>% pull_workflow_fit() %>% tidy()  # o glance() o # augment() 
+```
+
+```{r, echo=FALSE, eval=FALSE}
+a <- lm1_flujo_est %>% pull_workflow_fit()
+a$fit %>% augment()
+
+pull_workflow_fit(lm1_flujo_est)$fit %>% augment()
+```
+
+
+## Flujos de trabajo: `workflows()` (cont.)
+
+* Los objetos de flujos se pueden usar para predecir o procesar datos
+
+```{r}
+lm1_flujo_est %>% predict(RailTrail_entren)
+lm1_flujo_est %>% predict(RailTrail_prueb)
+
+lm1_flujo_est  %>% pull_workflow_prepped_recipe() %>% bake(RailTrail_prueb)
+lm1_flujo_est  %>% pull_workflow_prepped_recipe() %>% bake(RailTrail_entren)
+# lm1_flujo_est  %>% pull_workflow_prepped_recipe() %>% juice()
+```
+
+<!-- juice() necesitaría otra opción adicional -->
+
+* Los flujos de trabajo existentes se modifican con `update_recipe()` / `update_model()`, `remove_recipe()` / `remove_model()`,  `add_formula()` / `update_formula()`, etc.
+    
+```{r}
+lm2_flujo <- lm1_flujo %>% 
+                update_recipe( receta_lm1 %>% 
+                    step_log(volume, skip=TRUE)  )
 ```
 
 
 ## Validación del Modelo
 
-* La función `metrics()` mide el ajuste de un modelo, seleccionando automáticamente la métrica adecuada
-
-* Espera un `tibble` con el valor observado (*truth*) y el predicho (*estimate*)
+* `metrics()` proporciona (automáticamente) las métricas a partir de un `tibble` con el valor observado (*truth*) y el predicho (*estimate*)
 
 ```{r}
-modelo.lm %>% predict(especif1_prueba) %>% 
-  bind_cols(especif1_prueba) %>%  
-  metrics(truth=volume, estimate= .pred)
+lm1_flujo_est %>% predict(RailTrail_prueb) %>% 
+  bind_cols(RailTrail_prueb) %>%  
+  metrics(truth=volume, estimate= .pred)         #   mae(truth=volume, estimate= .pred)
 ```
 
-* La interfaz unificada de `tidymodels` permite medir las mismas métricas para otro modelo simplemente cambiando el objeto del modelo
+* Se puede obtener varias métricas de forma separada con `mae()`, `rmse()`, etc. o  definir las que queremos con `metric_set()` (ver más adelante)
+
+<!-- ver ayuda de p.e. rsq() y accuracy() para ver las disponibles -->  
+
+* La interfaz unificada de `tidymodels` permite medir las mismas métricas para otro modelo con mínimos cambios <!--cambiando el objeto del modelo-->
 
     + otro preprocesado (distintas variables, transformaciones)
     + otro método de estimación, etc
 
-* ¿Cuáles serían las métricas para un modelo con la variable dependiente en logaritmos?
+* ¿Cuáles serían para un modelo con la variable dependiente en logaritmos?
+
+```{r, echo=FALSE, eval=FALSE}
+lm2_flujo_est <- lm2_flujo %>% fit(data = RailTrail_entren) 
+
+lm2_flujo_est %>% predict(RailTrail_prueb) %>% 
+  bind_cols(RailTrail_prueb %>% select(volume) %>% mutate(volume=log(volume))) %>%   
+  metrics(truth=volume, estimate= .pred)
+```
 
 ## Validación del Modelo: Clasificación
 
-* Las métricas para clasificación incluyen las derivadas de la matriz de confusión
+* Con la predicción de clases, se puede obtener la matriz de confusión
 
 ```{r}
-modelo.logit1 %>% predict(logit1_prueba) %>% 
+modelo_logit1_est %>% predict(logit1_prueba) %>% 
   bind_cols(logit1_prueba) %>%  
-  metrics(truth=income, estimate= .pred_class)
+  conf_mat(truth=income, estimate= .pred_class)
 ```
 
-
-* Si predecimos probabilidades
+* Y varias métricas derivadas
 ```{r}
-logit1_probs <- modelo.logit1 %>% predict(logit1_prueba, type = "prob") %>% 
-  bind_cols(logit1_prueba) 
+mis_metricas <- metric_set(accuracy, spec, sens)
+modelo_logit1_est %>% predict(logit1_prueba) %>% 
+  bind_cols(logit1_prueba) %>%
+  mis_metricas(truth=income, estimate= .pred_class)
 ```
 
-* Podemos usarlas para represetar la curva ROC
+*  Nota: para predecir clases se utiliza por defecto la clase con mayor probabilidad predicha (la más probable); es decir, en el caso binario un umbral de $\small 0.5$
+
+## Validación del Modelo: Clasificación (cont.)
+
+
+* Si predecimos probabilidades, se pueden obtener la curva ROC y la AUC
+```{r}
+logit1_probs <- modelo_logit1_est %>% predict(logit1_prueba, type = "prob") %>%
+                      bind_cols(logit1_prueba) 
+
+logit1_probs %>%
+  roc_curve(income, `.pred_<=50K`) %>%  autoplot()
+
+logit1_probs %>%
+  roc_auc(income, `.pred_<=50K`) 
+
+```
+
 
 <!--
 o la curvas de ganancias
@@ -308,84 +418,197 @@ logit1_probs %>%
 ```
 -->
 
+* Se pueden combinar clases y probabilidades predichas
 
 ```{r}
-logit1_probs %>%
-  roc_curve(income, `.pred_<=50K`) %>%
-  autoplot()
-```
-
-## Validación del Modelo: Clasificación (cont.)
-
-* Finalmente si combinamos las dos, podemos obtener también la AUC
-
-```{r}
-modelo.logit1 %>% predict(logit1_prueba) %>% 
+modelo_logit1_est %>% predict(logit1_prueba) %>% 
   bind_cols(logit1_prueba) %>%  
   bind_cols(logit1_probs %>% select(1:2)) %>% 
   metrics(truth=income, `.pred_<=50K`, estimate= .pred_class)
 ```
-* La extensión a problemas con más de clases es simple:
 
-  + *accuracy* sigue teniendo la misma interpretación
+## Validación del Modelo: Clasificación con más de dos clases
+
+* Se predice la probabilidad de cada clase
+
+* La clase predicha es la más frecuente
+
+* La matriz de confusión se obtiene de manera similar, pero sus dimensiones son $\small k \times k$
+
+* La *accuracy* sigue teniendo la misma interpretación
   
-  + para la curva ROC y la AUC en lugar de una sola columna, se incluyen las probabilidades predichas de todas las clases
+* Paras la curva ROC y la AUC 
 
-<!--
+  + se incluyen las probabilidades predichas de todas las clases 
+  + se obtien una curva ROC y su AUC para cada clase
+      
 
-## Validación cruzada
+## Validación cruzada (VC)
 
-* Creamos las particiones con `vfold_cv()` en los datos sin procesar
+* Las particiones para VC se realizan en la **muestra de entrenamiento**
+
+* De forma similar a la división de entrenamiento/prueba, un subconjunto de los datos se utiliza para analizar el modelo y otro diferente para evaluarlo
+
+<center>
+![](pic/resampling.svg){width=65%}
+</center>
+
+
+## El proceso de validación cruzada
+
+
+* `vfold_cv()` crea particiones en los datos de entrenamiento sin procesar
+
+    + ver ayuda para opciones adicionales (ej. *estratos*)
+
 ```{r}
 set.seed(9753)
-datos_cv <- RailTrail %>% vfold_cv(v=10)
+RailTrail_cv <- RailTrail_entren %>% vfold_cv(v=10)
 ```
 
-* Se define el modelo sin `fit()`
+* El objeto de validación cruzada contiene cada una de los 10 grupos
+```{r, eval=FALSE}
+RailTrail_cv
+```
+
+
+* Se puede acceder a los datos de entrenamento y prueba de cada uno de ellos con `analysis()` y `assessment()`, respectivamente
+```{r}
+RailTrail_cv$splits[[1]] %>% analysis() %>% dim()
+RailTrail_cv$splits[[1]] %>% assessment() %>% dim()
+```
+
+## El proceso de validación cruzada (cont.)
+
+* `fit_resamples()`, similar a `fit()`, sobre un flujo de trabajo ya definido ...
 
 ```{r}
-modelo.lm.cv <- linear_reg(mode= "regression", penalty = 0) %>%
-                set_engine("lm")
+lm1_flujo_cv_est <- lm1_flujo  %>% 
+                        fit_resamples(RailTrail_cv)
 ```
 
-* Se define una receta sin `prep()`
+* ... crea un objeto con los valores de las métricas 
 
 ```{r}
-receta.cv <- function(dataset){
-  recipe(volume ~ cloudcover + precip + avgtemp, data = dataset) %>%
-  step_poly(avgtemp, degree = 3) %>% 
-  step_corr(all_predictors()) %>%
-  step_center(all_predictors(), -all_outcomes()) %>%
-  step_scale(all_predictors(), -all_outcomes()) %>%
-  prep()
-}
+lm1_flujo_cv_est %>% collect_metrics()      # promedio sobre 10 iteraciones
+lm1_flujo_cv_est$.metrics %>% bind_rows()   # valores en cada iteración
+```
+
+* Se pueden cambiar varias opciones del proceso 
+
+<!-- como las métricas calculadas y otros elementos de control -->
+
+```{r}
+lm1_flujo_cv_est <- lm1_flujo  %>% 
+                        fit_resamples(
+                          resamples = RailTrail_cv, 
+                          metrics   = metric_set(rmse, mae),
+                          control   = control_resamples(save_pred = TRUE)
+                        )
 ```
 
 
-* Se ajusta el modelo con `fit_resamples`
+## Selección de hiperparámetros: *tuning*
 
-```{r, eval =FALSE}
-validacion.fit <- fit_resamples(
-                    object       = modelo.lm.cv,
-                    preprocessor = receta.cv,
-                    resamples    = datos_cv,
-                    metrics      = metric_set(rmse, mae),
-                    control      = control_resamples(save_pred = TRUE)
-                  )
+* Algunos parámetros, denominados **hiperparámetros**, no pueden aprenderse directamente durante el entrenamiento del modelo (ej., $\small \lambda$ en LASSO)
+
+* Proceso de **ajuste** (*tuning*): se estima el mejor valor entrenando muchos modelos y explorando su funcionamiento mediante validación cruzada
+
+* Al definir el modelo, se identifican los hiperparámetros a ajustar
+
+```{r}
+modelo_LASSO <- linear_reg(mode= "regression", 
+                           penalty = tune() ) %>%
+                    set_engine("glmnet") 
 ```
 
+* Se establecen las combinaciones de valores sobre las que se buscará con `grid_random()`, `grid_max_entropy()` o `grid_regular()`
+```{r}
+LASSO_grid <- grid_regular(penalty(range = c(0, 15), trans = NULL),     # rango
+                          levels = 50)                     # número de valores
+
+```
 
 <!--
 
-https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/
+Tres estrategias 
 
-https://hansjoerg.me/2020/02/09/tidymodels-for-machine-learning/
+* `grid_regular()` : combinaciones están igualmente espaciadas para cada hiperparámetro 
 
-https://www.gmudatamining.com/lesson-10-r-tutorial.html
+* `grid_random()` :  los valores son aleatorios dentro de unos límites preestablecidos
 
-http://www.rebeccabarter.com/blog/2020-03-25_machine_learning/
+* `grid_max_entropy()`: los valores son aleatorios pero intentan cubrir todo lo posible el espacio de búsqueda
 
-https://rpubs.com/Joaquin_AR/598171
-
-https://www.tidymodels.org/start/
 -->
+
+## Flujo de trabajo para *tuning*
+
+* Se define el flujo de trabajo
+
+```{r}
+flujo_LASSO_tuning <- workflow() %>%
+  add_recipe(receta_lm1) %>% 
+  add_model(modelo_LASSO)
+```
+
+* Se usa `tune_grid()` de forma a similar a `fit_resamples()`
+
+<!-- alternativa: tune_bayesian() -->
+
+```{r}
+LASSO_tuned <- flujo_LASSO_tuning %>% 
+                tune_grid(
+                  resamples = RailTrail_cv, 
+                  metrics   = metric_set(rmse, mae),
+                  grid      = LASSO_grid
+                )
+
+```
+
+* NOTA: tanto valicación cruzada como el proceso de *tuning* son computacionalmente intensivos por lo que se suelen realizar mediante computación en paralelo
+
+
+## Resultados del ajuste
+
+* Podemos explorar visualmente los resultados del ajuste y seleccionar el mejor resultado
+
+```{r}
+penalty <- LASSO_tuned %>% collect_metrics() %>% filter(.metric == "rmse")
+
+penalty %>% ggplot(aes(x=penalty, y=mean)) + 
+              geom_line() + geom_point(color="red") + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color="gray") +
+              scale_x_log10() 
+```
+
+* Podemos ver los cinco mejores candidatos o el mejor de todos
+
+```{r}
+LASSO_tuned %>% show_best("rmse")
+mejor_lambda <- LASSO_tuned %>% select_best("rmse")
+```
+
+
+## Finalizando el modelo
+
+* Podemos actualizar el flujo de trabajo con los valores de `select_best()`
+
+```{r}
+flujo_final <- flujo_LASSO_tuning %>% 
+                 finalize_workflow(mejor_lambda)
+```
+
+* Y ver los resultados de este modelo en los datos completos de entrenamiento
+
+```{r}
+flujo_final %>%  fit(data = RailTrail_entren) %>%  broom::tidy()
+```
+ 
+* Finalmente, podemos usar `last_fit()`: ajusta al modelo finalizado en los datos de entrenamiento y lo evalúa en los de prueba.
+
+```{r}
+final_fit <- flujo_final %>% last_fit(RailTrail_part)
+
+final_fit %>% collect_metrics()
+final_fit %>% collect_predictions()
+```
