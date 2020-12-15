@@ -94,7 +94,7 @@ library(tidymodels)
 
 * Con `dplyr` (`tidyverse`) se pueden **transformar los datos** para que sean adecuados para la modelización, pero `tidymodels` facilita algunas partes del proceso cuando el desarrollo del modelo es complejo
 
-* `initial_split()`: particionar los datos en muestra y entrenamiento.
+* `initial_split()`: particionar los datos en prueba y entrenamiento.
 ```{r}
 library(mosaicData)
 set.seed(9753)
@@ -123,7 +123,7 @@ intersect(RailTrail_entren, RailTrail_prueb)
 
 * `recipe()` es "similar" a `ggplot()`: su principal argumento es una *fórmula* (define el rol de las variables) y se van añadiendo *pasos* con  `step_` 
     + `step_corr()`: elimina variables con alta correlaciones con otras
-    + `step_scale()`: ídem para tener una desviación estándar de uno
+    + `step_scale()`: rescala variables numéricas a desviación estándar de uno
 
 <!--    
     + `step_center()`: normaliza datos numéricos para tener media cero
@@ -134,7 +134,7 @@ Ver ayuda de recipes, ej. recipes::Roles
 -->
 
 
-* Los pasos se aplican a todas las variable, una sola o a un subconjunto  con `all_outcomes()`, `all_predictors()`, `all_numeric()`, `all_nominal()`, `contains()`, etc.
+* Los pasos se aplican a una sola variable, a todas o a un subconjunto con `all_outcomes()`, `all_predictors()`, `all_numeric()`, `all_nominal()`, `contains()`, etc.
 
     + `step_dummy(all_predictors(), -all_numeric())`
 
@@ -153,8 +153,8 @@ receta_lm1 <- training(RailTrail_part) %>%            # Datos: NO crucial
   recipe(volume ~ cloudcover + precip + avgtemp) %>%
   step_poly(avgtemp, degree = 6) %>% 
   step_corr(all_predictors(), threshold = 0.9) %>%
-  step_center(all_predictors(), -all_outcomes()) %>%
-  step_scale(all_predictors(), -all_outcomes())
+  step_center(all_predictors(), -all_nominal()) %>%
+  step_scale(all_numeric(), -all_outcomes())
 receta_lm1_prep <- receta_lm1 %>%  prep()
 ```
 
@@ -165,8 +165,8 @@ receta_lm1_prep <- receta_lm1 %>%  prep()
 receta_lm1 <- recipe(volume ~ cloudcover + precip + avgtemp, data = RailTrail) %>%
   step_poly(avgtemp, degree = 6) %>% 
   step_corr(all_predictors()) %>%
-  step_center(all_predictors(), -all_outcomes()) %>%
-  step_scale(all_predictors(), -all_outcomes())
+  step_center(all_predictors(), -all_nominal()) %>%
+  step_scale(all_numeric(), -all_outcomes())
 receta_lm1_prep <- receta_lm1 %>%  prep(training(RailTrail_part))
 ```
 
@@ -175,7 +175,15 @@ receta_lm1_prep <- receta_lm1 %>%  prep(training(RailTrail_part))
 lm1_entrena <- receta_lm1_prep %>% juice()
 ```
 
-* El preprocesado se aplica a otra muestra con `bake()`
+<!-- ver que los datos tienen media cero y varianza 1 -->
+
+```{r, echo=FALSE, eval=FALSE}
+lm1_entrena  %>% map(sd)
+lm1_entrena %>% map(mean)
+```
+
+
+* El preprocesado se aplica a otros datos con `bake()`
 ```{r}
 lm1_prueba <- receta_lm1_prep %>% bake(testing(RailTrail_part))
 ```
@@ -286,7 +294,7 @@ modelo_logit1_est %>%
 ```
 
 
-## Flujos de trabajo: `workflows()`
+## Flujos de trabajo: `workflow()`
 
 * Combina preprocesado y entrenamiento en un único objeto de flujos
 

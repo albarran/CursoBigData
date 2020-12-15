@@ -256,7 +256,7 @@ slide:not(.current) .plotly.html-widget{
 
 <ul>
 <li><p>Con <code>dplyr</code> (<code>tidyverse</code>) se pueden <strong>transformar los datos</strong> para que sean adecuados para la modelización, pero <code>tidymodels</code> facilita algunas partes del proceso cuando el desarrollo del modelo es complejo</p></li>
-<li><p><code>initial_split()</code>: particionar los datos en muestra y entrenamiento.</p></li>
+<li><p><code>initial_split()</code>: particionar los datos en prueba y entrenamiento.</p></li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>library(mosaicData)
@@ -291,7 +291,7 @@ intersect(RailTrail_entren, RailTrail_prueb)</pre>
 
 <ul>
 <li><code>step_corr()</code>: elimina variables con alta correlaciones con otras</li>
-<li><code>step_scale()</code>: ídem para tener una desviación estándar de uno</li>
+<li><code>step_scale()</code>: rescala variables numéricas a desviación estándar de uno</li>
 </ul></li>
 </ul>
 
@@ -304,7 +304,7 @@ Ver ayuda de recipes, ej. recipes::Roles
 -->
 
 <ul>
-<li><p>Los pasos se aplican a todas las variable, una sola o a un subconjunto con <code>all_outcomes()</code>, <code>all_predictors()</code>, <code>all_numeric()</code>, <code>all_nominal()</code>, <code>contains()</code>, etc.</p>
+<li><p>Los pasos se aplican a una sola variable, a todas o a un subconjunto con <code>all_outcomes()</code>, <code>all_predictors()</code>, <code>all_numeric()</code>, <code>all_nominal()</code>, <code>contains()</code>, etc.</p>
 
 <ul>
 <li><code>step_dummy(all_predictors(), -all_numeric())</code></li>
@@ -328,8 +328,8 @@ Ver ayuda de recipes, ej. recipes::Roles
   recipe(volume ~ cloudcover + precip + avgtemp) %&gt;%
   step_poly(avgtemp, degree = 6) %&gt;% 
   step_corr(all_predictors(), threshold = 0.9) %&gt;%
-  step_center(all_predictors(), -all_outcomes()) %&gt;%
-  step_scale(all_predictors(), -all_outcomes())
+  step_center(all_predictors(), -all_nominal()) %&gt;%
+  step_scale(all_numeric(), -all_outcomes())
 receta_lm1_prep &lt;- receta_lm1 %&gt;%  prep()</pre>
 
 <!-- los datos de la receta NO son importantes: se definirán al usarla luego -->
@@ -340,8 +340,10 @@ receta_lm1_prep &lt;- receta_lm1 %&gt;%  prep()</pre>
 
 <pre class = 'prettyprint lang-r'>lm1_entrena &lt;- receta_lm1_prep %&gt;% juice()</pre>
 
+<!-- ver que los datos tienen media cero y varianza 1 -->
+
 <ul>
-<li>El preprocesado se aplica a otra muestra con <code>bake()</code></li>
+<li>El preprocesado se aplica a otros datos con <code>bake()</code></li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>lm1_prueba &lt;- receta_lm1_prep %&gt;% bake(testing(RailTrail_part))</pre>
@@ -451,7 +453,7 @@ modelo_logit1_est %&gt;%
   predict(logit1_prueba, type = &quot;prob&quot;) %&gt;% 
   glimpse()                                 # probabilidades de cada categoría</pre>
 
-</article></slide><slide class=""><hgroup><h2>Flujos de trabajo: <code>workflows()</code></h2></hgroup><article  id="flujos-de-trabajo-workflows">
+</article></slide><slide class=""><hgroup><h2>Flujos de trabajo: <code>workflow()</code></h2></hgroup><article  id="flujos-de-trabajo-workflow">
 
 <ul>
 <li>Combina preprocesado y entrenamiento en un único objeto de flujos</li>

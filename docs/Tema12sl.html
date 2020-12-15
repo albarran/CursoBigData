@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tema 12 - kNN</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Tema 12 - kNN',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                        favIcon: 'Tema12sl_files/logo.svg',
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Prof.: Pedro Albarrán' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            {
+        name:  'Prof.: Alberto Pérez' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    code.sourceCode { white-space: pre-wrap; }
+    code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+        
+    slides > slide:not(.nobackground):before {
+      font-size: 12pt;
+      content: "";
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      background: url(Tema12sl_files/logo.svg) no-repeat 0 50%;
+      -webkit-background-size: 30px 30px;
+      -moz-background-size: 30px 30px;
+      -o-background-size: 30px 30px;
+      background-size: 30px 30px;
+      padding-left: 40px;
+      height: 30px;
+      line-height: 1.9;
+    }
+  </style>
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+        <aside class="gdbar"><img src="Tema12sl_files/logo.svg"></aside>
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Universidad de Alicante, Curso 2020/21</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>k-NN (&lsquo;k-nearest neighbors&rsquo;)</h2></hgroup><article  id="k-nn-k-nearest-neighbors">
+
+<ul>
+<li><p>Métodos paramétricos = supuesto funcional para la <strong>esperanza condicional</strong></p>
+
+<ul>
+<li><p>variable numérica \(\small E[y|\mathbf{X}=x_0]=f(x_0)=\beta_0+\beta_1 x_0\)</p></li>
+<li><p>variable binaria: \(\small E[y|\mathbf{X}=x_0]=\Pr(y=1|\mathbf{X}=x_0) =f(x_0)=\Lambda(\beta_{0}+\beta_{1} x_0)\)</p></li>
+<li><p>variable categórica: \(\small \Pr(y=j|\mathbf{X}=x_0) =f_j(x_0)=\Lambda(\beta_{0j}+\beta_{1j} x_0)\)</p></li>
+</ul></li>
+<li><p>k-NN estima la esperanza condicional de forma no parámetrica <!--(predice sin construir un modelo)--></p></li>
+<li><p>Idea: el valor esperado de \(\small y\) para una observación debe ser &ldquo;similar&rdquo; al de otras observaciones &ldquo;cercanas&rdquo; (por su valor en \(\small \mathbf{X}\))</p>
+
+<ul>
+<li><p>mismo valor de \(\small x_0\), mismo valor esperado de \(\small y\)</p></li>
+<li><p>\(\small f(\mathbf{X})\) no se supone conocida y fija</p></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Algoritmo k-NN</h2></hgroup><article  id="algoritmo-k-nn">
+
+<ul>
+<li><p>Datos unos datos de entrenamiento \(\small\{\mathbf{X}_{n\times p}, y_{n\times 1} \}\) y un parámetro \(\small k&gt;0\) entero</p></li>
+<li><p>Para una nueva observación \(\small \mathbf{x^*}\) (prueba)</p></li>
+</ul>
+
+<ol>
+<li><p>Identificar \(\small D(\mathbf{x^*})\): las \(\small k\) observaciones en los datos de entrenamiento más cercanas, según una medida de distancia (típicamente la norma \(\small ||x^*-x_i||_2\)</p></li>
+<li><p>Estimar la esperanza/probabilidad condicional de \(\small y\) con las observaciones de \(\small D(\mathbf{x^*})\) y obtener</p>
+
+<ul>
+<li><p>la media para \(\small y\) numérica: \(\small E[y|\mathbf{X}=x^*] \approx \frac{1}{k}\sum_{i\in D(\mathbf{x^*})} y_i\)</p></li>
+<li><p>la clase mayoritaria para categórica: \(\small \Pr[y=j|\mathbf{X}=x^*] \approx \frac{1}{k}\sum_{i\in D(\mathbf{x^*})} I(y_i = j)\)</p></li>
+</ul></li>
+<li><p>Asignárselo como valor predicho a \(\mathbf{x^*}\)</p></li>
+</ol>
+
+</article></slide><slide class=""><hgroup><h2>Algoritmo k-NN (cont.)</h2></hgroup><article  id="algoritmo-k-nn-cont.">
+
+<center>
+
+<img width="40%" src='pic/knn_cropped-1.png' title=''/>
+
+</center>
+
+<!--
+* No necesita un proceso de entrenamiento previo: lo hace sobre la marcha.
+
+* Simple y fácil de entender 
+
+* Puede tardar en calcular predicciones (procesa en el momento)
+-->
+
+<ul>
+<li><p>El valor &ldquo;óptimo&rdquo; de \(k\) se elige mediante validación cruzada.</p>
+
+<ul>
+<li><p>\(\small k\) bajo (= algoritmo demasiado flexible): alta varianza y sesgo bajo</p></li>
+<li><p>Al aumentar \(\small k\) (menos flexible), menor varianza, pero mayor sesgo</p></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Algoritmo k-NN: comentarios</h2></hgroup><article  id="algoritmo-k-nn-comentarios">
+
+<ul>
+<li>Implementación en R</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>install.packages(&quot;class&quot;)
+install.packages(&quot;kknn&quot;)</pre>
+
+<ul>
+<li><p>Su utilidad depende de la geometría de los datos</p>
+
+<ul>
+<li><p>la distancia solo se puede calcular para variables continuas</p></li>
+<li><p>conviene reescalar los datos</p></li>
+</ul></li>
+</ul>
+
+<!--     
+     + si una variable tiene una escala ancha puede perjudicar todo el proceso.
+-->
+
+<ul>
+<li><p>Se utiliza frecuentemente para imputar valores ausentes: <code>step_knnimpute</code> (transformación antes de modelizar, no cambiando todo)</p>
+
+<ul>
+<li><p>Mejor una media condicional que una media simple</p></li>
+<li><p>Nota: <code>recipes</code> de <code>tidymodels</code> incluye varios procedimientos de imputación</p></li>
+</ul></li>
+</ul>
+
+<!--    
+    * Nota 2: imputar la variable dependiente no tiene mucho sentido
+-->
+
+</article></slide><slide class=""><hgroup><h2>k-NN: ejemplo de clasificación</h2></hgroup><article  id="k-nn-ejemplo-de-clasificación">
+
+<pre class = 'prettyprint lang-r'>censo &lt;- read_csv(&quot;https://www.dropbox.com/s/6bqyjnkd2c638rm/census.csv?dl=1&quot;) %&gt;% 
+  mutate(income=as.factor(income))
+
+# solo variables cuantitativas
+x &lt;- c(&quot;age&quot;, &quot;education_1&quot;, &quot;capital_gain&quot;, &quot;capital_loss&quot;, &quot;hours_per_week&quot;)
+
+censo_ent &lt;- censo %&gt;% select(x,income) %&gt;% sample_frac(size = 0.8) 
+censo_pru &lt;- censo %&gt;% select(x,income) %&gt;% setdiff(censo_ent) 
+
+library(&quot;class&quot;)
+income_pred &lt;- knn(censo_ent %&gt;% select(x), test = censo_pru %&gt;% select(x), 
+                   cl = censo_ent$income, k = 1)
+table(income_pred, censo_pru$income)
+
+library(kknn)
+knn2 &lt;- kknn(income ~ age + education_1 + capital_gain + capital_loss + hours_per_week, 
+             train = censo_ent, test = censo_pru )
+summary(knn2)
+table(income_pred, fitted(knn2))</pre>
+
+<!-- kknn tiene muchas opciones adicionales para hacer CV, etc 
+
+tidymodels es mas sistematico
+-->
+
+</article></slide><slide class=""><hgroup><h2>k-NN con <code>tidymodels</code></h2></hgroup><article  id="k-nn-con-tidymodels">
+
+<pre class = 'prettyprint lang-r'>library(tidymodels)
+set.seed(7482)
+censo_part &lt;- censo %&gt;% initial_split(prop = .8)
+
+censo_receta_knn1 &lt;- training(censo_part) %&gt;%
+  recipe(income ~ age + education_1 +  capital_gain + capital_loss + hours_per_week) %&gt;% 
+  step_scale(all_numeric(), -all_outcomes())
+
+censo_modelo_knn1  &lt;- nearest_neighbor(mode = &quot;classification&quot;,
+                                       neighbors = 5, dist_power = 2) %&gt;% 
+                          set_engine(&quot;kknn&quot;)
+
+censo_flujo_knn1 &lt;- workflow() %&gt;% add_recipe(censo_receta_knn1) %&gt;% 
+                      add_model(censo_modelo_knn1)
+
+censo_flujo_knn1_est  &lt;- censo_flujo_knn1 %&gt;% fit(data = censo_part %&gt;% training()) 
+
+censo_flujo_knn1_est %&gt;% predict(testing(censo_part)) %&gt;% 
+  bind_cols(testing(censo_part)) %&gt;%  accuracy(income, .pred_class) </pre>
+
+</article></slide><slide class=""><hgroup><h2>k-NN con <code>tidymodels</code> (cont.)</h2></hgroup><article  id="k-nn-con-tidymodels-cont.">
+
+<pre class = 'prettyprint lang-r'>library(mosaicData)
+set.seed(9753)
+RailTrail_part &lt;- RailTrail %&gt;% initial_split(prop = .8)
+
+RailTrail_receta_knn1 &lt;- training(RailTrail_part) %&gt;%
+  recipe(volume ~ cloudcover + precip + avgtemp) %&gt;% 
+  step_scale(all_numeric(), -all_outcomes())
+
+RailTrail_modelo_knn1  &lt;- nearest_neighbor(mode = &quot;regression&quot;,
+                                       neighbors = 5, dist_power = 2) %&gt;% 
+                          set_engine(&quot;kknn&quot;)
+
+RailTrail_flujo_knn1 &lt;- workflow() %&gt;% add_recipe(RailTrail_receta_knn1) %&gt;% 
+                      add_model(RailTrail_modelo_knn1)
+
+RailTrail_flujo_knn1_est  &lt;- RailTrail_flujo_knn1 %&gt;% fit(training(RailTrail_part)) 
+
+RailTrail_flujo_knn1_est %&gt;% predict(testing(RailTrail_part)) %&gt;% 
+  bind_cols(testing(RailTrail_part)) %&gt;% metrics(volume, .pred) </pre></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

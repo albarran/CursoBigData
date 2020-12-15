@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tema 13 - Métodos basados en árboles</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Tema 13 - Métodos basados en árboles',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                        favIcon: 'Tema13sl_files/logo.svg',
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Prof.: Pedro Albarrán' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            {
+        name:  'Prof.: Alberto Pérez' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            
+    slides > slide:not(.nobackground):before {
+      font-size: 12pt;
+      content: "";
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      background: url(Tema13sl_files/logo.svg) no-repeat 0 50%;
+      -webkit-background-size: 30px 30px;
+      -moz-background-size: 30px 30px;
+      -o-background-size: 30px 30px;
+      background-size: 30px 30px;
+      padding-left: 40px;
+      height: 30px;
+      line-height: 1.9;
+    }
+  </style>
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+        <aside class="gdbar"><img src="Tema13sl_files/logo.svg"></aside>
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Universidad de Alicante, Curso 2020/21</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>Árboles de decisión</h2></hgroup><article  id="árboles-de-decisión">
+
+<ul>
+<li>Los métodos basados en árboles implican la estratificación o la segmentación del espacio de predicción en una serie de regiones simples</li>
+</ul>
+
+<!-- 
+* El conjunto de reglas de división usada para segmentar puede resumirse en un árbol
+
+* árbol de decisión es un diagrama de flujo en forma de árbol que clasifica observaciones -->
+
+<ul>
+<li><p>Un árbol de decisión es un diagrama de flujo en forma de árbol con reglas de división para segmentar y clasificar observaciones</p></li>
+<li><p>Los árboles de decisión suelen estar dibujados al revés:</p>
+
+<ul>
+<li><p>las hojas o los nodos terminales en la parte inferior del árbol</p></li>
+<li><p>los puntos del árbol en los que se divide el espacio de predicción se denominan nodos internos.</p></li>
+<li><p>los nodos se conectan por ramas.</p></li>
+</ul></li>
+<li><p>Cada rama del árbol separa las observaciones en subconjuntos cada vez homogéneos (&ldquo;puros&rdquo;): es más probable que compartan la misma clase o valor.</p></li>
+</ul>
+
+<!--
+Un ejemplo de árbol con dos variables numéricas $X_1$ y $X_2$ sería
+-->
+
+</article></slide><slide class=""><hgroup><h2>Árboles de decisión (cont.)</h2></hgroup><article  id="árboles-de-decisión-cont.">
+
+<center>
+
+<img width="95%" src='pic/tree.png' title=''/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Árboles de Regresión</h2></hgroup><article  id="árboles-de-regresión">
+
+<ul>
+<li>¿Cómo construimos estos árboles?</li>
+</ul>
+
+<ol>
+<li><p>Dividir el espacio de predicción, \(\small x_1, x_2, \dots, x_p\) en regiones \(\small J\) distintas y no superpuestas, \(\small R1, R2, \dots, R_J\)</p></li>
+<li><p>Cada observación que caiga en la región \(\small R_j\) tiene el mismo valor predicho: la media de \(\small y\) para las observaciones de entrenamiento en \(\small R_j\)</p></li>
+</ol>
+
+<ul>
+<li><p>¿Cómo determinar las regiones apropiadas \(\small R1, R2, \dots, R_J\)?</p></li>
+<li><p>Por simplicidad y por interpretabilidad, se divide el espacio de predicción en rectángulos de n-dimensiones o cajas</p></li>
+<li><p>El objetivo es encontrar regiones que minimicen la SCR <!--suma cuadrática de los residuos--></p></li>
+</ul>
+
+<p>\[\small
+\sum_j \sum_{i\in R_j} (y_i-\widehat{y}_{R_j})^2
+\]</p>
+
+<!--
+donde y^Rj
+es la respuesta media para las observaciones de entrenamiento en el cuadro j -->
+
+</article></slide><slide class=""><hgroup><h2>Algoritmo de partición binaria recursiva</h2></hgroup><article  id="algoritmo-de-partición-binaria-recursiva">
+
+<ul>
+<li><p>NO podemos encontar el árbol óptimo: es computacionalmente inviable considerar cada posible partición <!--del espacio de características--> en \(\small J\) regiones.</p></li>
+<li><p>Hay varias formas heurísticas para construir árboles de decisión que emplean estrategias denominadas &ldquo;voraces&rdquo; (<em>greedy</em>).</p></li>
+<li><p>Un algoritmo voraz elige una opción localmente óptima en cada paso con la esperanza de llegar a una solución general óptima.</p></li>
+</ul>
+
+<!-- en lugar de mirar adelante y elegir la partición mejor para un pasao futuro -->
+
+<ul>
+<li>La partición binaria recursiva sigue un enfoque de arriba a abajo</li>
+</ul></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>
