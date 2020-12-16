@@ -1,5 +1,3 @@
-
-
 ---
 #subtitle: "Técnicas para 'Big Data' en Economía"
 #subtitle: "Muestreo y Análisis de Datos"

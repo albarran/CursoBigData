@@ -100,7 +100,70 @@ slide:not(.current) .plotly.html-widget{
     div.column{display: inline-block; vertical-align: top; width: 50%;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
-            
+            code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    code.sourceCode { white-space: pre-wrap; }
+    code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+        
     slides > slide:not(.nobackground):before {
       font-size: 12pt;
       content: "";
@@ -138,17 +201,16 @@ slide:not(.current) .plotly.html-widget{
 
 <slide class=""><hgroup><h2>Árboles de decisión</h2></hgroup><article  id="árboles-de-decisión">
 
-<ul>
-<li>Los métodos basados en árboles implican la estratificación o la segmentación del espacio de predicción en una serie de regiones simples</li>
-</ul>
-
 <!-- 
+* Los métodos basados en árboles implican la estratificación o la segmentación del espacio de predicción en una serie de regiones simples
+
+
 * El conjunto de reglas de división usada para segmentar puede resumirse en un árbol
 
 * árbol de decisión es un diagrama de flujo en forma de árbol que clasifica observaciones -->
 
 <ul>
-<li><p>Un árbol de decisión es un diagrama de flujo en forma de árbol con reglas de división para segmentar y clasificar observaciones</p></li>
+<li><p>Un árbol de decisión es un diagrama de flujo con reglas para segmentar el espacio de regresores en regiones más simples y clasificar observaciones</p></li>
 <li><p>Los árboles de decisión suelen estar dibujados al revés:</p>
 
 <ul>
@@ -174,18 +236,18 @@ Un ejemplo de árbol con dos variables numéricas $X_1$ y $X_2$ sería
 </article></slide><slide class=""><hgroup><h2>Árboles de Regresión</h2></hgroup><article  id="árboles-de-regresión">
 
 <ul>
-<li>¿Cómo construimos estos árboles?</li>
-</ul>
+<li><p>¿Cómo construimos estos árboles para una variable cuantitativa?</p>
 
 <ol>
-<li><p>Dividir el espacio de predicción, \(\small x_1, x_2, \dots, x_p\) en regiones \(\small J\) distintas y no superpuestas, \(\small R1, R2, \dots, R_J\)</p></li>
+<li><p>Dividir el espacio de predicción, \(\small x_1, x_2, \dots, x_p\) en regiones \(\small J\) distintas y no superpuestas, \(\small R_1, R_2, \dots, R_J\)</p></li>
 <li><p>Cada observación que caiga en la región \(\small R_j\) tiene el mismo valor predicho: la media de \(\small y\) para las observaciones de entrenamiento en \(\small R_j\)</p></li>
-</ol>
+</ol></li>
+<li><p>¿Cómo determinar las regiones apropiadas \(\small R_1, R_2, \dots, R_J\)?</p>
 
 <ul>
-<li><p>¿Cómo determinar las regiones apropiadas \(\small R1, R2, \dots, R_J\)?</p></li>
-<li><p>Por simplicidad y por interpretabilidad, se divide el espacio de predicción en rectángulos de n-dimensiones o cajas</p></li>
+<li><p>Por simplicidad y por interpretabilidad, se divide el espacio de predicción en rectángulos de p-dimensiones o cajas</p></li>
 <li><p>El objetivo es encontrar regiones que minimicen la SCR <!--suma cuadrática de los residuos--></p></li>
+</ul></li>
 </ul>
 
 <p>\[\small
@@ -196,19 +258,286 @@ Un ejemplo de árbol con dos variables numéricas $X_1$ y $X_2$ sería
 donde y^Rj
 es la respuesta media para las observaciones de entrenamiento en el cuadro j -->
 
-</article></slide><slide class=""><hgroup><h2>Algoritmo de partición binaria recursiva</h2></hgroup><article  id="algoritmo-de-partición-binaria-recursiva">
+</article></slide><slide class=""><hgroup><h2>¿Cómo encontrar el árbol óptimo?</h2></hgroup><article  id="cómo-encontrar-el-árbol-óptimo">
 
 <ul>
-<li><p>NO podemos encontar el árbol óptimo: es computacionalmente inviable considerar cada posible partición <!--del espacio de características--> en \(\small J\) regiones.</p></li>
-<li><p>Hay varias formas heurísticas para construir árboles de decisión que emplean estrategias denominadas &ldquo;voraces&rdquo; (<em>greedy</em>).</p></li>
-<li><p>Un algoritmo voraz elige una opción localmente óptima en cada paso con la esperanza de llegar a una solución general óptima.</p></li>
+<li><p>NO podemos: es computacionalmente inviable considerar cada posible partición del espacio de características en \(\small J\) regiones.</p></li>
+<li><p>Existen allternativas heurísticas para construir árboles de decisión que emplean estrategias denominadas &ldquo;voraces&rdquo; (<em>greedy</em>)</p></li>
+<li><p>Un algoritmo &ldquo;voraz&rdquo; elige una opción localmente óptima en cada paso con la esperanza de llegar a una solución general óptima</p>
+
+<ul>
+<li>en lugar de <!--mirar adelante y --> elegir la mejor partición para un paso futuro</li>
+</ul></li>
 </ul>
 
-<!-- en lugar de mirar adelante y elegir la partición mejor para un pasao futuro -->
+</article></slide><slide class=""><hgroup><h2>Partición binaria recursiva</h2></hgroup><article  id="partición-binaria-recursiva">
+
+<!--
+* Sigue un enfoque de arriba a abajo
+-->
+
+<ol>
+<li><p>En la parte alta, todas las observaciones pertenecen a una sola región</p></li>
+<li><p>Se divide sucesivamente cada región en dos ramas: \(\small R_1(j,s) = \{X|X_j &lt; s\}\) y \(\small R_2(j,s) = \{X|X_j \geq s\}\)</p>
 
 <ul>
-<li>La partición binaria recursiva sigue un enfoque de arriba a abajo</li>
-</ul></article></slide>
+<li><p>En cada nodo, se consideran <em>todos</em> los regresores \(\small X_j\) y <em>todos</em> los umbrales \(s\)</p></li>
+<li><p>Se calcula \(\small SCR_{j,s} = \sum_{i\in R_1(j,s)}(y_i-\widehat{y}_{R_1})^2 + \sum_{i\in R_2(j,s)}(y_i-\widehat{y}_{R_2})^2\)</p></li>
+<li><p>SOLO una partición en cada iteración: se elige \(\small j\) y \(\small s\) con menor \(\small SCR_{j,s}\) <!--en esa iteración --></p></li>
+</ul></li>
+<li><p>Repetimos el proceso particionando cada región de la iteración anterior <!-- NO el conjunto entero --></p></li>
+<li><p>Se continua hasta que se cumpla un criterio de parada; p.e., ninguna región contiene más de \(5\) observaciones</p></li>
+</ol>
+
+</article></slide><slide class=""><hgroup><h2>Podar un árbol (<em>pruning</em>)</h2></hgroup><article  id="podar-un-árbol-pruning">
+
+<!--
+* El proceso anterior lleva, en general, a árboles complejos: "overfitting"
+
+* Alternativa 1: hacer crecer el árbol sólo si la disminución en SCR en cada división excede un umbral para obtener árboles más pequeños
+    
+* PERO es poco previsora: una división "inútil" al principio del árbol podría implicar gran reducción de la SCR futura.
+-->
+
+<ul>
+<li><p>Para evitar árboles demasiados complejos (&ldquo;overfitting&rdquo;), se podría hacer crecer el árbol solo si la SCR excede un umbral</p></li>
+<li><p>PERO esto es poco previsor: una división inicial &ldquo;inútil&rdquo; <!--al principio del árbol--> podría implicar gran reducción de la SCR futura.</p></li>
+<li><p>Alternativa: hacer crecer un árbol &ldquo;grande&rdquo; con \(\small T_0\) nodos terminales y <strong>podarlo</strong> para quedarnos con un sub-árbol con \(\small T\) nodos terminales \[\small
+min \sum_{m=1}^T \sum_{i \in R_m} (y_i-\widehat{y}_{R_m})^2 + \alpha |T|
+\]</p>
+
+<ul>
+<li>donde \(\small R_m\) es la región de \(\small m\)-nodo terminal</li>
+</ul></li>
+<li><p>\(\small \alpha\) es el hiperparametro de <strong>coste de complejidad</strong> de la poda (elegido por validación cruzada)</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Árboles de clasificación</h2></hgroup><article  id="árboles-de-clasificación">
+
+<ul>
+<li><p>Para un árbol de clasificación, se predice que cada observación pertenece a la clase más común en la región a la que pertenece en entrenamiento</p></li>
+<li><p>También se pueden obtener la proporción de una clase \(\small k\) dentro de una región particular \(\small m\) de nodos terminales: \(\small \widehat{p}_{mk}\)</p></li>
+<li><p>La métrica usada para hacer crecer los árboles NO puede ser SCR</p></li>
+</ul>
+
+<!--
+1. Tasa de error de clasificación (fracción de observaciones que no pertenecen a la clase más común)
+\[
+\small
+E=1 - max_k (\widehat{p}_{mk}$)
+\]
+
+no es lo suficientemente sensible para el cultivo de árboles y son preferibles otros criterios.
+-->
+
+<ol>
+<li><p>Índice de Gini: medida de la varianza entre clases \(\small G=\sum_{k=1}^{K}\widehat{p}_{mk}(1-\widehat{p}_{mk})\)</p></li>
+<li><p>Entropía (cruzada) \(\small D=\sum_{k=1}^{K}\widehat{p}_{mk}log(\widehat{p}_{mk})\)</p></li>
+</ol>
+
+<ul>
+<li>Ambos son medidas de &ldquo;pureza&rdquo; del nodo: un valor pequeño indica que la región contiene en su mayoría observaciones de una sola clase.</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Ventajas y desventajas</h2></hgroup><article  id="ventajas-y-desventajas">
+
+<p>(+) Funcionan mejor que modelos lineales para relaciones no lineales y complejas <!-- (y peor en caso contrario)--></p>
+
+<p>(+) Fáciles de explicar (más que la regresión lineal)</p>
+
+<p>(+) Reflejan los procesos de toma de decisiones de los humanos</p>
+
+<p>(+) Visualizables gráficamente: fáciles de interpretar por no expertos</p>
+
+<p>(+) No requieren dummies para modelizar las variables cualitativas.</p>
+
+<p>(-) No son robustos a cambios en los datos (grandes cambios en árbol final)</p>
+
+<p>(-) Menor poder de predicción</p>
+
+<ul>
+<li>PERO <strong>agregar</strong> muchos árboles de decisión mejorar el rendimiento predictivo y mitigar algunas desventajas</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Ejemplo de clasificación</h2></hgroup><article  id="ejemplo-de-clasificación">
+
+<pre class = 'prettyprint lang-r'>censo &lt;- read_csv(&quot;https://www.dropbox.com/s/6bqyjnkd2c638rm/census.csv?dl=1&quot;) %&gt;% 
+          mutate(income=as.factor(income))
+
+library(&quot;tidymodels&quot;)
+
+set.seed(7482)
+censo_part &lt;- censo %&gt;% initial_split(prop = .8)
+
+censo_receta_arbol &lt;- training(censo_part) %&gt;%
+  recipe(income ~ age + education_1 +  capital_gain + capital_loss + hours_per_week) 
+
+censo_modelo_arbol  &lt;- decision_tree(mode = &quot;classification&quot;, 
+                                     cost_complexity = .01) %&gt;% 
+                          set_engine(&quot;rpart&quot;)  # C5.0, spark
+
+censo_flujo_arbol &lt;- workflow() %&gt;% 
+                      add_recipe(censo_receta_arbol) %&gt;% 
+                      add_model(censo_modelo_arbol)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Ejemplo de clasificación (cont.)</h2></hgroup><article  id="ejemplo-de-clasificación-cont.">
+
+<pre class = 'prettyprint lang-r'>censo_flujo_arbol_est  &lt;- censo_flujo_arbol %&gt;% 
+                            fit(data = censo_part %&gt;% training()) 
+
+censo_flujo_arbol_est %&gt;% 
+  predict(testing(censo_part)) %&gt;% 
+  bind_cols(testing(censo_part)) %&gt;%  
+  accuracy(income, .pred_class) 
+
+library(rpart.plot)
+arbol &lt;- censo_flujo_arbol_est %&gt;% pull_workflow_fit() 
+rpart.plot(arbol$fit)   </pre>
+
+</article></slide><slide class=""><hgroup><h2><em>Bagging</em></h2></hgroup><article  id="bagging">
+
+<ul>
+<li><p>La agregación de Bootstrap, o <em>bagging</em>, es un procedimiento general para reducir la varianza de un método de aprendizaje estadístico</p></li>
+<li><p>Idea: promediar un conjunto de observaciones reduce la varianza: \[\small \{x_i\}_{i=1}^n iid \sim (\mu, \sigma^2) \Rightarrow \bar{x} \sim (\mu, \sigma^2/n)\]</p></li>
+<li><p>No disponemos de múltiples muestras de entrenamiento, PERO podemos tomar \(B\) re-muestras del <strong>único</strong> conjunto de entrenamiento</p>
+
+<ul>
+<li><p>en cada remuestra \(\small b\), entrenar y obtener una predicción: \(\small \widehat{f}^b(x)\)</p></li>
+<li><p>promediar las predicciones \(\small \widehat{f}_{bag}(x) = \frac{1}{B}\sum_{b=1}^B\widehat{f}^b(x)\)</p></li>
+<li><p>o predecir por voto mayoritario: clase más común en \(\small B\) remuestras</p></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Agregando árboles</h2></hgroup><article  id="agregando-árboles">
+
+<ul>
+<li><em>Bagging</em> es útil y habitual en el contexto de los árboles de decisión</li>
+</ul>
+
+<!--
+* Una aplicación popular consiste en un "bosque" de árboles de decisión 
+-->
+
+<ul>
+<li><p>En lugar de un único árbol complejo, se combinan muchos árboles diversos que pueden reflejar patrones sutiles</p></li>
+<li><p>Variación en las condiciones de &ldquo;entrenamiento&rdquo; mediante &ldquo;bootstrap&rdquo;</p></li>
+</ul>
+
+<center>
+
+<img width="55%" src='pic/random-forest.png' title=''/>
+
+</center>
+
+<ul>
+<li>El número de árboles, B, no es un parámetro crítico: B no implica &ldquo;overfitting&rdquo;</li>
+</ul>
+
+<!--
+Out of Bag Error Estimation
+
+It can be shown that, on average, each bagging tree makes use of around two-thirds of the training observations. The remaining third of the observations that are not used to fit a given bagged tree are referred to as the out-of-bag observations. An approximation of the test error of the bagged model can be obtained by taking each of the out-of-bag observations, evaluating the B/3
+predictions from those trees that did not use the given out-of-bag prediction, taking the mean/mode of those predictions, and comparing it to the value predicted by the bagged model, yielding the out-of-bag error. When B is sufficiently large, out-of-bag error is nearly equivalent to leave-one-out cross validation.
+-->
+
+<!--
+## Agregando árboles (cont.)
+
+<center>      
+![](./pic/random-forest-machine-learning.png){width=40%}
+</center>      
+
+
+-->
+
+</article></slide><slide class=""><hgroup><h2>&ldquo;Random forest&rdquo;</h2></hgroup><article  id="random-forest">
+
+<ul>
+<li><p>Es un algoritmo específico de agregación de árboles que introduce aleatorización para quitar correlación entre los árboles.</p></li>
+<li><p>Construimos un número de árboles de decisión en muestras de entrenamiento de bootstrap</p></li>
+<li><p>Cada vez que se considera una división en un árbol, se elige una selección aleatoria de \(\small m \approx \sqrt{p}\) regresores del total de \(\small p\) para realizar la partición</p>
+
+<ul>
+<li>cada división sólo considera una minoría de los regresores disponibles</li>
+</ul></li>
+<li><p>Este proceso mitiga la fuerza de regresores muy fuertes, permitiendo una mayor variación en los árboles embolsados</p></li>
+<li><p>Esto reduce la correlación entre los árboles y reduce la varianza</p></li>
+</ul>
+
+<!--
+En presencia de un predictor demasiado fuerte, bagging puede no superar a un solo árbol. Random Forest tendrá un mejor rendimiento en tal escenario.
+-->
+
+</article></slide><slide class=""><hgroup><h2>&ldquo;Random forest&rdquo;: importancia</h2></hgroup><article  id="random-forest-importancia">
+
+<ul>
+<li><p><em>Bagging</em> mejora la precisión de la predicción a expensas de la interpretación</p></li>
+<li><p>Medidas de importancia variable</p>
+
+<ul>
+<li><p>promedio de la reducción en SCR para un regresor en los \(\small B\) árboles</p></li>
+<li><p>disminución del índice de Gini</p></li>
+</ul></li>
+<li><!--Con la noción de **importancia**, se -->
+
+<p>Se determina qué variables parecen ser las más influyentes de manera consistente en los distintos árboles</p></li>
+<li><p>La importancia tiene un papel análogo al de los p-valores (sin una inferencia estadística formal), en el sentido de que puede ayudar a generar hipótesis.</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>&ldquo;Random forest&rdquo;: ejemplo de regresión</h2></hgroup><article  id="random-forest-ejemplo-de-regresión">
+
+<pre class = 'prettyprint lang-r'>#install.packages(&quot;ranger&quot;)
+library(mosaicData)
+set.seed(9753)
+RailTrail_part &lt;- RailTrail %&gt;% initial_split(prop = .8)
+
+RailTrail_receta_RF &lt;- training(RailTrail_part) %&gt;%
+  recipe(volume ~ cloudcover + precip + avgtemp + weekday) 
+
+RailTrail_modelo_RF  &lt;- rand_forest(mode = &quot;regression&quot;,
+                                       mtry = 3, trees = 100) %&gt;% 
+                          set_engine(&quot;ranger&quot;, #randomForest, spark
+                                     importance = &quot;impurity&quot;)   
+
+RailTrail_flujo_RF &lt;- workflow() %&gt;% add_recipe(RailTrail_receta_RF) %&gt;% 
+                      add_model(RailTrail_modelo_RF)
+
+RailTrail_flujo_RF_est  &lt;- RailTrail_flujo_RF %&gt;% fit(training(RailTrail_part))
+
+RailTrail_flujo_RF_est %&gt;% predict(testing(RailTrail_part)) %&gt;% 
+  bind_cols(testing(RailTrail_part)) %&gt;% metrics(volume, .pred) </pre>
+
+</article></slide><slide class=""><hgroup><h2>&ldquo;Random forest&rdquo;: ejemplo de regresión (cont.)</h2></hgroup><article  id="random-forest-ejemplo-de-regresión-cont.">
+
+<pre class = 'prettyprint lang-r'>RailTrail_flujo_RF_est_pull &lt;- pull_workflow_fit(RailTrail_flujo_RF_est)$fit
+
+RailTrail_flujo_RF_est_pull$variable.importance
+
+
+library(&quot;vip&quot;)
+pull_workflow_fit(RailTrail_flujo_RF_est) %&gt;% vip()</pre>
+
+</article></slide><slide class=""><hgroup><h2>&ldquo;Random forest&rdquo;: ejemplo de clasificacion</h2></hgroup><article  id="random-forest-ejemplo-de-clasificacion">
+
+<pre class = 'prettyprint lang-r'>library(tidymodels)
+set.seed(7482)
+censo_part &lt;- censo %&gt;% initial_split(prop = .8)
+
+censo_receta_RF &lt;- training(censo_part) %&gt;%
+  recipe(income ~ age + education_1 +  capital_gain + capital_loss + hours_per_week)
+
+censo_modelo_RF  &lt;- rand_forest(mode = &quot;classification&quot;,
+                                       mtry = 3, min_n=10, trees = 100) %&gt;% 
+                          set_engine(&quot;ranger&quot;, #randomForest, spark
+                                     importance = &quot;impurity&quot;) 
+
+censo_flujo_RF &lt;- workflow() %&gt;% add_recipe(censo_receta_RF) %&gt;% 
+                      add_model(censo_modelo_RF)
+
+censo_flujo_RF_est  &lt;- censo_flujo_RF %&gt;% fit(data = censo_part %&gt;% training()) 
+
+censo_flujo_RF_est %&gt;% predict(testing(censo_part)) %&gt;% 
+  bind_cols(testing(censo_part)) %&gt;%  accuracy(income, .pred_class) </pre></article></slide>
 
 
   <slide class="backdrop"></slide>
