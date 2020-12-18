@@ -172,6 +172,8 @@ D=\sum_{k=1}^{K}\widehat{p}_{mk}log(\widehat{p}_{mk})$
 
 (+) Funcionan mejor que modelos lineales para relaciones no lineales y complejas <!-- (y peor en caso contrario)-->
 
+<!-- son alternativas a interacciones en modelo de regresión lineal -->
+
 (+) Fáciles de explicar (más que la regresión lineal)
 
 (+) Reflejan los procesos de toma de decisiones de los humanos
@@ -200,11 +202,11 @@ set.seed(7482)
 censo_part <- censo %>% initial_split(prop = .8)
 
 censo_receta_arbol <- training(censo_part) %>%
-  recipe(income ~ age + education_1 +  capital_gain + capital_loss + hours_per_week) 
+  recipe(income ~ age + education_1 + sex + capital_gain + capital_loss + hours_per_week) 
 
 censo_modelo_arbol  <- decision_tree(mode = "classification", 
                                      cost_complexity = .01) %>% 
-                          set_engine("rpart")  # C5.0, spark
+                          set_engine("rpart") 
 
 censo_flujo_arbol <- workflow() %>% 
                       add_recipe(censo_receta_arbol) %>% 
@@ -227,6 +229,18 @@ library(rpart.plot)
 arbol <- censo_flujo_arbol_est %>% pull_workflow_fit() 
 rpart.plot(arbol$fit)   
 ```
+
+## Algoritmos para árboles e hiperparámetros
+
+* Existen tres  bibliotecas ("motores") que implementan algoritmos para árboles en `tidymodels`: `rpart` (por defecto), `spark` y `C5.0` (solo clasificación)
+
+* Cada algoritmo depende de varios hiperparámetros que deben elegirse mediante validación cruzada (proceso de ajuste o *tuning*)
+
+  + `min_n`: El número mínimo de observaciones en un nodo requeridos para que se divida más.
+
+  + Profundidad del árbol (`tree_depth`): máximo número de niveles del árbol, en `rpart` y `spark`
+
+  + Coste de complejidad (`cost_complexity`), solo en `rpart` 
 
 
 ## *Bagging*
@@ -282,21 +296,24 @@ predictions from those trees that did not use the given out-of-bag prediction, t
 
 ## "Random forest"
 
-* Es un algoritmo específico de agregación de árboles que introduce aleatorización para quitar correlación entre los árboles.
+* Es un algoritmo específico de agregación de árboles que introduce aleatorización para eliminar correlación entre los árboles.
 
-* Construimos un número de árboles de decisión en muestras de entrenamiento de bootstrap
+<!--
+* Esto reduce la correlación entre los árboles y reduce la varianza
+-->
+
+* Se construyen varios árboles en muestras de entrenamiento de bootstrap
 
 * Cada vez que se considera una división en un árbol, se elige una selección aleatoria de $\small m \approx \sqrt{p}$ regresores del total de $\small p$ para realizar la partición
 
     + cada división sólo considera una minoría de los regresores disponibles
       
-* Este proceso mitiga la fuerza de regresores muy fuertes, permitiendo una mayor variación en los árboles embolsados
-
-* Esto reduce la correlación entre los árboles y reduce la varianza
+* Este proceso mitiga la influencia de regresores muy fuertes, permitiendo una mayor diversidad en los árboles agregados
 
 <!--
 En presencia de un predictor demasiado fuerte, bagging puede no superar a un solo árbol. Random Forest tendrá un mejor rendimiento en tal escenario.
 -->
+
 
 ## "Random forest": importancia
 
@@ -314,6 +331,23 @@ En presencia de un predictor demasiado fuerte, bagging puede no superar a un sol
 en el sentido de que puede ayudar a generar hipótesis.
 
 
+## Algoritmos para RF e hiperparámetros
+
+* Existen tres algoritmos principales para RF en R: `ranger`, `randomForest` y `spark`
+
+* En todos los casos depende del números de árboles a considerar en total y de  dos hiperpárametros, con distintos nombres y valores por defecto
+
+<!-- ver descripción en ayuda -->
+
+* Afortunadamente, la interfaz unifica de `tidymodels` nos evita complicaciones
+
+  * `mtry`: número de variables a considerar en cada partición
+
+  * `min_n`: igual que en árboles
+
+  * `trees`: número de árboles a considerar en la agregación (no es un hiperparámetro)
+
+
 ## "Random forest": ejemplo de regresión
 ```{r}
 #install.packages("ranger")
@@ -326,20 +360,23 @@ RailTrail_receta_RF <- training(RailTrail_part) %>%
 
 RailTrail_modelo_RF  <- rand_forest(mode = "regression",
                                        mtry = 3, trees = 100) %>% 
-                          set_engine("ranger", #randomForest, spark
-                                     importance = "impurity")   
+                          set_engine("ranger", importance = "impurity")
 
 RailTrail_flujo_RF <- workflow() %>% add_recipe(RailTrail_receta_RF) %>% 
                       add_model(RailTrail_modelo_RF)
+
+```
+
+## "Random forest": ejemplo de regresión (cont.)
+
+```{r}
 
 RailTrail_flujo_RF_est  <- RailTrail_flujo_RF %>% fit(training(RailTrail_part))
 
 RailTrail_flujo_RF_est %>% predict(testing(RailTrail_part)) %>% 
   bind_cols(testing(RailTrail_part)) %>% metrics(volume, .pred) 
-```
-## "Random forest": ejemplo de regresión (cont.)
 
-```{r}
+
 RailTrail_flujo_RF_est_pull <- pull_workflow_fit(RailTrail_flujo_RF_est)$fit
 
 RailTrail_flujo_RF_est_pull$variable.importance
@@ -363,8 +400,7 @@ censo_receta_RF <- training(censo_part) %>%
 
 censo_modelo_RF  <- rand_forest(mode = "classification",
                                        mtry = 3, min_n=10, trees = 100) %>% 
-                          set_engine("ranger", #randomForest, spark
-                                     importance = "impurity") 
+                          set_engine("ranger", importance = "impurity") 
 
 censo_flujo_RF <- workflow() %>% add_recipe(censo_receta_RF) %>% 
                       add_model(censo_modelo_RF)
@@ -374,3 +410,5 @@ censo_flujo_RF_est  <- censo_flujo_RF %>% fit(data = censo_part %>% training())
 censo_flujo_RF_est %>% predict(testing(censo_part)) %>% 
   bind_cols(testing(censo_part)) %>%  accuracy(income, .pred_class) 
 ```
+
+

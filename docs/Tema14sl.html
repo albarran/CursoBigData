@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tema 14 - Aprendizaje No Supervisado</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Tema 14 - Aprendizaje No Supervisado',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+                        favIcon: 'Tema14sl_files/logo.svg',
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Prof.: Pedro Albarrán' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            {
+        name:  'Prof.: Alberto Pérez' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <link href="site_libs/ioslides-13.5.1/fonts/fonts.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/default.css" rel="stylesheet" />
+  <link href="site_libs/ioslides-13.5.1/theme/css/phone.css" rel="stylesheet" />
+  <script src="site_libs/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/prettify.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/hammer.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-controller.js"></script>
+  <script src="site_libs/ioslides-13.5.1/js/slide-deck.js"></script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    summary {
+      display: list-item;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+/* https://github.com/ropensci/plotly/pull/524#issuecomment-468142578 */
+slide:not(.current) .plotly.html-widget{
+  display: block;
+}
+
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+            code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode { white-space: pre; position: relative; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    code.sourceCode { white-space: pre-wrap; }
+    code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+        
+    slides > slide:not(.nobackground):before {
+      font-size: 12pt;
+      content: "";
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      background: url(Tema14sl_files/logo.svg) no-repeat 0 50%;
+      -webkit-background-size: 30px 30px;
+      -moz-background-size: 30px 30px;
+      -o-background-size: 30px 30px;
+      background-size: 30px 30px;
+      padding-left: 40px;
+      height: 30px;
+      line-height: 1.9;
+    }
+  </style>
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+        <aside class="gdbar"><img src="Tema14sl_files/logo.svg"></aside>
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">Universidad de Alicante, Curso 2020/21</p>
+          </hgroup>
+  </slide>
+
+<slide class=""><hgroup><h2>Aprendizaje no supervisado</h2></hgroup><article  id="aprendizaje-no-supervisado">
+
+<ul>
+<li><p>Objetivo: buscar patrones o relaciones en los datos sin una meta clara <!--(p.e. predecir y de X)--></p>
+
+<ul>
+<li>Ej.: compradores con historias de navegación y compra similares</li>
+</ul></li>
+<li><p>A menudo parte del análisis exploratorio de datos.</p></li>
+<li><p>Resultados más subjetivos: sin objetivos claros y sin mecanismos para validar los resultados (no hay respuesta correcta para comparar las predicciones)</p></li>
+<li><p>Dos técnicas populares:</p>
+
+<ul>
+<li><p>análisis de componentes principales (reducción de la dimensionalidad)</p></li>
+<li><p>&ldquo;clustering&rdquo; (agrupación)</p></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2><em>Clustering</em></h2></hgroup><article  id="clustering">
+
+<!-- (Agrupamiento/Particionamiento) -->
+
+<ul>
+<li><p>Conjunto de técnicas para identificar subgrupos homogéneos de observaciones a partir de sus características observadas.</p>
+
+<ul>
+<li><p>La estructura o patrón a descubrir no se conoce de antemano.</p></li>
+<li><p>Qué es similar o diferente depende del contexto</p></li>
+</ul></li>
+<li><p>Por ejemplo, la segmentación de mercado pretende identificar subgrupos más receptivos a cierta publicidad, o más propensos a comprar un producto</p>
+
+<ul>
+<li>a partir de información de renta, edad, género, dónde viven, etc.</li>
+</ul></li>
+<li><p>Métodos de &ldquo;clustering&rdquo;</p>
+
+<ol>
+<li><p>Métodos de partición (K-means, K-medoids)</p></li>
+<li><p>Agrupación jerárquica <!-- (*Hierarchical clustering*, que puede ser "agglomerative" o "divisive") --></p></li>
+</ol></li>
+</ul>
+
+<!--
+  3. Modelos de mixtura gausiana (basados en modelos)
+-->
+
+</article></slide><slide class=""><hgroup><h2>K-Means Clustering</h2></hgroup><article  id="k-means-clustering">
+
+<center>
+
+<img src='pic/kmeans-difk.png' title=''/>
+
+</center>
+
+<ul>
+<li><p>Para K dado, se divide el conjunto de datos en K grupos distintos \(\small C_1,\dots,C_K\)</p>
+
+<ol>
+<li><p>Cada observación pertenece a un grupo: \(\small i\in C_k\) tal que \(\small C_{1} \cup C_{2} \cup \dots \cup C_{K} = \{1,\dots,n\}\)</p></li>
+<li><p>Los grupos no se solapan (una observación no pertenece a más de un grupo): \(\small C_{k} \cap C_{k^{\prime}} = \emptyset \mathrm{\ for\ all\ k,}\ k \neq k^{\prime}\)</p></li>
+</ol></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>K-Means Clustering (cont.)</h2></hgroup><article  id="k-means-clustering-cont.">
+
+<ul>
+<li>Buena partición = grupos diferentes entre ellos y homogéneos (observaciones similares) dentro del grupo</li>
+</ul>
+
+<!--
+* En una buena partición,
+  + cada grupo es homogéneo (observaciones dentro tan similares entre sí como sea posible)
+  + las observaciones  tan diferentes entre grupos como sea posible
+-->
+
+<ul>
+<li><p>La variación dentro (<em>within</em>) de un cluster es una medida de cuánto difieren las observaciones de un cluster entre sí</p></li>
+<li><p>Por ejemplo, usando la norma L2, definimos la suma cuadrática total dentro del grupo (<em>within-cluster sum of squares</em> o <em>wss</em>) <!--distancia euclediana--></p></li>
+</ul>
+
+<p>\[\small W(C_{k}) = \frac{1}{|C_{k}|}\sum_{i,i^{\prime} \in C_{k}} \sum_{j=1}^{p}(x_{ij} - x_{i^{\prime}j})^{2}
+\]</p>
+
+<ul>
+<li>La partición óptima minimiza la siguiente función objetivo (suma total de la variación <em>within</em> o <em>total wss</em>): \(\small \mathrm{min}_{C_{1},\ \dots,\ C_{K}} \bigg \{\sum_{k=1}^{K} W(C_{k}) \bigg \}\)</li>
+</ul>
+
+<!--
+\[
+\small \mathrm{min}_{C_{1},\ \dots,\ C_{K}} \bigg \{\sum_{k=1}^{K}\frac{1}{|C_{k}|}\sum_{i,i^{\prime} \in C_{k}}
+\sum_{j=1}^{p}(x_{ij} - x_{i^{\prime}j})^{2} \bigg \}
+\]
+-->
+
+</article></slide><slide class=""><hgroup><h2>Algoritmo de K-Means</h2></hgroup><article  id="algoritmo-de-k-means">
+
+<ul>
+<li><p>La solución óptima es computacionalmente inviable: existen \(\small K^n\) maneras de dividir n observaciones en K grupos</p></li>
+<li><p>PERO existe un algoritmo (sencillo) para encontrar un mínimo local</p></li>
+</ul>
+
+<ol>
+<li><p>Conjetura inicial: asignar (aleatoriamente) cada observación a un grupo de 1 a K</p></li>
+<li><p>Iterar hasta las asignaciones dejen de cambiar:</p>
+
+<ol>
+<li><p>Calcular el centroide \(\small m_k\) de cada grupo, es decir, el vector de medias de las observaciones del grupo \(\small k\)</p></li>
+<li><p>Asignar cada observación al grupo cuyo centroide es el más cercano (distancia según la norma L2).</p></li>
+</ol></li>
+</ol>
+
+</article></slide><slide class=""><hgroup><h2>Algoritmo de K-Means (cont.)</h2></hgroup><article  id="algoritmo-de-k-means-cont.">
+
+<ul>
+<li><p>Este algoritmo garantiza que la función objetivo disminuye en cada paso</p>
+
+<ul>
+<li>las observaciones se reubican basadas en la minimización de la suma total de desviaciones al cuadrado</li>
+</ul></li>
+<li><p>Cuando la asignación ya no cambia, se ha encontrado un óptimo local</p></li>
+<li><p>El resultado depende de la asignación aleatoria inicial</p></li>
+<li><p>Se DEBE ejecutar el algoritmo con varias asignaciones iniciales y seleccionar la solución con menor valor de la función objetivo</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Algoritmo de K-Means: proceso</h2></hgroup><article  id="algoritmo-de-k-means-proceso">
+
+<center>
+
+<img src='pic/kmeans-algor.png' title=''/>
+
+</center>
+
+<!--
+## K-means: diferentes asignaciones
+
+<center>
+:::: {style="display: flex;"}
+
+::: {}
+
+![](pic/kmean1iter.png)
+
+
+:::
+
+::: {}
+
+![](pic/kmean2iter.png)
+
+:::
+
+::::
+
+![](pic/kmean3iter.png)
+</center>
+-->
+
+</article></slide><slide class=""><hgroup><h2>Algoritmo de K-Means: diferentes mínimos</h2></hgroup><article  id="algoritmo-de-k-means-diferentes-mínimos">
+
+<center>
+
+<img src='pic/kmeans-3localminima.png' title=''/>
+
+</center>
+
+</article></slide><slide class=""><hgroup><h2>Número óptimo de <em>clusters</em></h2></hgroup><article  id="número-óptimo-de-clusters">
+
+<!--
+* ¿Cómo elegir el número correcto de *clusters*? Lamentablemente, no hay una respuesta definitiva a esta pregunta. 
+-->
+
+<ul>
+<li><p>La agrupación óptima es relativamente &ldquo;subjetiva&rdquo;: depende de cómo se miden las similitudes, qué parámetros se utilizan para la partición, etc.</p></li>
+<li><p>Entre los muchos métodos existentes el &ldquo;método del codo&rdquo; (<em>elbow method</em>) es relativamente sencillo</p></li>
+</ul>
+
+<!-- el método de $K-means$ minimizando la variación total dentro del clúster. -->
+
+<ol>
+<li><p>Calcular el algoritmo de <em>clustering</em> para diferentes valores de \(\small k\).</p></li>
+<li><p>Para cada \(\small k\), obtener la suma cuadrática total dentro del grupo (<em>total wss</em>)</p></li>
+<li><p>Dibujar un gráfico de la <em>total wss</em> en función de \(\small k\) <!--(Este gráfico se denomina gráfico del acantilado o del despeñamiento,  *scree plot*.)
+--></p></li>
+<li><p>Un cambio de curvatura se considera como un indicador de \(\small k\) óptimo</p></li>
+</ol>
+
+</article></slide><slide class=""><hgroup><h2>Ejemplo de <em>clustering</em></h2></hgroup><article  id="ejemplo-de-clustering">
+
+<pre class = 'prettyprint lang-r'>faithful.clustered &lt;- 
+  faithful %&gt;% 
+  mutate(cluster = 
+           factor(kmeans(x = ., centers = 2)$cluster)
+         )
+
+faithful.clustered %&gt;% 
+  ggplot(aes(y = eruptions, x = waiting)) + 
+  geom_point(aes(color = cluster))</pre>
+
+</article></slide><slide class=""><hgroup><h2>Ejemplo de <em>clustering</em> (cont.)</h2></hgroup><article  id="ejemplo-de-clustering-cont.">
+
+<pre class = 'prettyprint lang-r'>iris.data &lt;- iris[-5]</pre>
+
+<!--
+
+```r
+set.seed(123)
+k.max <- 15 
+iris.data <- iris[-5]
+```
+
+
+```r
+wss <- lapply(1:k.max, function(k){kmeans(iris.data, k)$tot.withinss}) %>% unlist()
+
+plot.data <- tibble(k=1:k.max, wss)
+
+ggplot(data=plot.data, aes(x=k, y=wss)) +
+    geom_point() +
+    geom_line() +
+    xlab("Número de grupos, K") +
+    ylab("Suma Cuadrática Total dentro del grupo") +
+    geom_vline(aes(xintercept=3, color="red"))
+```
+
+En este caso, el método del codo sugiere tres grupos.
+-->
+
+<ul>
+<li>El método del codo se implementa con la función <code>fviz_nbclust()</code>:</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>iris.data &lt;- iris[-5]
+#install.packages(&quot;factoextra&quot;)
+library(factoextra)
+fviz_nbclust(iris.data, kmeans, method = &quot;wss&quot;) +
+    geom_vline(xintercept = 3)</pre></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

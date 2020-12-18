@@ -343,6 +343,8 @@ no es lo suficientemente sensible para el cultivo de árboles y son preferibles 
 
 <p>(+) Funcionan mejor que modelos lineales para relaciones no lineales y complejas <!-- (y peor en caso contrario)--></p>
 
+<!-- son alternativas a interacciones en modelo de regresión lineal -->
+
 <p>(+) Fáciles de explicar (más que la regresión lineal)</p>
 
 <p>(+) Reflejan los procesos de toma de decisiones de los humanos</p>
@@ -370,11 +372,11 @@ set.seed(7482)
 censo_part &lt;- censo %&gt;% initial_split(prop = .8)
 
 censo_receta_arbol &lt;- training(censo_part) %&gt;%
-  recipe(income ~ age + education_1 +  capital_gain + capital_loss + hours_per_week) 
+  recipe(income ~ age + education_1 + sex + capital_gain + capital_loss + hours_per_week) 
 
 censo_modelo_arbol  &lt;- decision_tree(mode = &quot;classification&quot;, 
                                      cost_complexity = .01) %&gt;% 
-                          set_engine(&quot;rpart&quot;)  # C5.0, spark
+                          set_engine(&quot;rpart&quot;) 
 
 censo_flujo_arbol &lt;- workflow() %&gt;% 
                       add_recipe(censo_receta_arbol) %&gt;% 
@@ -393,6 +395,19 @@ censo_flujo_arbol_est %&gt;%
 library(rpart.plot)
 arbol &lt;- censo_flujo_arbol_est %&gt;% pull_workflow_fit() 
 rpart.plot(arbol$fit)   </pre>
+
+</article></slide><slide class=""><hgroup><h2>Algoritmos para árboles e hiperparámetros</h2></hgroup><article  id="algoritmos-para-árboles-e-hiperparámetros">
+
+<ul>
+<li><p>Existen tres bibliotecas (&ldquo;motores&rdquo;) que implementan algoritmos para árboles en <code>tidymodels</code>: <code>rpart</code> (por defecto), <code>spark</code> y <code>C5.0</code> (solo clasificación)</p></li>
+<li><p>Cada algoritmo depende de varios hiperparámetros que deben elegirse mediante validación cruzada (proceso de ajuste o <em>tuning</em>)</p>
+
+<ul>
+<li><p><code>min_n</code>: El número mínimo de observaciones en un nodo requeridos para que se divida más.</p></li>
+<li><p>Profundidad del árbol (<code>tree_depth</code>): máximo número de niveles del árbol, en <code>rpart</code> y <code>spark</code></p></li>
+<li><p>Coste de complejidad (<code>cost_complexity</code>), solo en <code>rpart</code></p></li>
+</ul></li>
+</ul>
 
 </article></slide><slide class=""><hgroup><h2><em>Bagging</em></h2></hgroup><article  id="bagging">
 
@@ -453,15 +468,21 @@ predictions from those trees that did not use the given out-of-bag prediction, t
 </article></slide><slide class=""><hgroup><h2>&ldquo;Random forest&rdquo;</h2></hgroup><article  id="random-forest">
 
 <ul>
-<li><p>Es un algoritmo específico de agregación de árboles que introduce aleatorización para quitar correlación entre los árboles.</p></li>
-<li><p>Construimos un número de árboles de decisión en muestras de entrenamiento de bootstrap</p></li>
+<li>Es un algoritmo específico de agregación de árboles que introduce aleatorización para eliminar correlación entre los árboles.</li>
+</ul>
+
+<!--
+* Esto reduce la correlación entre los árboles y reduce la varianza
+-->
+
+<ul>
+<li><p>Se construyen varios árboles en muestras de entrenamiento de bootstrap</p></li>
 <li><p>Cada vez que se considera una división en un árbol, se elige una selección aleatoria de \(\small m \approx \sqrt{p}\) regresores del total de \(\small p\) para realizar la partición</p>
 
 <ul>
 <li>cada división sólo considera una minoría de los regresores disponibles</li>
 </ul></li>
-<li><p>Este proceso mitiga la fuerza de regresores muy fuertes, permitiendo una mayor variación en los árboles embolsados</p></li>
-<li><p>Esto reduce la correlación entre los árboles y reduce la varianza</p></li>
+<li><p>Este proceso mitiga la influencia de regresores muy fuertes, permitiendo una mayor diversidad en los árboles agregados</p></li>
 </ul>
 
 <!--
@@ -484,6 +505,25 @@ En presencia de un predictor demasiado fuerte, bagging puede no superar a un sol
 <li><p>La importancia tiene un papel análogo al de los p-valores (sin una inferencia estadística formal), en el sentido de que puede ayudar a generar hipótesis.</p></li>
 </ul>
 
+</article></slide><slide class=""><hgroup><h2>Algoritmos para RF e hiperparámetros</h2></hgroup><article  id="algoritmos-para-rf-e-hiperparámetros">
+
+<ul>
+<li><p>Existen tres algoritmos principales para RF en R: <code>ranger</code>, <code>randomForest</code> y <code>spark</code></p></li>
+<li><p>En todos los casos depende del números de árboles a considerar en total y de dos hiperpárametros, con distintos nombres y valores por defecto</p></li>
+</ul>
+
+<!-- ver descripción en ayuda -->
+
+<ul>
+<li><p>Afortunadamente, la interfaz unifica de <code>tidymodels</code> nos evita complicaciones</p>
+
+<ul>
+<li><p><code>mtry</code>: número de variables a considerar en cada partición</p></li>
+<li><p><code>min_n</code>: igual que en árboles</p></li>
+<li><p><code>trees</code>: número de árboles a considerar en la agregación (no es un hiperparámetro)</p></li>
+</ul></li>
+</ul>
+
 </article></slide><slide class=""><hgroup><h2>&ldquo;Random forest&rdquo;: ejemplo de regresión</h2></hgroup><article  id="random-forest-ejemplo-de-regresión">
 
 <pre class = 'prettyprint lang-r'>#install.packages(&quot;ranger&quot;)
@@ -496,20 +536,20 @@ RailTrail_receta_RF &lt;- training(RailTrail_part) %&gt;%
 
 RailTrail_modelo_RF  &lt;- rand_forest(mode = &quot;regression&quot;,
                                        mtry = 3, trees = 100) %&gt;% 
-                          set_engine(&quot;ranger&quot;, #randomForest, spark
-                                     importance = &quot;impurity&quot;)   
+                          set_engine(&quot;ranger&quot;, importance = &quot;impurity&quot;)
 
 RailTrail_flujo_RF &lt;- workflow() %&gt;% add_recipe(RailTrail_receta_RF) %&gt;% 
-                      add_model(RailTrail_modelo_RF)
-
-RailTrail_flujo_RF_est  &lt;- RailTrail_flujo_RF %&gt;% fit(training(RailTrail_part))
-
-RailTrail_flujo_RF_est %&gt;% predict(testing(RailTrail_part)) %&gt;% 
-  bind_cols(testing(RailTrail_part)) %&gt;% metrics(volume, .pred) </pre>
+                      add_model(RailTrail_modelo_RF)</pre>
 
 </article></slide><slide class=""><hgroup><h2>&ldquo;Random forest&rdquo;: ejemplo de regresión (cont.)</h2></hgroup><article  id="random-forest-ejemplo-de-regresión-cont.">
 
-<pre class = 'prettyprint lang-r'>RailTrail_flujo_RF_est_pull &lt;- pull_workflow_fit(RailTrail_flujo_RF_est)$fit
+<pre class = 'prettyprint lang-r'>RailTrail_flujo_RF_est  &lt;- RailTrail_flujo_RF %&gt;% fit(training(RailTrail_part))
+
+RailTrail_flujo_RF_est %&gt;% predict(testing(RailTrail_part)) %&gt;% 
+  bind_cols(testing(RailTrail_part)) %&gt;% metrics(volume, .pred) 
+
+
+RailTrail_flujo_RF_est_pull &lt;- pull_workflow_fit(RailTrail_flujo_RF_est)$fit
 
 RailTrail_flujo_RF_est_pull$variable.importance
 
@@ -528,8 +568,7 @@ censo_receta_RF &lt;- training(censo_part) %&gt;%
 
 censo_modelo_RF  &lt;- rand_forest(mode = &quot;classification&quot;,
                                        mtry = 3, min_n=10, trees = 100) %&gt;% 
-                          set_engine(&quot;ranger&quot;, #randomForest, spark
-                                     importance = &quot;impurity&quot;) 
+                          set_engine(&quot;ranger&quot;, importance = &quot;impurity&quot;) 
 
 censo_flujo_RF &lt;- workflow() %&gt;% add_recipe(censo_receta_RF) %&gt;% 
                       add_model(censo_modelo_RF)
