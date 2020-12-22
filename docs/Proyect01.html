@@ -1,0 +1,3496 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Pedro Albarran" />
+
+
+<title>Predicción de precios de las casas en Boston</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Big Data (UA)</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Introducción</a>
+</li>
+<li>
+  <a href="Contenidos.html">Contenidos</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Predicción de precios de las casas en Boston</h1>
+<h4 class="author">Pedro Albarran</h4>
+<h4 class="date">Universidad de Alicante, Curso 2020/21</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introducción"><span class="toc-section-number">1</span> Introducción</a><ul>
+<li><a href="#comentario-general"><span class="toc-section-number">1.1</span> Comentario General</a></li>
+<li><a href="#introducción-y-objetivos"><span class="toc-section-number">1.2</span> Introducción y Objetivos</a></li>
+</ul></li>
+<li><a href="#datos"><span class="toc-section-number">2</span> Datos</a></li>
+<li><a href="#exploración-inicial"><span class="toc-section-number">3</span> Exploración Inicial</a></li>
+<li><a href="#análisis-exploratorio-y-visualización-de-los-datos"><span class="toc-section-number">4</span> Análisis Exploratorio y Visualización de los datos</a><ul>
+<li><a href="#análisis-de-variación"><span class="toc-section-number">4.1</span> Análisis de variación</a></li>
+<li><a href="#análisis-de-covariación"><span class="toc-section-number">4.2</span> Análisis de covariación</a></li>
+</ul></li>
+<li><a href="#modelos"><span class="toc-section-number">5</span> Modelos</a><ul>
+<li><a href="#muestras-de-entrenamiento-y-prueba"><span class="toc-section-number">5.1</span> Muestras de entrenamiento y prueba</a></li>
+</ul></li>
+</ul>
+</div>
+
+<pre class="r"><code># Opciones por defecto para los fragmentos de código
+knitr::opts_chunk$set(eval = TRUE, echo = TRUE, 
+                      warning = FALSE, message = FALSE,
+                      results = &quot;hide&quot;, fig.show=&quot;hide&quot;)
+# se muestra y evalua el código,
+# no se muestran mensajes, ni avisos (warnings)
+# no se muestran los resultados de código (tampoco gráficos)
+#     en los códigos que considere necesarios los mostraré
+
+# Elimino todo del Entorno (del documento)
+rm(list = ls())       
+
+# Cargo todas las bibliotecas necesarias
+# (se podría hacer cuando cada una sea necesaria)
+library(&quot;tidyverse&quot;)
+library(&quot;tidymodels&quot;)
+library(&quot;printr&quot;)
+library(&quot;skimr&quot;)
+library(&quot;dlookr&quot;)
+library(&quot;broom&quot;)
+library(&quot;kableExtra&quot;)
+
+#fijo el directorio de trabajo
+#setwd(&quot;/home/albarran/Dropbox/MAD/00.TEC&quot;)</code></pre>
+<div id="introducción" class="section level1">
+<h1><span class="header-section-number">1</span> Introducción</h1>
+<div id="comentario-general" class="section level2">
+<h2><span class="header-section-number">1.1</span> Comentario General</h2>
+<p>Este documento debe entenderse como <strong>un ejemplo</strong>, no <em>la</em> guía o <em>la</em> receta única de hacer las cosas. Cada conjunto de datos es diferente y requiere un tratamiento distinto. Con los mismos datos se pueden hacer distintos análisis. Cada uno puede realizar distintos tratamientos de los datos, distintos modelos (usar regresión lineal, árboles, etc), diferentes especificaciones (incluir distintas combinaciones de variables y transformadas de manera diferente), etc. Por eso existen “hackatones” o competiciones para ver quién predice mejor con los mismos datos: si existiera una receta, ganaría un ordenador.</p>
+<p>Además en este ejemplo no se entran en muchos detalles de las distintasa fases del trabajo: características de los datos, procedimientos, tablas con encabezados adecuados, gráficos con ejes correctamente nombrados, comentario de resultados, etc. Tampoco se pretende que vuestros trabajos entren en muchos detalles, pero sí algo más de lo que se discute aquí.</p>
+<p>Por otro lado, he incluido la opción de que se muestre o se oculte el código de todo lo que he hecho. Esto es solo por cuestiones didácticas. No tenéis porque hacerlo igual y, de hecho, debéis pensar qué y cuándo queréis mostrar algo.</p>
+</div>
+<div id="introducción-y-objetivos" class="section level2">
+<h2><span class="header-section-number">1.2</span> Introducción y Objetivos</h2>
+<p>En este trabajo, se analizará un conjunto de datos con información sobre precios y otros atributos de una muestra de viviendas en Boston. Por un lado, el objetivo es examinar la influencia de varios atributos del vecindario en los precios de la vivienda, en un intento por descubrir las variables explicativas más adecuadas. Por otro lado, la construcción de un modelo de predicción permitirá determinar el valor por el que se puede poner en el mercado una vivienda o detectar si alguna está infravalorada o sobrevalorada dadas sus características.</p>
+<p>Para realizar este análisis se utilizará el lenguaje de programación R.</p>
+</div>
+</div>
+<div id="datos" class="section level1">
+<h1><span class="header-section-number">2</span> Datos</h1>
+<p>En este trabajo vamos a utilizar un conjunto de datos, “The Boston Housing Price”, derivados de la información recopilada por el Servicio de Censos de los Estados Unidos sobre las viviendas en el área de Boston (Massachusetts). Podemos encontrar algunos detalles adicionales sobre estos datos <a href="https://www.cs.toronto.edu/~delve/data/boston/bostonDetail.html">aquí</a>. Los datos pueden obtenerse desde esa misma página, pero por sencillez los leemos en formato de valores separados por comas (CSV) desde <a href="https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv">aquí</a>.</p>
+<pre class="r"><code>Boston &lt;- read_csv(&quot;https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv&quot;)</code></pre>
+<p>Los datos tienen 506 observaciones y 14 variables. (NOTA: esta información se ha incluido usando el código de R en línea “r dim(Boston)[1]” y “r dim(Boston)[2]”) y también se puede obtener con el siguiente código; NO está claro que queráis mostar este código.)</p>
+<pre class="r"><code>dim(Boston)</code></pre>
+<p>[1] 506 14</p>
+<p>Una descripción completa los atributos disponibles puede encontrarse en [Apéndice A]. Estos datos fueron originalmente utilizados en un estudio sobre el impacto de la contaminación del aire (utilizando las concentraciones de óxido de nitrógeno). En este trabajo, consideramos el efecto de otras características de la zona donde se encuentra la casa como la proximidad al río Charles, la distancia a los principales centros de empleo, la proporción de alumnos por maestro en las escuelas y los niveles de delincuencia. Nuestra variable de interés para predecir es el valor mediano del precio de la vivienda en mil dólares (denotado por MEDV). Notad que nos centramos en las viviendas ocupadas por sus propietarios, es decir, consideramos que el valor de las casas destinadas al alquiler sigue un proceso diferente para determinar su valor.</p>
+</div>
+<div id="exploración-inicial" class="section level1">
+<h1><span class="header-section-number">3</span> Exploración Inicial</h1>
+<p>Debemos considerar si los datos están listos para trabajar o requieren algún tipo de limpieza, ordenación o transformación. En primer comprobamos, el tipo de datos de cada variable y comprobamos si es el adecuado. En este caso, todas las variables son numéricas, lo cual se corresponde con la información cuantitativa de la mayoría de ellos. La variable que nos dice si la zona de la casa está cerca del rio es una variable binaria, es decir, aporta información cualitativa. En este caso, no es crucial convertila en un factor (en los modelos y para otras cuestiones, convertimos los factores en un variables binarias). En otros casos, podemos necesitar convertir más variables con información cualitativa a factores o eliminar variables de tipo carácter o con información que no podamos procesar. NOTA: para esto habremos comprobado el tipo de cada variable, habremos mirado los valores y contrastado con la información que según su descripcion debería tener. Utilizaríamos un código como el siguiente, aunque probablemente NO queráis incluir en el documento ni lo uno ni lo otro.</p>
+<pre class="r"><code>glimpse(Boston)</code></pre>
+<pre><code>## Rows: 506
+## Columns: 14
+## $ crim    &lt;dbl&gt; 0.00632, 0.02731, 0.02729, 0.03237, 0.06905, 0.02985, 0.08829, 0.14455, 0.21124, 0.170…
+## $ zn      &lt;dbl&gt; 18.0, 0.0, 0.0, 0.0, 0.0, 0.0, 12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 0.0, 0.0, 0.0…
+## $ indus   &lt;dbl&gt; 2.31, 7.07, 7.07, 2.18, 2.18, 2.18, 7.87, 7.87, 7.87, 7.87, 7.87, 7.87, 7.87, 8.14, 8.…
+## $ chas    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ nox     &lt;dbl&gt; 0.538, 0.469, 0.469, 0.458, 0.458, 0.458, 0.524, 0.524, 0.524, 0.524, 0.524, 0.524, 0.…
+## $ rm      &lt;dbl&gt; 6.575, 6.421, 7.185, 6.998, 7.147, 6.430, 6.012, 6.172, 5.631, 6.004, 6.377, 6.009, 5.…
+## $ age     &lt;dbl&gt; 65.2, 78.9, 61.1, 45.8, 54.2, 58.7, 66.6, 96.1, 100.0, 85.9, 94.3, 82.9, 39.0, 61.8, 8…
+## $ dis     &lt;dbl&gt; 4.0900, 4.9671, 4.9671, 6.0622, 6.0622, 6.0622, 5.5605, 5.9505, 6.0821, 6.5921, 6.3467…
+## $ rad     &lt;dbl&gt; 1, 2, 2, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,…
+## $ tax     &lt;dbl&gt; 296, 242, 242, 222, 222, 222, 311, 311, 311, 311, 311, 311, 311, 307, 307, 307, 307, 3…
+## $ ptratio &lt;dbl&gt; 15.3, 17.8, 17.8, 18.7, 18.7, 18.7, 15.2, 15.2, 15.2, 15.2, 15.2, 15.2, 15.2, 21.0, 21…
+## $ b       &lt;dbl&gt; 396.90, 396.90, 392.83, 394.63, 396.90, 394.12, 395.60, 396.90, 386.63, 386.71, 392.52…
+## $ lstat   &lt;dbl&gt; 4.98, 9.14, 4.03, 2.94, 5.33, 5.21, 12.43, 19.15, 29.93, 17.10, 20.45, 13.27, 15.71, 8…
+## $ medv    &lt;dbl&gt; 24.0, 21.6, 34.7, 33.4, 36.2, 28.7, 22.9, 27.1, 16.5, 18.9, 15.0, 18.9, 21.7, 20.4, 18…</code></pre>
+<pre class="r"><code>head(Boston) %&gt;% kbl() %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="text-align:right;">
+crim
+</th>
+<th style="text-align:right;">
+zn
+</th>
+<th style="text-align:right;">
+indus
+</th>
+<th style="text-align:right;">
+chas
+</th>
+<th style="text-align:right;">
+nox
+</th>
+<th style="text-align:right;">
+rm
+</th>
+<th style="text-align:right;">
+age
+</th>
+<th style="text-align:right;">
+dis
+</th>
+<th style="text-align:right;">
+rad
+</th>
+<th style="text-align:right;">
+tax
+</th>
+<th style="text-align:right;">
+ptratio
+</th>
+<th style="text-align:right;">
+b
+</th>
+<th style="text-align:right;">
+lstat
+</th>
+<th style="text-align:right;">
+medv
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0.00632
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:right;">
+2.31
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.538
+</td>
+<td style="text-align:right;">
+6.575
+</td>
+<td style="text-align:right;">
+65.2
+</td>
+<td style="text-align:right;">
+4.0900
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+296
+</td>
+<td style="text-align:right;">
+15.3
+</td>
+<td style="text-align:right;">
+396.90
+</td>
+<td style="text-align:right;">
+4.98
+</td>
+<td style="text-align:right;">
+24.0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.02731
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+7.07
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.469
+</td>
+<td style="text-align:right;">
+6.421
+</td>
+<td style="text-align:right;">
+78.9
+</td>
+<td style="text-align:right;">
+4.9671
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+242
+</td>
+<td style="text-align:right;">
+17.8
+</td>
+<td style="text-align:right;">
+396.90
+</td>
+<td style="text-align:right;">
+9.14
+</td>
+<td style="text-align:right;">
+21.6
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.02729
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+7.07
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.469
+</td>
+<td style="text-align:right;">
+7.185
+</td>
+<td style="text-align:right;">
+61.1
+</td>
+<td style="text-align:right;">
+4.9671
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+242
+</td>
+<td style="text-align:right;">
+17.8
+</td>
+<td style="text-align:right;">
+392.83
+</td>
+<td style="text-align:right;">
+4.03
+</td>
+<td style="text-align:right;">
+34.7
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.03237
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2.18
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.458
+</td>
+<td style="text-align:right;">
+6.998
+</td>
+<td style="text-align:right;">
+45.8
+</td>
+<td style="text-align:right;">
+6.0622
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+222
+</td>
+<td style="text-align:right;">
+18.7
+</td>
+<td style="text-align:right;">
+394.63
+</td>
+<td style="text-align:right;">
+2.94
+</td>
+<td style="text-align:right;">
+33.4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.06905
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2.18
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.458
+</td>
+<td style="text-align:right;">
+7.147
+</td>
+<td style="text-align:right;">
+54.2
+</td>
+<td style="text-align:right;">
+6.0622
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+222
+</td>
+<td style="text-align:right;">
+18.7
+</td>
+<td style="text-align:right;">
+396.90
+</td>
+<td style="text-align:right;">
+5.33
+</td>
+<td style="text-align:right;">
+36.2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.02985
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2.18
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.458
+</td>
+<td style="text-align:right;">
+6.430
+</td>
+<td style="text-align:right;">
+58.7
+</td>
+<td style="text-align:right;">
+6.0622
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+222
+</td>
+<td style="text-align:right;">
+18.7
+</td>
+<td style="text-align:right;">
+394.12
+</td>
+<td style="text-align:right;">
+5.21
+</td>
+<td style="text-align:right;">
+28.7
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>Boston$chas &lt;- factor(Boston$chas, 
+                         levels=c(0,1), labels = c(&quot;No&quot;, &quot;Yes&quot;))</code></pre>
+</div>
+<div id="análisis-exploratorio-y-visualización-de-los-datos" class="section level1">
+<h1><span class="header-section-number">4</span> Análisis Exploratorio y Visualización de los datos</h1>
+<p>La siguiente fase consiste en analizar la distribución de valores de cada variable (análisis de variación) y de las posibles relaciones entre ellas (análisis de covariación). Esto nos puede llevar a realizar limpieza adicional de los datos (en particular, relacionada con valores ausentes y puede que atípicos) o transformaciones de los datos (como tomar logaritmos o discretizar alguna variable). También podemos encontrar características de los datos que sean de interés por sí mismas como para especificar los modelos. Para este análisis nos podemos ayudar en librerías que realizan algunas de las tareas de forma automátizada. PERO recordad que NO queremos en general mostrar la salida directa de estos paquetes, sino que la utilizaremos para mostar aquello que consideremos más interesante.</p>
+<p>Por ejemplo, usando la libreria <code>skimr</code> podemos ver</p>
+<pre class="r"><code>skim(Boston)</code></pre>
+<table style='width: auto;'
+        class='table table-condensed'>
+<caption>
+Data summary
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Name
+</td>
+<td style="text-align:left;">
+Boston
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of rows
+</td>
+<td style="text-align:left;">
+506
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of columns
+</td>
+<td style="text-align:left;">
+14
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+_______________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Column type frequency:
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+factor
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric
+</td>
+<td style="text-align:left;">
+13
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+________________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group variables
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+ordered
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:left;">
+top_counts
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+chas
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+No: 471, Yes: 35
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+p0
+</th>
+<th style="text-align:right;">
+p25
+</th>
+<th style="text-align:right;">
+p50
+</th>
+<th style="text-align:right;">
+p75
+</th>
+<th style="text-align:right;">
+p100
+</th>
+<th style="text-align:left;">
+hist
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+crim
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.61
+</td>
+<td style="text-align:right;">
+8.60
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.08
+</td>
+<td style="text-align:right;">
+0.26
+</td>
+<td style="text-align:right;">
+3.68
+</td>
+<td style="text-align:right;">
+88.98
+</td>
+<td style="text-align:left;">
+▇▁▁▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+zn
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+11.36
+</td>
+<td style="text-align:right;">
+23.32
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+12.50
+</td>
+<td style="text-align:right;">
+100.00
+</td>
+<td style="text-align:left;">
+▇▁▁▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+indus
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+11.14
+</td>
+<td style="text-align:right;">
+6.86
+</td>
+<td style="text-align:right;">
+0.46
+</td>
+<td style="text-align:right;">
+5.19
+</td>
+<td style="text-align:right;">
+9.69
+</td>
+<td style="text-align:right;">
+18.10
+</td>
+<td style="text-align:right;">
+27.74
+</td>
+<td style="text-align:left;">
+▇▆▁▇▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nox
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.55
+</td>
+<td style="text-align:right;">
+0.12
+</td>
+<td style="text-align:right;">
+0.38
+</td>
+<td style="text-align:right;">
+0.45
+</td>
+<td style="text-align:right;">
+0.54
+</td>
+<td style="text-align:right;">
+0.62
+</td>
+<td style="text-align:right;">
+0.87
+</td>
+<td style="text-align:left;">
+▇▇▆▅▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rm
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+6.28
+</td>
+<td style="text-align:right;">
+0.70
+</td>
+<td style="text-align:right;">
+3.56
+</td>
+<td style="text-align:right;">
+5.89
+</td>
+<td style="text-align:right;">
+6.21
+</td>
+<td style="text-align:right;">
+6.62
+</td>
+<td style="text-align:right;">
+8.78
+</td>
+<td style="text-align:left;">
+▁▂▇▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+68.57
+</td>
+<td style="text-align:right;">
+28.15
+</td>
+<td style="text-align:right;">
+2.90
+</td>
+<td style="text-align:right;">
+45.02
+</td>
+<td style="text-align:right;">
+77.50
+</td>
+<td style="text-align:right;">
+94.07
+</td>
+<td style="text-align:right;">
+100.00
+</td>
+<td style="text-align:left;">
+▂▂▂▃▇
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dis
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.80
+</td>
+<td style="text-align:right;">
+2.11
+</td>
+<td style="text-align:right;">
+1.13
+</td>
+<td style="text-align:right;">
+2.10
+</td>
+<td style="text-align:right;">
+3.21
+</td>
+<td style="text-align:right;">
+5.19
+</td>
+<td style="text-align:right;">
+12.13
+</td>
+<td style="text-align:left;">
+▇▅▂▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rad
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+9.55
+</td>
+<td style="text-align:right;">
+8.71
+</td>
+<td style="text-align:right;">
+1.00
+</td>
+<td style="text-align:right;">
+4.00
+</td>
+<td style="text-align:right;">
+5.00
+</td>
+<td style="text-align:right;">
+24.00
+</td>
+<td style="text-align:right;">
+24.00
+</td>
+<td style="text-align:left;">
+▇▂▁▁▃
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tax
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+408.24
+</td>
+<td style="text-align:right;">
+168.54
+</td>
+<td style="text-align:right;">
+187.00
+</td>
+<td style="text-align:right;">
+279.00
+</td>
+<td style="text-align:right;">
+330.00
+</td>
+<td style="text-align:right;">
+666.00
+</td>
+<td style="text-align:right;">
+711.00
+</td>
+<td style="text-align:left;">
+▇▇▃▁▇
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ptratio
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+18.46
+</td>
+<td style="text-align:right;">
+2.16
+</td>
+<td style="text-align:right;">
+12.60
+</td>
+<td style="text-align:right;">
+17.40
+</td>
+<td style="text-align:right;">
+19.05
+</td>
+<td style="text-align:right;">
+20.20
+</td>
+<td style="text-align:right;">
+22.00
+</td>
+<td style="text-align:left;">
+▁▃▅▅▇
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+356.67
+</td>
+<td style="text-align:right;">
+91.29
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+<td style="text-align:right;">
+375.38
+</td>
+<td style="text-align:right;">
+391.44
+</td>
+<td style="text-align:right;">
+396.22
+</td>
+<td style="text-align:right;">
+396.90
+</td>
+<td style="text-align:left;">
+▁▁▁▁▇
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lstat
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+12.65
+</td>
+<td style="text-align:right;">
+7.14
+</td>
+<td style="text-align:right;">
+1.73
+</td>
+<td style="text-align:right;">
+6.95
+</td>
+<td style="text-align:right;">
+11.36
+</td>
+<td style="text-align:right;">
+16.96
+</td>
+<td style="text-align:right;">
+37.97
+</td>
+<td style="text-align:left;">
+▇▇▅▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+medv
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+22.53
+</td>
+<td style="text-align:right;">
+9.20
+</td>
+<td style="text-align:right;">
+5.00
+</td>
+<td style="text-align:right;">
+17.02
+</td>
+<td style="text-align:right;">
+21.20
+</td>
+<td style="text-align:right;">
+25.00
+</td>
+<td style="text-align:right;">
+50.00
+</td>
+<td style="text-align:left;">
+▂▇▅▁▁
+</td>
+</tr>
+</tbody>
+</table>
+<p>o usando <code>dlookr</code></p>
+<pre class="r"><code>Boston %&gt;% 
+  describe() %&gt;%
+  select(variable:kurtosis) %&gt;% 
+  kbl(digits = 2) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="text-align:left;">
+variable
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+na
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+se_mean
+</th>
+<th style="text-align:right;">
+IQR
+</th>
+<th style="text-align:right;">
+skewness
+</th>
+<th style="text-align:right;">
+kurtosis
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+crim
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+3.61
+</td>
+<td style="text-align:right;">
+8.60
+</td>
+<td style="text-align:right;">
+0.38
+</td>
+<td style="text-align:right;">
+3.60
+</td>
+<td style="text-align:right;">
+5.22
+</td>
+<td style="text-align:right;">
+37.13
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+zn
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+11.36
+</td>
+<td style="text-align:right;">
+23.32
+</td>
+<td style="text-align:right;">
+1.04
+</td>
+<td style="text-align:right;">
+12.50
+</td>
+<td style="text-align:right;">
+2.23
+</td>
+<td style="text-align:right;">
+4.03
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+indus
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+11.14
+</td>
+<td style="text-align:right;">
+6.86
+</td>
+<td style="text-align:right;">
+0.30
+</td>
+<td style="text-align:right;">
+12.91
+</td>
+<td style="text-align:right;">
+0.30
+</td>
+<td style="text-align:right;">
+-1.23
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nox
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.55
+</td>
+<td style="text-align:right;">
+0.12
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.17
+</td>
+<td style="text-align:right;">
+0.73
+</td>
+<td style="text-align:right;">
+-0.06
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rm
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+6.28
+</td>
+<td style="text-align:right;">
+0.70
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+0.74
+</td>
+<td style="text-align:right;">
+0.40
+</td>
+<td style="text-align:right;">
+1.89
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+68.57
+</td>
+<td style="text-align:right;">
+28.15
+</td>
+<td style="text-align:right;">
+1.25
+</td>
+<td style="text-align:right;">
+49.05
+</td>
+<td style="text-align:right;">
+-0.60
+</td>
+<td style="text-align:right;">
+-0.97
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dis
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+3.80
+</td>
+<td style="text-align:right;">
+2.11
+</td>
+<td style="text-align:right;">
+0.09
+</td>
+<td style="text-align:right;">
+3.09
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:right;">
+0.49
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rad
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+9.55
+</td>
+<td style="text-align:right;">
+8.71
+</td>
+<td style="text-align:right;">
+0.39
+</td>
+<td style="text-align:right;">
+20.00
+</td>
+<td style="text-align:right;">
+1.00
+</td>
+<td style="text-align:right;">
+-0.87
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tax
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+408.24
+</td>
+<td style="text-align:right;">
+168.54
+</td>
+<td style="text-align:right;">
+7.49
+</td>
+<td style="text-align:right;">
+387.00
+</td>
+<td style="text-align:right;">
+0.67
+</td>
+<td style="text-align:right;">
+-1.14
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ptratio
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+18.46
+</td>
+<td style="text-align:right;">
+2.16
+</td>
+<td style="text-align:right;">
+0.10
+</td>
+<td style="text-align:right;">
+2.80
+</td>
+<td style="text-align:right;">
+-0.80
+</td>
+<td style="text-align:right;">
+-0.29
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+356.67
+</td>
+<td style="text-align:right;">
+91.29
+</td>
+<td style="text-align:right;">
+4.06
+</td>
+<td style="text-align:right;">
+20.85
+</td>
+<td style="text-align:right;">
+-2.89
+</td>
+<td style="text-align:right;">
+7.23
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lstat
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+12.65
+</td>
+<td style="text-align:right;">
+7.14
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+<td style="text-align:right;">
+10.01
+</td>
+<td style="text-align:right;">
+0.91
+</td>
+<td style="text-align:right;">
+0.49
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+medv
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+22.53
+</td>
+<td style="text-align:right;">
+9.20
+</td>
+<td style="text-align:right;">
+0.41
+</td>
+<td style="text-align:right;">
+7.98
+</td>
+<td style="text-align:right;">
+1.11
+</td>
+<td style="text-align:right;">
+1.50
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>Boston %&gt;% 
+  describe() %&gt;%
+  select(variable, p00:p100) %&gt;% 
+  kbl(digits = 2) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="text-align:left;">
+variable
+</th>
+<th style="text-align:right;">
+p00
+</th>
+<th style="text-align:right;">
+p01
+</th>
+<th style="text-align:right;">
+p05
+</th>
+<th style="text-align:right;">
+p10
+</th>
+<th style="text-align:right;">
+p20
+</th>
+<th style="text-align:right;">
+p25
+</th>
+<th style="text-align:right;">
+p30
+</th>
+<th style="text-align:right;">
+p40
+</th>
+<th style="text-align:right;">
+p50
+</th>
+<th style="text-align:right;">
+p60
+</th>
+<th style="text-align:right;">
+p70
+</th>
+<th style="text-align:right;">
+p75
+</th>
+<th style="text-align:right;">
+p80
+</th>
+<th style="text-align:right;">
+p90
+</th>
+<th style="text-align:right;">
+p95
+</th>
+<th style="text-align:right;">
+p99
+</th>
+<th style="text-align:right;">
+p100
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+crim
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:right;">
+0.06
+</td>
+<td style="text-align:right;">
+0.08
+</td>
+<td style="text-align:right;">
+0.10
+</td>
+<td style="text-align:right;">
+0.15
+</td>
+<td style="text-align:right;">
+0.26
+</td>
+<td style="text-align:right;">
+0.55
+</td>
+<td style="text-align:right;">
+1.73
+</td>
+<td style="text-align:right;">
+3.68
+</td>
+<td style="text-align:right;">
+5.58
+</td>
+<td style="text-align:right;">
+10.75
+</td>
+<td style="text-align:right;">
+15.79
+</td>
+<td style="text-align:right;">
+41.37
+</td>
+<td style="text-align:right;">
+88.98
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+zn
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+12.50
+</td>
+<td style="text-align:right;">
+20.00
+</td>
+<td style="text-align:right;">
+42.50
+</td>
+<td style="text-align:right;">
+80.00
+</td>
+<td style="text-align:right;">
+90.00
+</td>
+<td style="text-align:right;">
+100.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+indus
+</td>
+<td style="text-align:right;">
+0.46
+</td>
+<td style="text-align:right;">
+1.25
+</td>
+<td style="text-align:right;">
+2.18
+</td>
+<td style="text-align:right;">
+2.91
+</td>
+<td style="text-align:right;">
+4.39
+</td>
+<td style="text-align:right;">
+5.19
+</td>
+<td style="text-align:right;">
+5.96
+</td>
+<td style="text-align:right;">
+7.38
+</td>
+<td style="text-align:right;">
+9.69
+</td>
+<td style="text-align:right;">
+12.83
+</td>
+<td style="text-align:right;">
+18.10
+</td>
+<td style="text-align:right;">
+18.10
+</td>
+<td style="text-align:right;">
+18.10
+</td>
+<td style="text-align:right;">
+19.58
+</td>
+<td style="text-align:right;">
+21.89
+</td>
+<td style="text-align:right;">
+25.65
+</td>
+<td style="text-align:right;">
+27.74
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nox
+</td>
+<td style="text-align:right;">
+0.38
+</td>
+<td style="text-align:right;">
+0.40
+</td>
+<td style="text-align:right;">
+0.41
+</td>
+<td style="text-align:right;">
+0.43
+</td>
+<td style="text-align:right;">
+0.44
+</td>
+<td style="text-align:right;">
+0.45
+</td>
+<td style="text-align:right;">
+0.47
+</td>
+<td style="text-align:right;">
+0.51
+</td>
+<td style="text-align:right;">
+0.54
+</td>
+<td style="text-align:right;">
+0.58
+</td>
+<td style="text-align:right;">
+0.60
+</td>
+<td style="text-align:right;">
+0.62
+</td>
+<td style="text-align:right;">
+0.67
+</td>
+<td style="text-align:right;">
+0.71
+</td>
+<td style="text-align:right;">
+0.74
+</td>
+<td style="text-align:right;">
+0.87
+</td>
+<td style="text-align:right;">
+0.87
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rm
+</td>
+<td style="text-align:right;">
+3.56
+</td>
+<td style="text-align:right;">
+4.52
+</td>
+<td style="text-align:right;">
+5.31
+</td>
+<td style="text-align:right;">
+5.59
+</td>
+<td style="text-align:right;">
+5.84
+</td>
+<td style="text-align:right;">
+5.89
+</td>
+<td style="text-align:right;">
+5.95
+</td>
+<td style="text-align:right;">
+6.09
+</td>
+<td style="text-align:right;">
+6.21
+</td>
+<td style="text-align:right;">
+6.38
+</td>
+<td style="text-align:right;">
+6.50
+</td>
+<td style="text-align:right;">
+6.62
+</td>
+<td style="text-align:right;">
+6.75
+</td>
+<td style="text-align:right;">
+7.15
+</td>
+<td style="text-align:right;">
+7.59
+</td>
+<td style="text-align:right;">
+8.33
+</td>
+<td style="text-align:right;">
+8.78
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age
+</td>
+<td style="text-align:right;">
+2.90
+</td>
+<td style="text-align:right;">
+6.61
+</td>
+<td style="text-align:right;">
+17.72
+</td>
+<td style="text-align:right;">
+26.95
+</td>
+<td style="text-align:right;">
+37.80
+</td>
+<td style="text-align:right;">
+45.02
+</td>
+<td style="text-align:right;">
+52.40
+</td>
+<td style="text-align:right;">
+65.40
+</td>
+<td style="text-align:right;">
+77.50
+</td>
+<td style="text-align:right;">
+85.90
+</td>
+<td style="text-align:right;">
+91.80
+</td>
+<td style="text-align:right;">
+94.07
+</td>
+<td style="text-align:right;">
+95.60
+</td>
+<td style="text-align:right;">
+98.80
+</td>
+<td style="text-align:right;">
+100.00
+</td>
+<td style="text-align:right;">
+100.00
+</td>
+<td style="text-align:right;">
+100.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dis
+</td>
+<td style="text-align:right;">
+1.13
+</td>
+<td style="text-align:right;">
+1.21
+</td>
+<td style="text-align:right;">
+1.46
+</td>
+<td style="text-align:right;">
+1.63
+</td>
+<td style="text-align:right;">
+1.95
+</td>
+<td style="text-align:right;">
+2.10
+</td>
+<td style="text-align:right;">
+2.26
+</td>
+<td style="text-align:right;">
+2.64
+</td>
+<td style="text-align:right;">
+3.21
+</td>
+<td style="text-align:right;">
+3.88
+</td>
+<td style="text-align:right;">
+4.54
+</td>
+<td style="text-align:right;">
+5.19
+</td>
+<td style="text-align:right;">
+5.62
+</td>
+<td style="text-align:right;">
+6.82
+</td>
+<td style="text-align:right;">
+7.83
+</td>
+<td style="text-align:right;">
+9.22
+</td>
+<td style="text-align:right;">
+12.13
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rad
+</td>
+<td style="text-align:right;">
+1.00
+</td>
+<td style="text-align:right;">
+1.00
+</td>
+<td style="text-align:right;">
+2.00
+</td>
+<td style="text-align:right;">
+3.00
+</td>
+<td style="text-align:right;">
+4.00
+</td>
+<td style="text-align:right;">
+4.00
+</td>
+<td style="text-align:right;">
+4.00
+</td>
+<td style="text-align:right;">
+5.00
+</td>
+<td style="text-align:right;">
+5.00
+</td>
+<td style="text-align:right;">
+5.00
+</td>
+<td style="text-align:right;">
+8.00
+</td>
+<td style="text-align:right;">
+24.00
+</td>
+<td style="text-align:right;">
+24.00
+</td>
+<td style="text-align:right;">
+24.00
+</td>
+<td style="text-align:right;">
+24.00
+</td>
+<td style="text-align:right;">
+24.00
+</td>
+<td style="text-align:right;">
+24.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tax
+</td>
+<td style="text-align:right;">
+187.00
+</td>
+<td style="text-align:right;">
+188.00
+</td>
+<td style="text-align:right;">
+222.00
+</td>
+<td style="text-align:right;">
+233.00
+</td>
+<td style="text-align:right;">
+273.00
+</td>
+<td style="text-align:right;">
+279.00
+</td>
+<td style="text-align:right;">
+289.00
+</td>
+<td style="text-align:right;">
+307.00
+</td>
+<td style="text-align:right;">
+330.00
+</td>
+<td style="text-align:right;">
+398.00
+</td>
+<td style="text-align:right;">
+437.00
+</td>
+<td style="text-align:right;">
+666.00
+</td>
+<td style="text-align:right;">
+666.00
+</td>
+<td style="text-align:right;">
+666.00
+</td>
+<td style="text-align:right;">
+666.00
+</td>
+<td style="text-align:right;">
+666.00
+</td>
+<td style="text-align:right;">
+711.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ptratio
+</td>
+<td style="text-align:right;">
+12.60
+</td>
+<td style="text-align:right;">
+13.00
+</td>
+<td style="text-align:right;">
+14.70
+</td>
+<td style="text-align:right;">
+14.75
+</td>
+<td style="text-align:right;">
+16.60
+</td>
+<td style="text-align:right;">
+17.40
+</td>
+<td style="text-align:right;">
+17.80
+</td>
+<td style="text-align:right;">
+18.40
+</td>
+<td style="text-align:right;">
+19.05
+</td>
+<td style="text-align:right;">
+19.70
+</td>
+<td style="text-align:right;">
+20.20
+</td>
+<td style="text-align:right;">
+20.20
+</td>
+<td style="text-align:right;">
+20.20
+</td>
+<td style="text-align:right;">
+20.90
+</td>
+<td style="text-align:right;">
+21.00
+</td>
+<td style="text-align:right;">
+21.20
+</td>
+<td style="text-align:right;">
+22.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+<td style="text-align:right;">
+6.73
+</td>
+<td style="text-align:right;">
+84.59
+</td>
+<td style="text-align:right;">
+290.27
+</td>
+<td style="text-align:right;">
+364.31
+</td>
+<td style="text-align:right;">
+375.38
+</td>
+<td style="text-align:right;">
+378.66
+</td>
+<td style="text-align:right;">
+387.97
+</td>
+<td style="text-align:right;">
+391.44
+</td>
+<td style="text-align:right;">
+393.53
+</td>
+<td style="text-align:right;">
+395.47
+</td>
+<td style="text-align:right;">
+396.22
+</td>
+<td style="text-align:right;">
+396.90
+</td>
+<td style="text-align:right;">
+396.90
+</td>
+<td style="text-align:right;">
+396.90
+</td>
+<td style="text-align:right;">
+396.90
+</td>
+<td style="text-align:right;">
+396.90
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lstat
+</td>
+<td style="text-align:right;">
+1.73
+</td>
+<td style="text-align:right;">
+2.88
+</td>
+<td style="text-align:right;">
+3.71
+</td>
+<td style="text-align:right;">
+4.68
+</td>
+<td style="text-align:right;">
+6.29
+</td>
+<td style="text-align:right;">
+6.95
+</td>
+<td style="text-align:right;">
+7.77
+</td>
+<td style="text-align:right;">
+9.53
+</td>
+<td style="text-align:right;">
+11.36
+</td>
+<td style="text-align:right;">
+13.33
+</td>
+<td style="text-align:right;">
+15.62
+</td>
+<td style="text-align:right;">
+16.96
+</td>
+<td style="text-align:right;">
+18.06
+</td>
+<td style="text-align:right;">
+23.04
+</td>
+<td style="text-align:right;">
+26.81
+</td>
+<td style="text-align:right;">
+33.92
+</td>
+<td style="text-align:right;">
+37.97
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+medv
+</td>
+<td style="text-align:right;">
+5.00
+</td>
+<td style="text-align:right;">
+7.01
+</td>
+<td style="text-align:right;">
+10.20
+</td>
+<td style="text-align:right;">
+12.75
+</td>
+<td style="text-align:right;">
+15.30
+</td>
+<td style="text-align:right;">
+17.02
+</td>
+<td style="text-align:right;">
+18.20
+</td>
+<td style="text-align:right;">
+19.70
+</td>
+<td style="text-align:right;">
+21.20
+</td>
+<td style="text-align:right;">
+22.70
+</td>
+<td style="text-align:right;">
+24.15
+</td>
+<td style="text-align:right;">
+25.00
+</td>
+<td style="text-align:right;">
+28.20
+</td>
+<td style="text-align:right;">
+34.80
+</td>
+<td style="text-align:right;">
+43.40
+</td>
+<td style="text-align:right;">
+50.00
+</td>
+<td style="text-align:right;">
+50.00
+</td>
+</tr>
+</tbody>
+</table>
+<div id="análisis-de-variación" class="section level2">
+<h2><span class="header-section-number">4.1</span> Análisis de variación</h2>
+<p>Como primer elemento destacable, estos datos no continene valores ausentes en ninguna de las variables.</p>
+<p>Podemos centrarnos en describir con más detalles algunas distribuciones. Esto nuevamente es un EJEMPLO dependiendo de las variables que tengamos y de qué observemos. En general, caracterizar la variable dependiente suele ser una buena idea. Visualizamos la distribución y densidad del precio mediano de las viviendas. La curva negra representa la densidad. Vemos que el valor medio del precio de la vivienda está sesgado a la derecha. Es decir, observamos precios muy altos con una frecuencia mayor de la esperada en una distribución simétrica donde existiría la misma proporción por encima y debajo de la media.</p>
+<pre class="r"><code>Boston %&gt;%  ggplot(aes(x=medv)) + geom_histogram(aes(y=..density..))+ geom_density() + ggtitle(&quot;Distribución del Precio&quot;) + xlab(&quot;Precio de las casas&quot;) + ylab(&quot;Densidad&quot;)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/graf-precio-1.png" alt="Figura 1. Distribución del precio de la vivienda" width="672" />
+<p class="caption">
+Figura 1. Distribución del precio de la vivienda
+</p>
+</div>
+<p>Dada esta asimetría, quizás debamos considerar modelizar posteriormente esta variable transformada en logaritmos. La razón: se aprecia un comportamiento que puede modelizarse mejor de forma no lineal. También se puede nota una acumulación de valores en 50 mil dólares (se puede observar en los resultados de <code>describe()</code> que esa acumulación NO es producto de la discretización del gráfico sino de que ese valor se repite varias veces).</p>
+<p>También podemos representar gráficamente o en un tabla la única variable categórica que tenemos.</p>
+<pre class="r"><code>Boston %&gt;%  count(chas) %&gt;% 
+  mutate(freq=n/sum(n)) %&gt;% 
+  kbl(col.names=c(&quot;Casa cercana al río&quot;,&quot;Número de casos&quot;, &quot;Frecuencia&quot;),
+                  caption = &quot;Tabla 1. Distribución de Casas según cercanía al río&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Tabla 1. Distribución de Casas según cercanía al río
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Casa cercana al río
+</th>
+<th style="text-align:right;">
+Número de casos
+</th>
+<th style="text-align:right;">
+Frecuencia
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+471
+</td>
+<td style="text-align:right;">
+0.93083
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:right;">
+0.06917
+</td>
+</tr>
+</tbody>
+</table>
+<p>En el caso de variables binarias las podemos representar de varias maneras: como una distribución o con una sola barra (NOTA: los gráficos siguientes son redundantes en esta caso, con uno de ellos sería más que suficiente)</p>
+<pre class="r"><code>Boston %&gt;%  ggplot() + geom_bar(aes(x=chas)) +  xlab(&quot;Zona cercana al río&quot;) +ylab(&quot;Número de casos&quot;)
+
+Boston %&gt;%  ggplot() + geom_bar(aes(x=&quot;&quot;,fill=chas)) + labs(fill=&quot;Zona cercana al río&quot;) +ylab(&quot;Número de casos&quot;)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/graf-rio-1.png" alt="Figura 2. Distribución de la cercanía al río" width="50%" /><img src="Proyect01_files/figure-html/graf-rio-2.png" alt="Figura 2. Distribución de la cercanía al río" width="50%" />
+<p class="caption">
+Figura 2. Distribución de la cercanía al río
+</p>
+</div>
+<p>También podemos mostrar algunas otras características interesantes mediante gráficos y/o tablas de estadísticos descriptivos. Algunas variables como el número de habitaciones tienen distribuciones bastante simétricas. Mientras que otras, como la edad o el porcentaje de población desfavorecida muestran claras asimetrías: hay una alta concentración de casas “viejas” y de zonas no desfavorecidas. NOTA: Recordad que habría que probar varios anchos de intervalos (<em>binwidth</em>) para asegurarnos de entender la forma de la distribución. También hay que asegurarse de que los nombres de los gráficos y de los ejes son suficientemente descriptivos (quizás no es el caso en algunos de los que presento aquí).</p>
+<pre class="r"><code>Boston %&gt;%  ggplot(aes(x=age)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Edad&quot;) + ylab(&quot;Densidad&quot;)
+
+Boston %&gt;%  ggplot(aes(x=lstat)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Porcentaje de población desfavorecida&quot;) + ylab(&quot;Densidad&quot;)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/graf-varias-1.png" alt="Figura 3. Distribuciones" width="50%" /><img src="Proyect01_files/figure-html/graf-varias-2.png" alt="Figura 3. Distribuciones" width="50%" />
+<p class="caption">
+Figura 3. Distribuciones
+</p>
+</div>
+<p>El caso de la distancia a los centros de empleo es similar a las dos anteriores: una gran concentración en zonas bien conectadas, aunque una cola de zonas alejadas. Se omite por simplicidad: no hay que mostrar gráficos o tablas de cada variable ni comentar necesariamente las características de la distribución de todas, solo de aquellas con rasgos interesante o relevantes.</p>
+<p>Algunas variables tienen distribuciones con características poco reseñables: unas con valores distribuidos de forma relativamente homogénea, otras dispersas, con concentraciones en valores aislados en medio o en los extremos de la distribución, pero no aportan mucho información (se podrían omitir). En este caso, quizás se podría notar una concentración de zonas con altos impuestos, muy diferenciadas del resto.</p>
+<pre class="r"><code>Boston %&gt;%  ggplot(aes(x=nox)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Concentración de óxidos nítricos&quot;) + ylab(&quot;Densidad&quot;)
+
+Boston %&gt;%  ggplot(aes(x=ptratio)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Ratio de alumnos por profesor&quot;) + ylab(&quot;Densidad&quot;)
+
+Boston %&gt;%  ggplot(aes(x=tax)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Impuesto de la propiedad&quot;) + ylab(&quot;Densidad&quot;)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/graf-varias2-1.png" alt="Figura 4. Distribuciones" width="33.33%" /><img src="Proyect01_files/figure-html/graf-varias2-2.png" alt="Figura 4. Distribuciones" width="33.33%" /><img src="Proyect01_files/figure-html/graf-varias2-3.png" alt="Figura 4. Distribuciones" width="33.33%" />
+<p class="caption">
+Figura 4. Distribuciones
+</p>
+</div>
+<p>Algo más interesantes son algunas variables que muestran polaridad en sus valores o una excesiva acumulación en algunos. Por ejemplo, la criminalidad y el porcentaje de población de color tienen distribuciones muy asimétricas y, en el segundo caso, persiste incluso tras transoformar en logaritmos.</p>
+<pre class="r"><code>Boston %&gt;%  ggplot(aes(x=crim)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Criminalidad&quot;) + ylab(&quot;Densidad&quot;)
+Boston %&gt;%  ggplot(aes(x=crim)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Criminalidad&quot;) + ylab(&quot;Densidad&quot;) + scale_x_log10()</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/graf-varias3-1.png" alt="Figura 5. Distribuciones" width="50%" /><img src="Proyect01_files/figure-html/graf-varias3-2.png" alt="Figura 5. Distribuciones" width="50%" />
+<p class="caption">
+Figura 5. Distribuciones
+</p>
+</div>
+<pre class="r"><code>Boston %&gt;%  ggplot(aes(x=b)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Población de color&quot;) + ylab(&quot;Densidad&quot;) 
+Boston %&gt;%  ggplot(aes(x=b)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Población de color&quot;) + ylab(&quot;Densidad&quot;) + scale_x_log10()</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/graf-varias4-1.png" alt="Figura 6. Distribuciones" width="50%" /><img src="Proyect01_files/figure-html/graf-varias4-2.png" alt="Figura 6. Distribuciones" width="50%" />
+<p class="caption">
+Figura 6. Distribuciones
+</p>
+</div>
+<p>Estas variables y algunas otras anteriores son candidatas a ser discretizadas. La criminalidad, por ejemplo, no solo muestra una concentración en unos pocos valores, sino que una vez transformada en logaritmos se aprecian dos grupos diferenciados, como también pasaba con los impuestos. En el caso de la ratio de profesor/alumno también unos valores con gran concentración de frecuencia y muy pocos por encima de este por lo que podrían agruparse juntos. En el caso de la población de color, vemos que a partir del percentil 75, los valores son prácticamente iguales y antes del percentil 10 son mucho menores que en el resto de la distribución. En estos casos de valores concentrados o infrecuentes, agrupar y discretizar es una buena opción porque es más fácil identificar el efecto medio sobre el precio de la vivienda de un rango de valores (ej., zonas de baja criminalidad frente a alta) que el efecto de incrementar en un punto la variables. Es decir, buscamos efectos no lineales debido a la distribución de la variable.</p>
+</div>
+<div id="análisis-de-covariación" class="section level2">
+<h2><span class="header-section-number">4.2</span> Análisis de covariación</h2>
+<p>Empezamos analizando la relación entre nuestra variable de interés y la única variable categórica que tenemos inicialmente, para lo que podríamos presentar alguna (NO todas) de las siguientes figuras</p>
+<pre class="r"><code>Boston %&gt;% ggplot(aes(y = medv, x = chas)) +  geom_boxplot() + ylab(&quot;Densidad&quot;) + xlab(&quot;Cerca del río&quot;) + ylab(&quot;Precio&quot;) 
+Boston %&gt;% ggplot(aes(x = medv)) + geom_density(mapping = aes(colour = chas)) + xlab(&quot;Precio&quot;) + ylab(&quot;Densidad&quot;)  + labs(color = &quot;Cerca del río&quot;)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/graf-precio-rio-1.png" alt="Figura 7a. Distribución del precio por cercanía al rio" width="50%" /><img src="Proyect01_files/figure-html/graf-precio-rio-2.png" alt="Figura 7a. Distribución del precio por cercanía al rio" width="50%" />
+<p class="caption">
+Figura 7a. Distribución del precio por cercanía al rio
+</p>
+</div>
+<pre class="r"><code>Boston %&gt;% ggplot(aes(x = medv)) + geom_density() + facet_wrap(~chas) + ylab(&quot;Densidad&quot;)  + xlab(&quot;Precio&quot;)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/graf-precio-riob-1.png" alt="Figura 7b. Distribución del precio, según cercanía al rio" width="672" />
+<p class="caption">
+Figura 7b. Distribución del precio, según cercanía al rio
+</p>
+</div>
+<p>Parece que las casa cercanas al río tienen un precio (ligeramente) superior, aunque la diferecia no es muy grande. Ambas distribuciones son asimétricas, aunque en el caso de casas cercanas al río la cola derecha no es tan larga. Mediante una regresión simple o calculando las medias podemos comprobar si existen diferencias:</p>
+<pre class="r"><code>lm(data = Boston, medv ~ chas) %&gt;% broom::tidy() %&gt;%  kbl(digits = 2, caption = &quot;Table 2a. Precio según cercanía al río&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 2a. Precio según cercanía al río
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+22.09
+</td>
+<td style="text-align:right;">
+0.42
+</td>
+<td style="text-align:right;">
+52.9
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+chasYes
+</td>
+<td style="text-align:right;">
+6.35
+</td>
+<td style="text-align:right;">
+1.59
+</td>
+<td style="text-align:right;">
+4.0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>Boston %&gt;% group_by(chas) %&gt;% describe(medv) %&gt;% select(variable:n, mean, se_mean) %&gt;%  kbl(digits = 2, caption = &quot;Tabla 2b. Precio según cercanía al río&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Tabla 2b. Precio según cercanía al río
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+variable
+</th>
+<th style="text-align:left;">
+chas
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+se_mean
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+medv
+</td>
+<td style="text-align:left;">
+No
+</td>
+<td style="text-align:right;">
+471
+</td>
+<td style="text-align:right;">
+22.09
+</td>
+<td style="text-align:right;">
+0.41
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+medv
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:right;">
+28.44
+</td>
+<td style="text-align:right;">
+2.00
+</td>
+</tr>
+</tbody>
+</table>
+<p>A continuación podemos a analizar rápidamente si las variables continuas están relacionadas con nuestra variable de interés, precio de la vivienda. Lo podemos hacer mediante distintos análisis de correlación, en una tabla (excesivamente larga) o visualmente.</p>
+<pre class="r"><code>Boston %&gt;% correlate() %&gt;% 
+  filter(as.integer(var1) &gt; as.integer(var2)) %&gt;% 
+  kbl(digits = 2, caption = &quot;Tabla 3. Correlaciones&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<pre class="r"><code>Boston %&gt;% plot_correlate() 
+
+Boston %&gt;% mutate(logmedv=log(medv)) %&gt;% select(-medv) %&gt;% plot_correlate() </code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/graf-correl-1.png" alt="Figura 8. Correlaciones entre variables continuas" width="50%" /><img src="Proyect01_files/figure-html/graf-correl-2.png" alt="Figura 8. Correlaciones entre variables continuas" width="50%" />
+<p class="caption">
+Figura 8. Correlaciones entre variables continuas
+</p>
+</div>
+<p>Hemos considerado la correlación tanto con el precio como con su logaritmo, dado lo discutido anteriormente. Sin embargo, apenas se aprecian diferencias.</p>
+<p>Vemos que existe una fuerte correlación positiva o negativa entre el precio y varias variables que intuitivamente consideraríamos como importartes. El número de habitaciones tiene la correlación positiva más fuerte con el valor medio del precio de la vivienda, mientras que el porcentaje de la población desfavorecida y el número de alumnos por docente tienen una correlación negativa fuerte. También es evidente que las zonas más industriales y la contaminación están fuertemente correlacionados positivamente entre sí, puesto que los niveles de óxido nítrico tienden a aumentar con el aumento de las industrias. También vemos que las zonas con más población desfavorecida son las más industriales y contaminadas, con casas más antiguas y de menos habitaciones y con escuelas con un mayor ratio de alumnos por profesor. Debemos recordar esto de cara a la especificación de los modelos de regresión lineal.</p>
+<p>Sin embargo, esto no considera posibles relaciones no lineales. Para ello vamos a representar varios gráficos de dispersión y un ajuste no lineal. Nuevamente, en vuestro trabajo no mostraréis necesariamente todos estos gráficos sino una selección después de haberlos vistos.</p>
+<pre class="r"><code>vars &lt;- c(&quot;crim&quot;, &quot;zn&quot;, &quot;indus&quot;, &quot;nox&quot;, &quot;rm&quot;, &quot;age&quot;, &quot;dis&quot;, &quot;rad&quot;, &quot;tax&quot;, &quot;ptratio&quot;, &quot;b&quot;, &quot;lstat&quot;)
+
+migraf &lt;- function(v) {
+  Boston %&gt;% 
+      ggplot(aes_string(x = v, y = &quot;medv&quot;)) +
+      geom_point() +  geom_smooth() +
+      labs(x = v, y = &quot;Precio de las casas ($1000s)&quot;) 
+}
+
+vars %&gt;% map(migraf)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/graf-disper-1.png" alt="Figura 9a. Gráficos de dispersión" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-2.png" alt="Figura 9a. Gráficos de dispersión" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-3.png" alt="Figura 9a. Gráficos de dispersión" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-4.png" alt="Figura 9a. Gráficos de dispersión" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-5.png" alt="Figura 9a. Gráficos de dispersión" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-6.png" alt="Figura 9a. Gráficos de dispersión" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-7.png" alt="Figura 9a. Gráficos de dispersión" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-8.png" alt="Figura 9a. Gráficos de dispersión" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-9.png" alt="Figura 9a. Gráficos de dispersión" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-10.png" alt="Figura 9a. Gráficos de dispersión" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-11.png" alt="Figura 9a. Gráficos de dispersión" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-12.png" alt="Figura 9a. Gráficos de dispersión" width="33.33%" />
+<p class="caption">
+Figura 9a. Gráficos de dispersión
+</p>
+</div>
+<pre class="r"><code>vars &lt;- c(&quot;crim&quot;, &quot;zn&quot;, &quot;indus&quot;, &quot;nox&quot;, &quot;rm&quot;, &quot;age&quot;, &quot;dis&quot;, &quot;rad&quot;, &quot;tax&quot;, &quot;ptratio&quot;, &quot;b&quot;, &quot;lstat&quot;)
+
+migraf &lt;- function(v) {
+  Boston %&gt;% 
+      ggplot(aes_string(x = v, y = &quot;medv&quot;)) +
+      geom_point() +  geom_smooth() +
+      labs(x = v, y = &quot;Precio de las casas ($1000s)&quot;)  +
+      scale_y_log10()
+}
+
+vars %&gt;% map(migraf)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/graf-disper-log-1.png" alt="Figura 9b. Gráficos de dispersión (en escala logaritmica)" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-log-2.png" alt="Figura 9b. Gráficos de dispersión (en escala logaritmica)" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-log-3.png" alt="Figura 9b. Gráficos de dispersión (en escala logaritmica)" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-log-4.png" alt="Figura 9b. Gráficos de dispersión (en escala logaritmica)" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-log-5.png" alt="Figura 9b. Gráficos de dispersión (en escala logaritmica)" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-log-6.png" alt="Figura 9b. Gráficos de dispersión (en escala logaritmica)" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-log-7.png" alt="Figura 9b. Gráficos de dispersión (en escala logaritmica)" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-log-8.png" alt="Figura 9b. Gráficos de dispersión (en escala logaritmica)" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-log-9.png" alt="Figura 9b. Gráficos de dispersión (en escala logaritmica)" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-log-10.png" alt="Figura 9b. Gráficos de dispersión (en escala logaritmica)" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-log-11.png" alt="Figura 9b. Gráficos de dispersión (en escala logaritmica)" width="33.33%" /><img src="Proyect01_files/figure-html/graf-disper-log-12.png" alt="Figura 9b. Gráficos de dispersión (en escala logaritmica)" width="33.33%" />
+<p class="caption">
+Figura 9b. Gráficos de dispersión (en escala logaritmica)
+</p>
+</div>
+<!--
+
+-->
+<p>En primer lugar, no se aprecian grandes diferencias entre el modelo con el precio sin transformar o en logaritmos. En segundo lugar, sí se aprecia cierta no linealidad en la relación con las variables de edad, número de habitaciones y porcentaje de población desfavorecida. En el resto de relaciones, no están tan claras por la acumulación de valores.</p>
+<p>Podemos probar discretizando algunas de las varialbes comentadas anteriormente. Por ejemplo, hacemos dos grupos de criminalidad; los umbrales para discretizar no tienen una justificación muy formal: se basan en lo que aproximadamente hemos visto.</p>
+<pre class="r"><code>  Boston %&gt;% 
+      mutate(crim.alta = cut(crim, breaks = c(0,1,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;) ) ) %&gt;% 
+      ggplot(aes(y = medv, x = crim.alta)) +  geom_boxplot() + ylab(&quot;Densidad&quot;) + xlab(&quot;Criminalidad alta&quot;) + ylab(&quot;Precio&quot;) </code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/graf-crim-1.png" alt="Figura 10. Gráficos Criminalidad Discreta" width="50%" />
+<p class="caption">
+Figura 10. Gráficos Criminalidad Discreta
+</p>
+</div>
+<pre class="r"><code>  Boston %&gt;% 
+      mutate(crim.alta = cut(crim, breaks = c(0,1,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;) ) ) %&gt;% 
+  lm(data = ., medv ~ crim.alta) %&gt;% tidy() %&gt;%  kbl(digits = 2, caption = &quot;Table 4. Precio según criminalidad&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 4. Precio según criminalidad
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+25.11
+</td>
+<td style="text-align:right;">
+0.47
+</td>
+<td style="text-align:right;">
+53.91
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+crim.altaAlta
+</td>
+<td style="text-align:right;">
+-7.50
+</td>
+<td style="text-align:right;">
+0.79
+</td>
+<td style="text-align:right;">
+-9.44
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p>Tanto el gráfico como la regresión apuntan a un efecto significativo de la criminalidad sobre los precios. En principio deberíamos probar con otros puntos de corte para discretizar, pero por simplicidad utilizaremos este obtenido a partir del análisis exploratorio.</p>
+<pre class="r"><code>Boston &lt;- Boston %&gt;% 
+            mutate(crim.alta = cut(crim, breaks = c(0,1,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;) ) )</code></pre>
+<p>Podemos proceder de manera similar con otras variables.</p>
+<pre class="r"><code>Boston &lt;- Boston %&gt;% 
+            mutate(dis.alta = cut(dis, breaks = c(0,3,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;) ) ) 
+
+Boston %&gt;% lm(data = ., medv ~ dis.alta) %&gt;% tidy() %&gt;%  kbl(digits = 2, caption = &quot;Table 5. Precio según distancia&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 5. Precio según distancia
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+19.73
+</td>
+<td style="text-align:right;">
+0.57
+</td>
+<td style="text-align:right;">
+34.69
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dis.altaAlta
+</td>
+<td style="text-align:right;">
+5.32
+</td>
+<td style="text-align:right;">
+0.78
+</td>
+<td style="text-align:right;">
+6.79
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>Boston &lt;- Boston %&gt;% 
+            mutate(rad.alta = cut(dis, breaks = c(0,10,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;) ) ) 
+
+Boston %&gt;% lm(data = ., medv ~ rad.alta) %&gt;% tidy() %&gt;%  kbl(digits = 2, caption = &quot;Table 6. Precio según accesibilidad&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 6. Precio según accesibilidad
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+22.53
+</td>
+<td style="text-align:right;">
+0.41
+</td>
+<td style="text-align:right;">
+54.79
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rad.altaAlta
+</td>
+<td style="text-align:right;">
+-0.21
+</td>
+<td style="text-align:right;">
+4.14
+</td>
+<td style="text-align:right;">
+-0.05
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>Boston &lt;- Boston %&gt;% 
+            mutate(tax.alta = cut(tax, breaks = c(0,350,500,Inf), labels = c(&quot;Baja&quot;,&quot;Media&quot;,&quot;Alta&quot;)) ) 
+
+Boston %&gt;% lm(data = ., medv ~ tax.alta) %&gt;% tidy() %&gt;%  kbl(digits = 2, caption = &quot;Table 7. Precio según impuestos&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 7. Precio según impuestos
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+25.88
+</td>
+<td style="text-align:right;">
+0.51
+</td>
+<td style="text-align:right;">
+51.16
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tax.altaMedia
+</td>
+<td style="text-align:right;">
+-3.68
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+-3.83
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tax.altaAlta
+</td>
+<td style="text-align:right;">
+-9.60
+</td>
+<td style="text-align:right;">
+0.87
+</td>
+<td style="text-align:right;">
+-11.06
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>Boston &lt;- Boston %&gt;% 
+            mutate(black.cat = cut(b, breaks = c(0,100, 395,Inf), labels = c(&quot;Baja&quot;,&quot;Media&quot;,&quot;Alta&quot;)) ) 
+
+Boston %&gt;% lm(data = ., medv ~ black.cat) %&gt;% tidy() %&gt;%  kbl(digits = 2, caption = &quot;Table 8. Precio según población de color&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 8. Precio según población de color
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+12.33
+</td>
+<td style="text-align:right;">
+1.58
+</td>
+<td style="text-align:right;">
+7.82
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+black.catMedia
+</td>
+<td style="text-align:right;">
+11.63
+</td>
+<td style="text-align:right;">
+1.65
+</td>
+<td style="text-align:right;">
+7.03
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+black.catAlta
+</td>
+<td style="text-align:right;">
+9.48
+</td>
+<td style="text-align:right;">
+1.72
+</td>
+<td style="text-align:right;">
+5.52
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>Boston &lt;- Boston %&gt;% 
+            mutate(black.alta = cut(b, breaks = c(0, 100,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;)) ) 
+
+Boston %&gt;% lm(data = ., medv ~ black.alta) %&gt;% tidy() %&gt;%  kbl(digits = 2, caption = &quot;Table 8b. Precio según población de color&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 8b. Precio según población de color
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+12.33
+</td>
+<td style="text-align:right;">
+1.59
+</td>
+<td style="text-align:right;">
+7.77
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+black.altaAlta
+</td>
+<td style="text-align:right;">
+10.87
+</td>
+<td style="text-align:right;">
+1.64
+</td>
+<td style="text-align:right;">
+6.64
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="modelos" class="section level1">
+<h1><span class="header-section-number">5</span> Modelos</h1>
+<div id="muestras-de-entrenamiento-y-prueba" class="section level2">
+<h2><span class="header-section-number">5.1</span> Muestras de entrenamiento y prueba</h2>
+<p>Particionamos los datos en una proporción de 8 a 2 como conjuntos de datos de entrenamiento y prueba.</p>
+<pre class="r"><code>set.seed(1)
+Boston_part &lt;- Boston %&gt;% initial_split(prop = .8)</code></pre>
+<!--
+## Modelos de regresión lineal
+
+Primero, probemos el modelo de regresión lineal generalizada con MEDV como variable dependiente y todas las variables restantes como variables independientes. Entrenamos el modelo con el conjunto de datos de formación. Para este modelo lineal, a continuación se muestran los coeficientes de todas las características y la intercepción. A continuación, utilizamos el modelo entrenado para predecir el resultado (MEDV) para el conjunto de datos de la prueba. Una buena métrica para probar la precisión del modelo es calcular la raíz cuadrada del error cuadrático medio.
+
+
+```r
+fit.lm <- lm(medv~.,data = Boston_part %>% training())
+summary(fit.lm)
+```
+
+
+```r
+pred.lm <- predict(fit.lm, newdata = Boston_part %>% testing())
+
+# Root-mean squared error 
+rmse.lm <- sqrt(sum((pred.lm - testing(Boston_part)$medv)^2)/
+                   length(testing(Boston_part)$medv))
+                   
+c(RMSE = rmse.lm, R2 = summary(fit.lm)$r.squared)
+```
+
+Notad que el $R^2$ también es una medida basada en los errores de predicción, pero (aquí) está calculada en la muestra de entrenamiento!
+
+También vimos que la variable MEDV estaba sesgada hacia la derecha. Usar una transformación logarítmica normalizaría la distribución de MEDV. Vemos que el modelo predice mejor.
+
+
+```r
+fit.lm1 <- lm(log(medv)~.,data = training(Boston_part))
+
+pred.lm1 <- predict(fit.lm1, newdata = testing(Boston_part))
+
+rmse.lm1 <- sqrt(sum((exp(pred.lm1) - testing(Boston_part)$medv)^2)/
+                   length(testing(Boston_part)$medv))
+                   
+c(RMSE = rmse.lm1, R2 = summary(fit.lm1)$r.squared)
+```
+
+
+Examinemos el valor-p calculado para cada característica del modelo lineal. Cualquier característica que no sea significativa (p<0.05) no está contribuyendo significativamente para el modelo, probablemente debido a la multicolinealidad entre otras características. Vemos que las características, ZN, INDUS y AGE no son significativas.
+
+
+
+```r
+summary(fit.lm1)
+```
+
+Basándonos en todas estas observaciones, ahora construimos un nuevo modelo lineal.
+
+
+```r
+fit.lm2 <- lm(formula = log(medv) ~ . , data = training(Boston_part) %>% select(-zn, -indus, -age))
+
+pred.lm2 <- predict(fit.lm2, newdata = testing(Boston_part))
+
+rmse.lm2 <- sqrt(sum((exp(pred.lm2) - testing(Boston_part)$medv)^2)/
+                   length(testing(Boston_part)$medv))
+
+c(RMSE = rmse.lm2, R2 = summary(fit.lm2)$r.squared)
+```
+
+Este modelo es apenas un poco menos acertado que el modelo anterior.
+
+## Árboles de regresión
+
+También podemos considerar modelos más flexibles (no restringidos a relaciones lineales) como la variante para variables continuas de los árboles de decisiones; estos se llaman árboles de regresión.
+
+
+```r
+library(rpart)  
+library(rpart.plot) 
+fit.tree <- rpart(log(medv)~., 
+                   data = training(Boston_part), method = "anova")
+
+rpart.plot(fit.tree)
+```
+
+Comprobando su bondad de ajuste mediante la raíz del error cuadrático medio podemos ver que su funcionamiento es inferior a nuestro modelo lineal preferido.
+
+
+```r
+pred.tree <- predict(fit.tree, testing(Boston_part))
+
+rmse.tree <- sqrt(sum(((pred.tree) - testing(Boston_part)$medv)^2)/
+                   length(testing(Boston_part)$medv))
+c(RMSE = rmse.tree)
+```
+
+Podrìamos considerar modelos de árboles de regresión más complejos o variantes más sofisticadas como "random forests".
+
+# Conclusión
+
+El objetivo de este informe era determinar los atributos del vecindario que mejor explicaban la variación en los precios de las viviendas. Se utilizaron varias técnicas estadísticas para eliminar los predictores y las observaciones superfluas. Al examinar el modelo final, se observa -de forma bastante razonable- que los precios de la vivienda son más altos en las zonas donde la delincuencia es menor y la proporción de alumnos por maestro es menor. Los precios de las casas también tienden a ser más altos cerca del río Charles, y las casas con más habitaciones son más caras. Este informe está interesado en los atributos del barrio de las casas, por lo que el número de habitaciones no es un predictor importante. Los factores más interesantes a considerar son los niveles de óxido de nitrógeno y la distancia a los principales centros de empleo. Por un lado, la gente querría vivir cerca de su lugar de trabajo. Sin embargo, es razonable sugerir que los niveles de contaminación son más altos a medida que uno se acerca a estos principales centros de empleo. Y lo que es más importante, cuando se habla de contaminación, no sólo son más altos los niveles de óxido de nitrógeno, sino también los niveles de contaminación acústica. El modelo de regresión que se implementó muestra que los niveles más altos de contaminación disminuyen los precios de la vivienda en mayor medida que la distancia a los centros de empleo. Esto sugiere que la gente preferiría vivir más lejos de su lugar de trabajo si esto significara menores niveles de contaminación, lo cual es un punto interesante a considerar. A modo de conclusión, es importante señalar que los datos para este informe se recopilaron hace varias décadas. En los años transcurridos desde entonces, no cabe duda de que los niveles de contaminación han aumentado y sería interesante examinar la forma en que esto afecta a los precios de las viviendas en Boston en la actualidad.
+
+# Apéndice A
+
+Como se ha comentado, nuestro conjunto de datos dispone de 506 observaciones y 14 variables. A continuación se presenta una breve descripción de cada variable:
+
+|Variable    |     Descripción
+|:-----------|:--------------------------------------------------------------------
+|    CRIM    |    tasa de criminalidad per cápita por ciudad
+|    ZN      |    proporción de terreno residencial dividido en 
+|            |       zonas para lotes de más de 25,000 pies cuadrados.
+|    INDUS   |    proporción de acres de negocios no comerciales por zona
+|    CHAS    |    variable "dummy"del río Charles 
+|            |       (1 si la zona limita con el río; si no, 0)
+|    NOX     |    concentración de óxidos nítricos (partes por 10 millones)
+|    RM      |    número medio de habitaciones por vivienda
+|    AGE     |    proporción de casas ocupadas por sus propietarios 
+|            |       construidas antes de 1940.
+|    DIS     |    distancia media ponderada a cinco centros de empleo de Boston
+|    RAD     |    índice de accesibilidad a carreteras radiales
+|    TAX     |    impuesto sobre el valor total de la propiedad 
+|            |       (por cada $10,000)
+|    PTRATIO |    número de alumnos por docente en los colegios de la zona ("town")
+|    B       |    1000(Bk - 0.63)^2 donde Bk es la proporción de población de color
+|            |        en la zona (0.63 es la media en la ciudad)
+|    LSTAT   |    porcentaje de población desfavorecida (bajo estatus social)
+|    MEDV    |    valor mediano de las viviendas ocupadas por sus propietarios 
+|            |       (en miles de dólares)
+
+
+
+-->
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
