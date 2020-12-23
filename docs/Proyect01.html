@@ -336,7 +336,14 @@ $(document).ready(function () {
 </ul></li>
 <li><a href="#modelos"><span class="toc-section-number">5</span> Modelos</a><ul>
 <li><a href="#muestras-de-entrenamiento-y-prueba"><span class="toc-section-number">5.1</span> Muestras de entrenamiento y prueba</a></li>
+<li><a href="#modelos-de-regresión-lineal"><span class="toc-section-number">5.2</span> Modelos de regresión lineal</a></li>
+<li><a href="#lasso"><span class="toc-section-number">5.3</span> LASSO</a></li>
+<li><a href="#knn"><span class="toc-section-number">5.4</span> kNN</a></li>
+<li><a href="#árboles-de-regresión"><span class="toc-section-number">5.5</span> Árboles de regresión</a></li>
+<li><a href="#random-forests"><span class="toc-section-number">5.6</span> Random Forests</a></li>
 </ul></li>
+<li><a href="#conclusión"><span class="toc-section-number">6</span> Conclusión</a></li>
+<li><a href="#apéndice-a"><span class="toc-section-number">7</span> Apéndice A</a></li>
 </ul>
 </div>
 
@@ -344,7 +351,7 @@ $(document).ready(function () {
 knitr::opts_chunk$set(eval = TRUE, echo = TRUE, 
                       warning = FALSE, message = FALSE,
                       results = &quot;hide&quot;, fig.show=&quot;hide&quot;)
-# se muestra y evalua el código,
+# se muestra y evalúa el código,
 # no se muestran mensajes, ni avisos (warnings)
 # no se muestran los resultados de código (tampoco gráficos)
 #     en los códigos que considere necesarios los mostraré
@@ -361,6 +368,8 @@ library(&quot;skimr&quot;)
 library(&quot;dlookr&quot;)
 library(&quot;broom&quot;)
 library(&quot;kableExtra&quot;)
+library(&quot;rpart.plot&quot;)
+library(&quot;vip&quot;)
 
 #fijo el directorio de trabajo
 #setwd(&quot;/home/albarran/Dropbox/MAD/00.TEC&quot;)</code></pre>
@@ -368,8 +377,8 @@ library(&quot;kableExtra&quot;)
 <h1><span class="header-section-number">1</span> Introducción</h1>
 <div id="comentario-general" class="section level2">
 <h2><span class="header-section-number">1.1</span> Comentario General</h2>
-<p>Este documento debe entenderse como <strong>un ejemplo</strong>, no <em>la</em> guía o <em>la</em> receta única de hacer las cosas. Cada conjunto de datos es diferente y requiere un tratamiento distinto. Con los mismos datos se pueden hacer distintos análisis. Cada uno puede realizar distintos tratamientos de los datos, distintos modelos (usar regresión lineal, árboles, etc), diferentes especificaciones (incluir distintas combinaciones de variables y transformadas de manera diferente), etc. Por eso existen “hackatones” o competiciones para ver quién predice mejor con los mismos datos: si existiera una receta, ganaría un ordenador.</p>
-<p>Además en este ejemplo no se entran en muchos detalles de las distintasa fases del trabajo: características de los datos, procedimientos, tablas con encabezados adecuados, gráficos con ejes correctamente nombrados, comentario de resultados, etc. Tampoco se pretende que vuestros trabajos entren en muchos detalles, pero sí algo más de lo que se discute aquí.</p>
+<p>Este documento debe entenderse como <strong>un ejemplo</strong>, no <em>la</em> guía o <em>la</em> receta única de hacer las cosas. Cada conjunto de datos es diferente y requiere un tratamiento distinto. Con los mismos datos se pueden hacer distintos análisis. Cada uno puede realizar distintos tratamientos de los datos, distintos modelos (usar regresión lineal, árboles, etc.), diferentes especificaciones (incluir distintas combinaciones de variables y transformadas de manera diferente), etc. Por eso existen “hackatones” o competiciones para ver quién predice mejor con los mismos datos: si existiera una receta, ganaría un ordenador.</p>
+<p>Además en este ejemplo no se entran en muchos detalles en algunas cuestiones de las fases del trabajo: características de los datos, procedimientos, tablas con encabezados adecuados, gráficos con ejes correctamente nombrados, comentario de resultados, etc. Tampoco se pretende que vuestros trabajos sean excesivamente detallados, pero sí algo más de lo que se discute aquí. Sin embargo, este ejemplo tiene probablemente muchos más gráficos y tablas de los que vosotros debéis reportar y se han probado muchas más cosas para ofrecer como ejemplo de los que vosotros tendréis que hacer.</p>
 <p>Por otro lado, he incluido la opción de que se muestre o se oculte el código de todo lo que he hecho. Esto es solo por cuestiones didácticas. No tenéis porque hacerlo igual y, de hecho, debéis pensar qué y cuándo queréis mostrar algo.</p>
 </div>
 <div id="introducción-y-objetivos" class="section level2">
@@ -382,31 +391,31 @@ library(&quot;kableExtra&quot;)
 <h1><span class="header-section-number">2</span> Datos</h1>
 <p>En este trabajo vamos a utilizar un conjunto de datos, “The Boston Housing Price”, derivados de la información recopilada por el Servicio de Censos de los Estados Unidos sobre las viviendas en el área de Boston (Massachusetts). Podemos encontrar algunos detalles adicionales sobre estos datos <a href="https://www.cs.toronto.edu/~delve/data/boston/bostonDetail.html">aquí</a>. Los datos pueden obtenerse desde esa misma página, pero por sencillez los leemos en formato de valores separados por comas (CSV) desde <a href="https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv">aquí</a>.</p>
 <pre class="r"><code>Boston &lt;- read_csv(&quot;https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv&quot;)</code></pre>
-<p>Los datos tienen 506 observaciones y 14 variables. (NOTA: esta información se ha incluido usando el código de R en línea “r dim(Boston)[1]” y “r dim(Boston)[2]”) y también se puede obtener con el siguiente código; NO está claro que queráis mostar este código.)</p>
+<p>Los datos tienen 506 observaciones y 14 variables. (NOTA: esta información se ha incluido usando el código de R en línea “r dim(Boston)[1]” y “r dim(Boston)[2]”) y también se puede obtener con el siguiente código; NO está claro que queráis mostrar este código.)</p>
 <pre class="r"><code>dim(Boston)</code></pre>
 <p>[1] 506 14</p>
-<p>Una descripción completa los atributos disponibles puede encontrarse en [Apéndice A]. Estos datos fueron originalmente utilizados en un estudio sobre el impacto de la contaminación del aire (utilizando las concentraciones de óxido de nitrógeno). En este trabajo, consideramos el efecto de otras características de la zona donde se encuentra la casa como la proximidad al río Charles, la distancia a los principales centros de empleo, la proporción de alumnos por maestro en las escuelas y los niveles de delincuencia. Nuestra variable de interés para predecir es el valor mediano del precio de la vivienda en mil dólares (denotado por MEDV). Notad que nos centramos en las viviendas ocupadas por sus propietarios, es decir, consideramos que el valor de las casas destinadas al alquiler sigue un proceso diferente para determinar su valor.</p>
+<p>Una descripción completa los atributos disponibles puede encontrarse en <a href="#apéndice-a">Apéndice A</a>. Estos datos fueron originalmente utilizados en un estudio sobre el impacto de la contaminación del aire (utilizando las concentraciones de óxido de nitrógeno). En este trabajo, consideramos el efecto de otras características de la zona donde se encuentra la casa como la proximidad al río Charles, la distancia a los principales centros de empleo, la calidad de las escuelas (medida por la el número de alumnos por maestro) y los niveles de delincuencia. Nuestra variable de interés para predecir es el valor mediano del precio de la vivienda en mil dólares (denotado por MEDV). Notad que nos centramos en las viviendas ocupadas por sus propietarios, es decir, consideramos que el valor de las casas destinadas al alquiler se determina según un proceso diferente.</p>
 </div>
 <div id="exploración-inicial" class="section level1">
 <h1><span class="header-section-number">3</span> Exploración Inicial</h1>
-<p>Debemos considerar si los datos están listos para trabajar o requieren algún tipo de limpieza, ordenación o transformación. En primer comprobamos, el tipo de datos de cada variable y comprobamos si es el adecuado. En este caso, todas las variables son numéricas, lo cual se corresponde con la información cuantitativa de la mayoría de ellos. La variable que nos dice si la zona de la casa está cerca del rio es una variable binaria, es decir, aporta información cualitativa. En este caso, no es crucial convertila en un factor (en los modelos y para otras cuestiones, convertimos los factores en un variables binarias). En otros casos, podemos necesitar convertir más variables con información cualitativa a factores o eliminar variables de tipo carácter o con información que no podamos procesar. NOTA: para esto habremos comprobado el tipo de cada variable, habremos mirado los valores y contrastado con la información que según su descripcion debería tener. Utilizaríamos un código como el siguiente, aunque probablemente NO queráis incluir en el documento ni lo uno ni lo otro.</p>
+<p>Debemos considerar si los datos están listos para trabajar o requieren algún tipo de limpieza, ordenación o transformación. En primer lugar, comprobamos si el tipo de datos de cada variable es el adecuado. En este caso, todas las variables son numéricas, lo cual se corresponde con la información cuantitativa de la mayoría de ellas. La variable que nos dice si la zona de la casa está cerca del río es una variable binaria, es decir, aporta información cualitativa. En este caso, no es crucial convertirla en un factor (en los modelos y para otras cuestiones, convertimos los factores en variables binarias). En otros casos, podemos necesitar convertir más variables con información cualitativa a factores o eliminar variables de tipo carácter o con información que no podamos procesar. NOTA: para esto habremos comprobado el tipo de cada variable, habremos mirado los valores y contrastado con la información que según su descripción debería tener. Utilizaríamos un código como el siguiente, aunque probablemente NO queráis incluir en el documento ni lo uno ni lo otro.</p>
 <pre class="r"><code>glimpse(Boston)</code></pre>
 <pre><code>## Rows: 506
 ## Columns: 14
-## $ crim    &lt;dbl&gt; 0.00632, 0.02731, 0.02729, 0.03237, 0.06905, 0.02985, 0.08829, 0.14455, 0.21124, 0.170…
-## $ zn      &lt;dbl&gt; 18.0, 0.0, 0.0, 0.0, 0.0, 0.0, 12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 0.0, 0.0, 0.0…
-## $ indus   &lt;dbl&gt; 2.31, 7.07, 7.07, 2.18, 2.18, 2.18, 7.87, 7.87, 7.87, 7.87, 7.87, 7.87, 7.87, 8.14, 8.…
-## $ chas    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-## $ nox     &lt;dbl&gt; 0.538, 0.469, 0.469, 0.458, 0.458, 0.458, 0.524, 0.524, 0.524, 0.524, 0.524, 0.524, 0.…
-## $ rm      &lt;dbl&gt; 6.575, 6.421, 7.185, 6.998, 7.147, 6.430, 6.012, 6.172, 5.631, 6.004, 6.377, 6.009, 5.…
-## $ age     &lt;dbl&gt; 65.2, 78.9, 61.1, 45.8, 54.2, 58.7, 66.6, 96.1, 100.0, 85.9, 94.3, 82.9, 39.0, 61.8, 8…
-## $ dis     &lt;dbl&gt; 4.0900, 4.9671, 4.9671, 6.0622, 6.0622, 6.0622, 5.5605, 5.9505, 6.0821, 6.5921, 6.3467…
-## $ rad     &lt;dbl&gt; 1, 2, 2, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,…
-## $ tax     &lt;dbl&gt; 296, 242, 242, 222, 222, 222, 311, 311, 311, 311, 311, 311, 311, 307, 307, 307, 307, 3…
-## $ ptratio &lt;dbl&gt; 15.3, 17.8, 17.8, 18.7, 18.7, 18.7, 15.2, 15.2, 15.2, 15.2, 15.2, 15.2, 15.2, 21.0, 21…
-## $ b       &lt;dbl&gt; 396.90, 396.90, 392.83, 394.63, 396.90, 394.12, 395.60, 396.90, 386.63, 386.71, 392.52…
-## $ lstat   &lt;dbl&gt; 4.98, 9.14, 4.03, 2.94, 5.33, 5.21, 12.43, 19.15, 29.93, 17.10, 20.45, 13.27, 15.71, 8…
-## $ medv    &lt;dbl&gt; 24.0, 21.6, 34.7, 33.4, 36.2, 28.7, 22.9, 27.1, 16.5, 18.9, 15.0, 18.9, 21.7, 20.4, 18…</code></pre>
+## $ crim    &lt;dbl&gt; 0.00632, 0.02731, 0.02729, 0.03237, 0.06905, 0.02985, 0.08829, 0.144…
+## $ zn      &lt;dbl&gt; 18.0, 0.0, 0.0, 0.0, 0.0, 0.0, 12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 1…
+## $ indus   &lt;dbl&gt; 2.31, 7.07, 7.07, 2.18, 2.18, 2.18, 7.87, 7.87, 7.87, 7.87, 7.87, 7.…
+## $ chas    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ nox     &lt;dbl&gt; 0.538, 0.469, 0.469, 0.458, 0.458, 0.458, 0.524, 0.524, 0.524, 0.524…
+## $ rm      &lt;dbl&gt; 6.575, 6.421, 7.185, 6.998, 7.147, 6.430, 6.012, 6.172, 5.631, 6.004…
+## $ age     &lt;dbl&gt; 65.2, 78.9, 61.1, 45.8, 54.2, 58.7, 66.6, 96.1, 100.0, 85.9, 94.3, 8…
+## $ dis     &lt;dbl&gt; 4.0900, 4.9671, 4.9671, 6.0622, 6.0622, 6.0622, 5.5605, 5.9505, 6.08…
+## $ rad     &lt;dbl&gt; 1, 2, 2, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,…
+## $ tax     &lt;dbl&gt; 296, 242, 242, 222, 222, 222, 311, 311, 311, 311, 311, 311, 311, 307…
+## $ ptratio &lt;dbl&gt; 15.3, 17.8, 17.8, 18.7, 18.7, 18.7, 15.2, 15.2, 15.2, 15.2, 15.2, 15…
+## $ b       &lt;dbl&gt; 396.90, 396.90, 392.83, 394.63, 396.90, 394.12, 395.60, 396.90, 386.…
+## $ lstat   &lt;dbl&gt; 4.98, 9.14, 4.03, 2.94, 5.33, 5.21, 12.43, 19.15, 29.93, 17.10, 20.4…
+## $ medv    &lt;dbl&gt; 24.0, 21.6, 34.7, 33.4, 36.2, 28.7, 22.9, 27.1, 16.5, 18.9, 15.0, 18…</code></pre>
 <pre class="r"><code>head(Boston) %&gt;% kbl() %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
 <table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
 <thead>
@@ -727,8 +736,8 @@ medv
 </div>
 <div id="análisis-exploratorio-y-visualización-de-los-datos" class="section level1">
 <h1><span class="header-section-number">4</span> Análisis Exploratorio y Visualización de los datos</h1>
-<p>La siguiente fase consiste en analizar la distribución de valores de cada variable (análisis de variación) y de las posibles relaciones entre ellas (análisis de covariación). Esto nos puede llevar a realizar limpieza adicional de los datos (en particular, relacionada con valores ausentes y puede que atípicos) o transformaciones de los datos (como tomar logaritmos o discretizar alguna variable). También podemos encontrar características de los datos que sean de interés por sí mismas como para especificar los modelos. Para este análisis nos podemos ayudar en librerías que realizan algunas de las tareas de forma automátizada. PERO recordad que NO queremos en general mostrar la salida directa de estos paquetes, sino que la utilizaremos para mostar aquello que consideremos más interesante.</p>
-<p>Por ejemplo, usando la libreria <code>skimr</code> podemos ver</p>
+<p>La siguiente fase consiste en analizar la distribución de valores de cada variable (análisis de variación) y las posibles relaciones entre ellas (análisis de covariación). Esto nos puede llevar a realizar limpieza adicional de los datos (en particular, relacionada con valores ausentes y puede que atípicos) o transformaciones de los datos (como tomar logaritmos o discretizar alguna variable). También podemos encontrar características de los datos que sean de interés por sí mismas como para especificar los modelos. Para este análisis nos podemos ayudar en librerías que realizan algunas de las tareas de forma automatizada. PERO recordad que NO queremos en general mostrar la salida directa de estos paquetes, sino que la utilizaremos para aprender nosotros y luego mostrar aquello que consideremos más interesante.</p>
+<p>Por ejemplo, usando la biblioteca <code>skimr</code> podemos ver</p>
 <pre class="r"><code>skim(Boston)</code></pre>
 <table style='width: auto;'
         class='table table-condensed'>
@@ -2572,7 +2581,7 @@ medv
 </table>
 <div id="análisis-de-variación" class="section level2">
 <h2><span class="header-section-number">4.1</span> Análisis de variación</h2>
-<p>Como primer elemento destacable, estos datos no continene valores ausentes en ninguna de las variables.</p>
+<p>Como primer elemento a destacar, estos datos no contiene valores ausentes en ninguna de las variables. En caso contrario, deberíamos identificar cuántas observaciones y qué variables están afectadas. Sabemos que podemos posponer la imputación de valores a una fase posterior (como un paso del pre-procesado antes de estimar un modelo), pero es conveniente tener una visión general y pensar si algunas observaciones probablemente serán descartadas (si tienen muchos valores ausentes y sobre todo afectan a la variable dependiente).</p>
 <p>Podemos centrarnos en describir con más detalles algunas distribuciones. Esto nuevamente es un EJEMPLO dependiendo de las variables que tengamos y de qué observemos. En general, caracterizar la variable dependiente suele ser una buena idea. Visualizamos la distribución y densidad del precio mediano de las viviendas. La curva negra representa la densidad. Vemos que el valor medio del precio de la vivienda está sesgado a la derecha. Es decir, observamos precios muy altos con una frecuencia mayor de la esperada en una distribución simétrica donde existiría la misma proporción por encima y debajo de la media.</p>
 <pre class="r"><code>Boston %&gt;%  ggplot(aes(x=medv)) + geom_histogram(aes(y=..density..))+ geom_density() + ggtitle(&quot;Distribución del Precio&quot;) + xlab(&quot;Precio de las casas&quot;) + ylab(&quot;Densidad&quot;)</code></pre>
 <div class="figure">
@@ -2581,8 +2590,8 @@ medv
 Figura 1. Distribución del precio de la vivienda
 </p>
 </div>
-<p>Dada esta asimetría, quizás debamos considerar modelizar posteriormente esta variable transformada en logaritmos. La razón: se aprecia un comportamiento que puede modelizarse mejor de forma no lineal. También se puede nota una acumulación de valores en 50 mil dólares (se puede observar en los resultados de <code>describe()</code> que esa acumulación NO es producto de la discretización del gráfico sino de que ese valor se repite varias veces).</p>
-<p>También podemos representar gráficamente o en un tabla la única variable categórica que tenemos.</p>
+<p>Dada esta asimetría, quizás debamos considerar modelizar posteriormente esta variable transformada en logaritmos. La razón: se aprecia un comportamiento que puede modelizarse mejor de forma no lineal. También se puede nota una acumulación de valores en 50 mil dólares (Se puede observar en los resultados de <code>describe()</code> que ese valor exacto se repite varias veces, NO es producto de la discretización del gráfico en la que se acumulan varios valores diferentes en un intervalo en torno a 50).</p>
+<p>También podemos representar gráficamente o en un tabla la única variable categórica que tenemos. La conclusión no es particularmente interesante: solo unas pocas zonas de la ciudad están cerca del río.</p>
 <pre class="r"><code>Boston %&gt;%  count(chas) %&gt;% 
   mutate(freq=n/sum(n)) %&gt;% 
   kbl(col.names=c(&quot;Casa cercana al río&quot;,&quot;Número de casos&quot;, &quot;Frecuencia&quot;),
@@ -2629,7 +2638,7 @@ Yes
 </tr>
 </tbody>
 </table>
-<p>En el caso de variables binarias las podemos representar de varias maneras: como una distribución o con una sola barra (NOTA: los gráficos siguientes son redundantes en esta caso, con uno de ellos sería más que suficiente)</p>
+<p>En el caso de variables binarias las podemos representar de varias maneras: como una distribución o con una sola barra (NOTA: los gráficos siguientes son redundantes en esta caso, con uno de ellos sería más que suficiente en caso de considerar relevante esta información.)</p>
 <pre class="r"><code>Boston %&gt;%  ggplot() + geom_bar(aes(x=chas)) +  xlab(&quot;Zona cercana al río&quot;) +ylab(&quot;Número de casos&quot;)
 
 Boston %&gt;%  ggplot() + geom_bar(aes(x=&quot;&quot;,fill=chas)) + labs(fill=&quot;Zona cercana al río&quot;) +ylab(&quot;Número de casos&quot;)</code></pre>
@@ -2639,7 +2648,7 @@ Boston %&gt;%  ggplot() + geom_bar(aes(x=&quot;&quot;,fill=chas)) + labs(fill=&q
 Figura 2. Distribución de la cercanía al río
 </p>
 </div>
-<p>También podemos mostrar algunas otras características interesantes mediante gráficos y/o tablas de estadísticos descriptivos. Algunas variables como el número de habitaciones tienen distribuciones bastante simétricas. Mientras que otras, como la edad o el porcentaje de población desfavorecida muestran claras asimetrías: hay una alta concentración de casas “viejas” y de zonas no desfavorecidas. NOTA: Recordad que habría que probar varios anchos de intervalos (<em>binwidth</em>) para asegurarnos de entender la forma de la distribución. También hay que asegurarse de que los nombres de los gráficos y de los ejes son suficientemente descriptivos (quizás no es el caso en algunos de los que presento aquí).</p>
+<p>También podemos mostrar algunas otras características interesantes mediante gráficos y/o tablas de estadísticos descriptivos. Algunas variables como el número de habitaciones tienen distribuciones bastante simétricas. Mientras que otras, como la edad o el porcentaje de población desfavorecida muestran claras asimetrías: hay una alta concentración de casas “viejas” y de zonas no desfavorecidas. NOTA: Recordad que habría que probar varios anchos de intervalos (<em>binwidth</em>) para asegurarnos de entender la forma de la distribución. También debéis poner nombres suficientemente descriptivos e informativos a los gráficos, los ejes, la leyenda, etc. (Quizás no es el caso en algunos de los que presento aquí).</p>
 <pre class="r"><code>Boston %&gt;%  ggplot(aes(x=age)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Edad&quot;) + ylab(&quot;Densidad&quot;)
 
 Boston %&gt;%  ggplot(aes(x=lstat)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Porcentaje de población desfavorecida&quot;) + ylab(&quot;Densidad&quot;)</code></pre>
@@ -2649,7 +2658,18 @@ Boston %&gt;%  ggplot(aes(x=lstat)) + geom_histogram(aes(y=..density..))+ geom_d
 Figura 3. Distribuciones
 </p>
 </div>
-<p>El caso de la distancia a los centros de empleo es similar a las dos anteriores: una gran concentración en zonas bien conectadas, aunque una cola de zonas alejadas. Se omite por simplicidad: no hay que mostrar gráficos o tablas de cada variable ni comentar necesariamente las características de la distribución de todas, solo de aquellas con rasgos interesante o relevantes.</p>
+<p>Notad que en la variable edad nuevamente hay una concentración de valores en 100; en la salida <code>describe()</code> mostrada anteriormente, se aprecia mejor que ese valor exacto está en los datos originales, no resulta de que se agrupen valores en el gráfico.</p>
+<p>El caso de la distancia a los centros de empleo es similar a las dos anteriores: una gran concentración en zonas bien conectadas, aunque una cola de zonas alejadas. Se podría omitir: no hay que mostrar gráficos o tablas de cada variable ni comentar necesariamente las características de la distribución de todas, solo de aquellas con rasgos interesante o relevantes.</p>
+<p>Otra variable en principio relacionada, el índice de accesibilidad, muestra una distribución “poco continua”: además de un cúmulo de valores en la cola derecha, hay muchos huecos vacíos. Si probáis un transformación logarítmica, veréis que no cambia en esencia. Las variables con este forma en su distribución suelen ser candidatas a ser discretizadas.</p>
+<pre class="r"><code>Boston %&gt;%  ggplot(aes(x=dis)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Distancia a centro de trabajo&quot;) + ylab(&quot;Densidad&quot;)
+
+Boston %&gt;%  ggplot(aes(x=rad)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Índice de accesibilidad&quot;) + ylab(&quot;Densidad&quot;)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/graf-dists-1.png" alt="Figura 4. Distribuciones" width="50%" /><img src="Proyect01_files/figure-html/graf-dists-2.png" alt="Figura 4. Distribuciones" width="50%" />
+<p class="caption">
+Figura 4. Distribuciones
+</p>
+</div>
 <p>Algunas variables tienen distribuciones con características poco reseñables: unas con valores distribuidos de forma relativamente homogénea, otras dispersas, con concentraciones en valores aislados en medio o en los extremos de la distribución, pero no aportan mucho información (se podrían omitir). En este caso, quizás se podría notar una concentración de zonas con altos impuestos, muy diferenciadas del resto.</p>
 <pre class="r"><code>Boston %&gt;%  ggplot(aes(x=nox)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Concentración de óxidos nítricos&quot;) + ylab(&quot;Densidad&quot;)
 
@@ -2657,29 +2677,29 @@ Boston %&gt;%  ggplot(aes(x=ptratio)) + geom_histogram(aes(y=..density..))+ geom
 
 Boston %&gt;%  ggplot(aes(x=tax)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Impuesto de la propiedad&quot;) + ylab(&quot;Densidad&quot;)</code></pre>
 <div class="figure">
-<img src="Proyect01_files/figure-html/graf-varias2-1.png" alt="Figura 4. Distribuciones" width="33.33%" /><img src="Proyect01_files/figure-html/graf-varias2-2.png" alt="Figura 4. Distribuciones" width="33.33%" /><img src="Proyect01_files/figure-html/graf-varias2-3.png" alt="Figura 4. Distribuciones" width="33.33%" />
+<img src="Proyect01_files/figure-html/graf-varias2-1.png" alt="Figura 5. Distribuciones" width="33.33%" /><img src="Proyect01_files/figure-html/graf-varias2-2.png" alt="Figura 5. Distribuciones" width="33.33%" /><img src="Proyect01_files/figure-html/graf-varias2-3.png" alt="Figura 5. Distribuciones" width="33.33%" />
 <p class="caption">
-Figura 4. Distribuciones
+Figura 5. Distribuciones
 </p>
 </div>
-<p>Algo más interesantes son algunas variables que muestran polaridad en sus valores o una excesiva acumulación en algunos. Por ejemplo, la criminalidad y el porcentaje de población de color tienen distribuciones muy asimétricas y, en el segundo caso, persiste incluso tras transoformar en logaritmos.</p>
+<p>Algo más interesantes son algunas variables que muestran polaridad en sus valores o una excesiva acumulación en algunos. Por ejemplo, la criminalidad y el porcentaje de población de color tienen distribuciones muy asimétricas y, en el segundo caso, persiste incluso tras transformar en logaritmos.</p>
 <pre class="r"><code>Boston %&gt;%  ggplot(aes(x=crim)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Criminalidad&quot;) + ylab(&quot;Densidad&quot;)
 Boston %&gt;%  ggplot(aes(x=crim)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Criminalidad&quot;) + ylab(&quot;Densidad&quot;) + scale_x_log10()</code></pre>
 <div class="figure">
-<img src="Proyect01_files/figure-html/graf-varias3-1.png" alt="Figura 5. Distribuciones" width="50%" /><img src="Proyect01_files/figure-html/graf-varias3-2.png" alt="Figura 5. Distribuciones" width="50%" />
+<img src="Proyect01_files/figure-html/graf-varias3-1.png" alt="Figura 6a. Distribuciones" width="50%" /><img src="Proyect01_files/figure-html/graf-varias3-2.png" alt="Figura 6a. Distribuciones" width="50%" />
 <p class="caption">
-Figura 5. Distribuciones
+Figura 6a. Distribuciones
 </p>
 </div>
 <pre class="r"><code>Boston %&gt;%  ggplot(aes(x=b)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Población de color&quot;) + ylab(&quot;Densidad&quot;) 
 Boston %&gt;%  ggplot(aes(x=b)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab(&quot;Población de color&quot;) + ylab(&quot;Densidad&quot;) + scale_x_log10()</code></pre>
 <div class="figure">
-<img src="Proyect01_files/figure-html/graf-varias4-1.png" alt="Figura 6. Distribuciones" width="50%" /><img src="Proyect01_files/figure-html/graf-varias4-2.png" alt="Figura 6. Distribuciones" width="50%" />
+<img src="Proyect01_files/figure-html/graf-varias4-1.png" alt="Figura 6b. Distribuciones" width="50%" /><img src="Proyect01_files/figure-html/graf-varias4-2.png" alt="Figura 6b. Distribuciones" width="50%" />
 <p class="caption">
-Figura 6. Distribuciones
+Figura 6b. Distribuciones
 </p>
 </div>
-<p>Estas variables y algunas otras anteriores son candidatas a ser discretizadas. La criminalidad, por ejemplo, no solo muestra una concentración en unos pocos valores, sino que una vez transformada en logaritmos se aprecian dos grupos diferenciados, como también pasaba con los impuestos. En el caso de la ratio de profesor/alumno también unos valores con gran concentración de frecuencia y muy pocos por encima de este por lo que podrían agruparse juntos. En el caso de la población de color, vemos que a partir del percentil 75, los valores son prácticamente iguales y antes del percentil 10 son mucho menores que en el resto de la distribución. En estos casos de valores concentrados o infrecuentes, agrupar y discretizar es una buena opción porque es más fácil identificar el efecto medio sobre el precio de la vivienda de un rango de valores (ej., zonas de baja criminalidad frente a alta) que el efecto de incrementar en un punto la variables. Es decir, buscamos efectos no lineales debido a la distribución de la variable.</p>
+<p>Estas variables y algunas otras anteriores son candidatas a ser discretizadas. La criminalidad, por ejemplo, no solo muestra una concentración en unos pocos valores, sino que una vez transformada en logaritmos se aprecian dos grupos diferenciados, como también pasaba con los impuestos. En el caso de la ratio de profesor/alumno también unos valores con gran concentración de frecuencia y muy pocos por encima de este por lo que podrían agruparse juntos. En el caso de la población de color, vemos que a partir del percentil 75, los valores son prácticamente iguales y antes del percentil 10 son mucho menores que en el resto de la distribución. En estos casos de variables con valores concentrados o infrecuentes y con saltos o huecos, no podemos decir que la variable que observamos en nuestra muestra tenga una apariencia de variable continua, aunque en principio lo sea. Por tanto, agrupar y discretizar es una buena opción. En particular, es más fácil identificar el efecto medio sobre el precio de la vivienda de un rango de valores (ej., zonas de baja criminalidad frente a alta) que el efecto de incrementar en un punto la variable (cuando en los datos no observamos valores con ese punto más). En otras palabras, vamos a modelizar efectos flexibles no lineales.</p>
 </div>
 <div id="análisis-de-covariación" class="section level2">
 <h2><span class="header-section-number">4.2</span> Análisis de covariación</h2>
@@ -2699,7 +2719,7 @@ Figura 7a. Distribución del precio por cercanía al rio
 Figura 7b. Distribución del precio, según cercanía al rio
 </p>
 </div>
-<p>Parece que las casa cercanas al río tienen un precio (ligeramente) superior, aunque la diferecia no es muy grande. Ambas distribuciones son asimétricas, aunque en el caso de casas cercanas al río la cola derecha no es tan larga. Mediante una regresión simple o calculando las medias podemos comprobar si existen diferencias:</p>
+<p>Parece que las casa cercanas al río tienen un precio superior, aunque la diferencia no parece grande. Ambas distribuciones son asimétricas, aunque en el caso de casas cercanas al río la cola derecha no es tan larga. Mediante una regresión simple o calculando las medias podemos comprobar si existen diferencias en media y si son significativas:</p>
 <pre class="r"><code>lm(data = Boston, medv ~ chas) %&gt;% broom::tidy() %&gt;%  kbl(digits = 2, caption = &quot;Table 2a. Precio según cercanía al río&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
 <table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
 <caption>
@@ -2822,7 +2842,170 @@ Yes
 </tr>
 </tbody>
 </table>
-<p>A continuación podemos a analizar rápidamente si las variables continuas están relacionadas con nuestra variable de interés, precio de la vivienda. Lo podemos hacer mediante distintos análisis de correlación, en una tabla (excesivamente larga) o visualmente.</p>
+<p>También podríamos analizar si la variable binaria de cercanía al río está relacionada. (NOTA: esto nuevamente es un código de ejemplo para hacer de forma fácil este proceso. NO es necesario que vosotros lo hagáis así.)</p>
+<pre class="r"><code>dif.rio &lt;- function(var) {
+  formula &lt;- paste0(var,&quot; ~ chas&quot;)
+  lm(data = Boston, formula) %&gt;% tidy() %&gt;% filter(term==&quot;chasYes&quot;) %&gt;% select(estimate, p.value)
+}
+
+vars &lt;- c(&quot;crim&quot;, &quot;zn&quot;, &quot;indus&quot;, &quot;nox&quot;, &quot;rm&quot;, &quot;age&quot;, &quot;dis&quot;, &quot;rad&quot;, &quot;tax&quot;, &quot;ptratio&quot;, &quot;b&quot;, &quot;lstat&quot;)
+
+tabla &lt;- vars %&gt;% map_df(dif.rio)
+bind_cols(Variable=vars, tabla) %&gt;%  kbl(digits = 2, caption = &quot;Tabla 2c. Diferencias en variable por cercanía al río&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Tabla 2c. Diferencias en variable por cercanía al río
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+crim
+</td>
+<td style="text-align:right;">
+-1.89
+</td>
+<td style="text-align:right;">
+0.21
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+zn
+</td>
+<td style="text-align:right;">
+-3.92
+</td>
+<td style="text-align:right;">
+0.34
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+indus
+</td>
+<td style="text-align:right;">
+1.70
+</td>
+<td style="text-align:right;">
+0.16
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nox
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rm
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age
+</td>
+<td style="text-align:right;">
+9.59
+</td>
+<td style="text-align:right;">
+0.05
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dis
+</td>
+<td style="text-align:right;">
+-0.82
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rad
+</td>
+<td style="text-align:right;">
+-0.25
+</td>
+<td style="text-align:right;">
+0.87
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tax
+</td>
+<td style="text-align:right;">
+-23.61
+</td>
+<td style="text-align:right;">
+0.42
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ptratio
+</td>
+<td style="text-align:right;">
+-1.04
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b
+</td>
+<td style="text-align:right;">
+17.54
+</td>
+<td style="text-align:right;">
+0.27
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lstat
+</td>
+<td style="text-align:right;">
+-1.52
+</td>
+<td style="text-align:right;">
+0.23
+</td>
+</tr>
+</tbody>
+</table>
+<p>Vemos que las casas cercanas al rio son más antiguas, con más habitaciones, más cercanas al centro de trabajo, con más contaminación y mejores condiciones escolares.</p>
+<p>A continuación podemos analizar rápidamente si las variables continuas están relacionadas con nuestra variable de interés, precio de la vivienda, y entre ellas. Lo podemos hacer mediante distintos análisis de correlación, en una tabla (excesivamente larga) o visualmente.</p>
 <pre class="r"><code>Boston %&gt;% correlate() %&gt;% 
   filter(as.integer(var1) &gt; as.integer(var2)) %&gt;% 
   kbl(digits = 2, caption = &quot;Tabla 3. Correlaciones&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
@@ -2836,7 +3019,7 @@ Figura 8. Correlaciones entre variables continuas
 </p>
 </div>
 <p>Hemos considerado la correlación tanto con el precio como con su logaritmo, dado lo discutido anteriormente. Sin embargo, apenas se aprecian diferencias.</p>
-<p>Vemos que existe una fuerte correlación positiva o negativa entre el precio y varias variables que intuitivamente consideraríamos como importartes. El número de habitaciones tiene la correlación positiva más fuerte con el valor medio del precio de la vivienda, mientras que el porcentaje de la población desfavorecida y el número de alumnos por docente tienen una correlación negativa fuerte. También es evidente que las zonas más industriales y la contaminación están fuertemente correlacionados positivamente entre sí, puesto que los niveles de óxido nítrico tienden a aumentar con el aumento de las industrias. También vemos que las zonas con más población desfavorecida son las más industriales y contaminadas, con casas más antiguas y de menos habitaciones y con escuelas con un mayor ratio de alumnos por profesor. Debemos recordar esto de cara a la especificación de los modelos de regresión lineal.</p>
+<p>Vemos que existe una fuerte correlación (positiva o negativa) entre el precio y varias variables que intuitivamente consideraríamos como importantes. El número de habitaciones tiene la correlación positiva más fuerte con el valor medio del precio de la vivienda, mientras que el porcentaje de la población desfavorecida y el número de alumnos por docente tienen una correlación negativa fuerte. También es evidente que las zonas más industriales y la contaminación están fuertemente correlacionados positivamente entre sí, puesto que los niveles de óxido nítrico tienden a aumentar con el aumento de las industrias. También vemos que las zonas con más población desfavorecida son las más industriales y contaminadas, con casas más antiguas y de menos habitaciones y con escuelas con un mayor ratio de alumnos por profesor. Debemos recordar esto de cara a la especificación de los modelos de regresión lineal.</p>
 <p>Sin embargo, esto no considera posibles relaciones no lineales. Para ello vamos a representar varios gráficos de dispersión y un ajuste no lineal. Nuevamente, en vuestro trabajo no mostraréis necesariamente todos estos gráficos sino una selección después de haberlos vistos.</p>
 <pre class="r"><code>vars &lt;- c(&quot;crim&quot;, &quot;zn&quot;, &quot;indus&quot;, &quot;nox&quot;, &quot;rm&quot;, &quot;age&quot;, &quot;dis&quot;, &quot;rad&quot;, &quot;tax&quot;, &quot;ptratio&quot;, &quot;b&quot;, &quot;lstat&quot;)
 
@@ -2875,7 +3058,7 @@ Figura 9b. Gráficos de dispersión (en escala logaritmica)
 
 -->
 <p>En primer lugar, no se aprecian grandes diferencias entre el modelo con el precio sin transformar o en logaritmos. En segundo lugar, sí se aprecia cierta no linealidad en la relación con las variables de edad, número de habitaciones y porcentaje de población desfavorecida. En el resto de relaciones, no están tan claras por la acumulación de valores.</p>
-<p>Podemos probar discretizando algunas de las varialbes comentadas anteriormente. Por ejemplo, hacemos dos grupos de criminalidad; los umbrales para discretizar no tienen una justificación muy formal: se basan en lo que aproximadamente hemos visto.</p>
+<p>Podemos probar discretizando algunas de las variables comentadas anteriormente. Por ejemplo, hacemos dos grupos de criminalidad; los umbrales para discretizar no tienen una justificación muy formal: se basan en lo que aproximadamente hemos visto.</p>
 <pre class="r"><code>  Boston %&gt;% 
       mutate(crim.alta = cut(crim, breaks = c(0,1,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;) ) ) %&gt;% 
       ggplot(aes(y = medv, x = crim.alta)) +  geom_boxplot() + ylab(&quot;Densidad&quot;) + xlab(&quot;Criminalidad alta&quot;) + ylab(&quot;Precio&quot;) </code></pre>
@@ -2949,13 +3132,11 @@ crim.altaAlta
 </tbody>
 </table>
 <p>Tanto el gráfico como la regresión apuntan a un efecto significativo de la criminalidad sobre los precios. En principio deberíamos probar con otros puntos de corte para discretizar, pero por simplicidad utilizaremos este obtenido a partir del análisis exploratorio.</p>
-<pre class="r"><code>Boston &lt;- Boston %&gt;% 
-            mutate(crim.alta = cut(crim, breaks = c(0,1,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;) ) )</code></pre>
-<p>Podemos proceder de manera similar con otras variables.</p>
-<pre class="r"><code>Boston &lt;- Boston %&gt;% 
-            mutate(dis.alta = cut(dis, breaks = c(0,3,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;) ) ) 
-
-Boston %&gt;% lm(data = ., medv ~ dis.alta) %&gt;% tidy() %&gt;%  kbl(digits = 2, caption = &quot;Table 5. Precio según distancia&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<p>Podemos proceder de manera similar con otras variables. Nuevamente, tanto el número de grupos como los valores de corte no se derivan de forma super rigurosa, sino en base al análisis exploratorio. Debería probarse con otras variantes.</p>
+<pre class="r"><code>Boston %&gt;% 
+  mutate(dis.alta = cut(dis, breaks = c(0,3,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;) ) ) %&gt;% 
+  lm(data = ., medv ~ dis.alta) %&gt;% tidy() %&gt;%
+  kbl(digits = 2, caption = &quot;Table 5. Precio según distancia&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
 <table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
 <caption>
 Table 5. Precio según distancia
@@ -3016,10 +3197,10 @@ dis.altaAlta
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>Boston &lt;- Boston %&gt;% 
-            mutate(rad.alta = cut(dis, breaks = c(0,10,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;) ) ) 
-
-Boston %&gt;% lm(data = ., medv ~ rad.alta) %&gt;% tidy() %&gt;%  kbl(digits = 2, caption = &quot;Table 6. Precio según accesibilidad&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<pre class="r"><code>Boston %&gt;% 
+  mutate(rad.alta = cut(dis, breaks = c(0,10,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;) ) ) %&gt;% 
+  lm(data = ., medv ~ rad.alta) %&gt;% tidy() %&gt;%  
+  kbl(digits = 2, caption = &quot;Table 6. Precio según accesibilidad&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
 <table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
 <caption>
 Table 6. Precio según accesibilidad
@@ -3080,10 +3261,10 @@ rad.altaAlta
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>Boston &lt;- Boston %&gt;% 
-            mutate(tax.alta = cut(tax, breaks = c(0,350,500,Inf), labels = c(&quot;Baja&quot;,&quot;Media&quot;,&quot;Alta&quot;)) ) 
-
-Boston %&gt;% lm(data = ., medv ~ tax.alta) %&gt;% tidy() %&gt;%  kbl(digits = 2, caption = &quot;Table 7. Precio según impuestos&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<pre class="r"><code>Boston %&gt;% 
+  mutate(tax.alta = cut(tax, breaks = c(0,350,500,Inf), labels = c(&quot;Baja&quot;,&quot;Media&quot;,&quot;Alta&quot;)) ) %&gt;%
+  lm(data = ., medv ~ tax.alta) %&gt;% tidy() %&gt;%  
+  kbl(digits = 2, caption = &quot;Table 7. Precio según impuestos&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
 <table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
 <caption>
 Table 7. Precio según impuestos
@@ -3161,10 +3342,10 @@ tax.altaAlta
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>Boston &lt;- Boston %&gt;% 
-            mutate(black.cat = cut(b, breaks = c(0,100, 395,Inf), labels = c(&quot;Baja&quot;,&quot;Media&quot;,&quot;Alta&quot;)) ) 
-
-Boston %&gt;% lm(data = ., medv ~ black.cat) %&gt;% tidy() %&gt;%  kbl(digits = 2, caption = &quot;Table 8. Precio según población de color&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<pre class="r"><code>Boston %&gt;% 
+  mutate(black.cat = cut(b, breaks = c(0,100, 395,Inf), labels = c(&quot;Baja&quot;,&quot;Media&quot;,&quot;Alta&quot;)) ) %&gt;%
+  lm(data = ., medv ~ black.cat) %&gt;% tidy() %&gt;%  
+  kbl(digits = 2, caption = &quot;Table 8. Precio según población de color&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
 <table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
 <caption>
 Table 8. Precio según población de color
@@ -3242,10 +3423,10 @@ black.catAlta
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>Boston &lt;- Boston %&gt;% 
-            mutate(black.alta = cut(b, breaks = c(0, 100,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;)) ) 
-
-Boston %&gt;% lm(data = ., medv ~ black.alta) %&gt;% tidy() %&gt;%  kbl(digits = 2, caption = &quot;Table 8b. Precio según población de color&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<pre class="r"><code>Boston %&gt;% 
+  mutate(black.alta = cut(b, breaks = c(0, 100,Inf), labels = c(&quot;Baja&quot;,&quot;Alta&quot;)) ) %&gt;% 
+  lm(data = ., medv ~ black.alta) %&gt;% tidy() %&gt;%  
+  kbl(digits = 2, caption = &quot;Table 8b. Precio según población de color&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
 <table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
 <caption>
 Table 8b. Precio según población de color
@@ -3306,140 +3487,2530 @@ black.altaAlta
 </tr>
 </tbody>
 </table>
+<p>(NOTA: estas tablas se podrían haber hecho con un bucle. También notad que NO he mantenido la variable discretizada en los datos, aunque podría haberlo hecho.)</p>
 </div>
 </div>
 <div id="modelos" class="section level1">
 <h1><span class="header-section-number">5</span> Modelos</h1>
 <div id="muestras-de-entrenamiento-y-prueba" class="section level2">
 <h2><span class="header-section-number">5.1</span> Muestras de entrenamiento y prueba</h2>
-<p>Particionamos los datos en una proporción de 8 a 2 como conjuntos de datos de entrenamiento y prueba.</p>
+<p>Antes de empezar, generamos una nueva variables igual al logaritmo de la variable dependiente por si queremos usarla transformada dada lo que hemos visto en el análisis exploratorio. Hemos visto que otras variables (explicativas) también podrían ser transformadas tomando logaritmos o polinomios, discretizando, etc. Todo esas transformaciones se pueden hacer en el pre-procesado de <code>tidymodels</code>. El caso de la variable dependiente es diferente y, por eso, es la única que transformamos antes y la incluimos transformada en el conjunto de datos.</p>
+<pre class="r"><code>Boston &lt;- Boston %&gt;% mutate(logmedv = log(medv))</code></pre>
+<p>A continuación, hacemos la partición de los datos reservando una proporción del 80% como conjuntos de datos de entrenamiento y el 20% restante como prueba.</p>
 <pre class="r"><code>set.seed(1)
 Boston_part &lt;- Boston %&gt;% initial_split(prop = .8)</code></pre>
-<!--
-## Modelos de regresión lineal
-
-Primero, probemos el modelo de regresión lineal generalizada con MEDV como variable dependiente y todas las variables restantes como variables independientes. Entrenamos el modelo con el conjunto de datos de formación. Para este modelo lineal, a continuación se muestran los coeficientes de todas las características y la intercepción. A continuación, utilizamos el modelo entrenado para predecir el resultado (MEDV) para el conjunto de datos de la prueba. Una buena métrica para probar la precisión del modelo es calcular la raíz cuadrada del error cuadrático medio.
-
-
-```r
-fit.lm <- lm(medv~.,data = Boston_part %>% training())
-summary(fit.lm)
-```
-
-
-```r
-pred.lm <- predict(fit.lm, newdata = Boston_part %>% testing())
-
-# Root-mean squared error 
-rmse.lm <- sqrt(sum((pred.lm - testing(Boston_part)$medv)^2)/
-                   length(testing(Boston_part)$medv))
-                   
-c(RMSE = rmse.lm, R2 = summary(fit.lm)$r.squared)
-```
-
-Notad que el $R^2$ también es una medida basada en los errores de predicción, pero (aquí) está calculada en la muestra de entrenamiento!
-
-También vimos que la variable MEDV estaba sesgada hacia la derecha. Usar una transformación logarítmica normalizaría la distribución de MEDV. Vemos que el modelo predice mejor.
-
-
-```r
-fit.lm1 <- lm(log(medv)~.,data = training(Boston_part))
-
-pred.lm1 <- predict(fit.lm1, newdata = testing(Boston_part))
-
-rmse.lm1 <- sqrt(sum((exp(pred.lm1) - testing(Boston_part)$medv)^2)/
-                   length(testing(Boston_part)$medv))
-                   
-c(RMSE = rmse.lm1, R2 = summary(fit.lm1)$r.squared)
-```
-
-
-Examinemos el valor-p calculado para cada característica del modelo lineal. Cualquier característica que no sea significativa (p<0.05) no está contribuyendo significativamente para el modelo, probablemente debido a la multicolinealidad entre otras características. Vemos que las características, ZN, INDUS y AGE no son significativas.
-
-
-
-```r
-summary(fit.lm1)
-```
-
-Basándonos en todas estas observaciones, ahora construimos un nuevo modelo lineal.
-
-
-```r
-fit.lm2 <- lm(formula = log(medv) ~ . , data = training(Boston_part) %>% select(-zn, -indus, -age))
-
-pred.lm2 <- predict(fit.lm2, newdata = testing(Boston_part))
-
-rmse.lm2 <- sqrt(sum((exp(pred.lm2) - testing(Boston_part)$medv)^2)/
-                   length(testing(Boston_part)$medv))
-
-c(RMSE = rmse.lm2, R2 = summary(fit.lm2)$r.squared)
-```
-
-Este modelo es apenas un poco menos acertado que el modelo anterior.
-
-## Árboles de regresión
-
-También podemos considerar modelos más flexibles (no restringidos a relaciones lineales) como la variante para variables continuas de los árboles de decisiones; estos se llaman árboles de regresión.
-
-
-```r
-library(rpart)  
-library(rpart.plot) 
-fit.tree <- rpart(log(medv)~., 
-                   data = training(Boston_part), method = "anova")
-
-rpart.plot(fit.tree)
-```
-
-Comprobando su bondad de ajuste mediante la raíz del error cuadrático medio podemos ver que su funcionamiento es inferior a nuestro modelo lineal preferido.
-
-
-```r
-pred.tree <- predict(fit.tree, testing(Boston_part))
-
-rmse.tree <- sqrt(sum(((pred.tree) - testing(Boston_part)$medv)^2)/
-                   length(testing(Boston_part)$medv))
-c(RMSE = rmse.tree)
-```
-
-Podrìamos considerar modelos de árboles de regresión más complejos o variantes más sofisticadas como "random forests".
-
-# Conclusión
-
-El objetivo de este informe era determinar los atributos del vecindario que mejor explicaban la variación en los precios de las viviendas. Se utilizaron varias técnicas estadísticas para eliminar los predictores y las observaciones superfluas. Al examinar el modelo final, se observa -de forma bastante razonable- que los precios de la vivienda son más altos en las zonas donde la delincuencia es menor y la proporción de alumnos por maestro es menor. Los precios de las casas también tienden a ser más altos cerca del río Charles, y las casas con más habitaciones son más caras. Este informe está interesado en los atributos del barrio de las casas, por lo que el número de habitaciones no es un predictor importante. Los factores más interesantes a considerar son los niveles de óxido de nitrógeno y la distancia a los principales centros de empleo. Por un lado, la gente querría vivir cerca de su lugar de trabajo. Sin embargo, es razonable sugerir que los niveles de contaminación son más altos a medida que uno se acerca a estos principales centros de empleo. Y lo que es más importante, cuando se habla de contaminación, no sólo son más altos los niveles de óxido de nitrógeno, sino también los niveles de contaminación acústica. El modelo de regresión que se implementó muestra que los niveles más altos de contaminación disminuyen los precios de la vivienda en mayor medida que la distancia a los centros de empleo. Esto sugiere que la gente preferiría vivir más lejos de su lugar de trabajo si esto significara menores niveles de contaminación, lo cual es un punto interesante a considerar. A modo de conclusión, es importante señalar que los datos para este informe se recopilaron hace varias décadas. En los años transcurridos desde entonces, no cabe duda de que los niveles de contaminación han aumentado y sería interesante examinar la forma en que esto afecta a los precios de las viviendas en Boston en la actualidad.
-
-# Apéndice A
-
-Como se ha comentado, nuestro conjunto de datos dispone de 506 observaciones y 14 variables. A continuación se presenta una breve descripción de cada variable:
-
-|Variable    |     Descripción
-|:-----------|:--------------------------------------------------------------------
-|    CRIM    |    tasa de criminalidad per cápita por ciudad
-|    ZN      |    proporción de terreno residencial dividido en 
-|            |       zonas para lotes de más de 25,000 pies cuadrados.
-|    INDUS   |    proporción de acres de negocios no comerciales por zona
-|    CHAS    |    variable "dummy"del río Charles 
-|            |       (1 si la zona limita con el río; si no, 0)
-|    NOX     |    concentración de óxidos nítricos (partes por 10 millones)
-|    RM      |    número medio de habitaciones por vivienda
-|    AGE     |    proporción de casas ocupadas por sus propietarios 
-|            |       construidas antes de 1940.
-|    DIS     |    distancia media ponderada a cinco centros de empleo de Boston
-|    RAD     |    índice de accesibilidad a carreteras radiales
-|    TAX     |    impuesto sobre el valor total de la propiedad 
-|            |       (por cada $10,000)
-|    PTRATIO |    número de alumnos por docente en los colegios de la zona ("town")
-|    B       |    1000(Bk - 0.63)^2 donde Bk es la proporción de población de color
-|            |        en la zona (0.63 es la media en la ciudad)
-|    LSTAT   |    porcentaje de población desfavorecida (bajo estatus social)
-|    MEDV    |    valor mediano de las viviendas ocupadas por sus propietarios 
-|            |       (en miles de dólares)
-
-
-
--->
 </div>
+<div id="modelos-de-regresión-lineal" class="section level2">
+<h2><span class="header-section-number">5.2</span> Modelos de regresión lineal</h2>
+<p>Primero, probemos el modelo de regresión lineal para el precio como variable dependiente y todas las variables restantes como variables independientes. Entrenamos el modelo con el conjunto de datos de entrenamiento. A continuación se muestran todos los coeficientes. Finalmente, utilizamos el modelo entrenado para predecir en el conjunto de datos de la prueba y calcular sus métricas.</p>
+<pre class="r"><code>lm1_receta &lt;- training(Boston_part) %&gt;%            
+  recipe(medv ~ chas + crim + zn + indus + nox + rm + 
+           age + dis + rad + tax + ptratio + b + lstat) %&gt;% 
+  step_corr(all_predictors(), -all_nominal(), threshold = 0.9) 
+
+lm1_modelo &lt;- linear_reg(mode= &quot;regression&quot;, penalty = 0) %&gt;%
+                    set_engine(&quot;lm&quot;)
+
+lm1_flujo &lt;- workflow() %&gt;%
+  add_recipe(lm1_receta) %&gt;%
+  add_model(lm1_modelo)
+
+lm1_flujo_est &lt;- lm1_flujo %&gt;% fit(data = training(Boston_part)) 
+
+lm1_flujo_est %&gt;% pull_workflow_fit() %&gt;% tidy() %&gt;% 
+   kbl(digits = 2, caption = &quot;Table 9. Modelo de Regresión&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 9. Modelo de Regresión
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+32.98
+</td>
+<td style="text-align:right;">
+5.73
+</td>
+<td style="text-align:right;">
+5.76
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+chasYes
+</td>
+<td style="text-align:right;">
+3.06
+</td>
+<td style="text-align:right;">
+0.99
+</td>
+<td style="text-align:right;">
+3.10
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+crim
+</td>
+<td style="text-align:right;">
+-0.09
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:right;">
+-2.18
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+zn
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+2.28
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+indus
+</td>
+<td style="text-align:right;">
+-0.06
+</td>
+<td style="text-align:right;">
+0.06
+</td>
+<td style="text-align:right;">
+-0.92
+</td>
+<td style="text-align:right;">
+0.36
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nox
+</td>
+<td style="text-align:right;">
+-20.67
+</td>
+<td style="text-align:right;">
+4.31
+</td>
+<td style="text-align:right;">
+-4.79
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rm
+</td>
+<td style="text-align:right;">
+4.13
+</td>
+<td style="text-align:right;">
+0.48
+</td>
+<td style="text-align:right;">
+8.68
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+0.18
+</td>
+<td style="text-align:right;">
+0.86
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dis
+</td>
+<td style="text-align:right;">
+-1.41
+</td>
+<td style="text-align:right;">
+0.22
+</td>
+<td style="text-align:right;">
+-6.35
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rad
+</td>
+<td style="text-align:right;">
+0.13
+</td>
+<td style="text-align:right;">
+0.05
+</td>
+<td style="text-align:right;">
+2.68
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ptratio
+</td>
+<td style="text-align:right;">
+-0.95
+</td>
+<td style="text-align:right;">
+0.15
+</td>
+<td style="text-align:right;">
+-6.23
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+3.11
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lstat
+</td>
+<td style="text-align:right;">
+-0.50
+</td>
+<td style="text-align:right;">
+0.06
+</td>
+<td style="text-align:right;">
+-8.58
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+</tbody>
+</table>
+<p>(NOTA: los nombres de las columnas y de las filas/variables son “mejorables”: si el documento está en castellano las columnas no deberían tener nombres en inglés y sería preferible que apareciera un nombre más descriptivo de las variables. Pero no voy a exigir esto en el plazo que tenemos. Eso sí, al menos que en algún sitio aparezca la descripción completa del nombre abreviado de las variables, como hago aquí con el Apéndice A.)</p>
+<p>Los resultados del modelo con todas las variables son similares a los anteriores con solo una variable cada vez, aunque la edad NO es significativa (<em>ceteris paribus</em>). Notad que se ha quitado la variable de impuestos por estar muy correlacionada con otras.</p>
+<p>Finalmente, calculamos las métricas de error de este modelo.</p>
+<pre class="r"><code>lm_metricas &lt;- list()
+lm_metricas[[1]] &lt;- lm1_flujo_est %&gt;% 
+                  predict(testing(Boston_part)) %&gt;% 
+                  bind_cols(testing(Boston_part)) %&gt;%  
+                  metrics(truth=medv, estimate= .pred) </code></pre>
+<p>Vamos a considerar algunas otras especificaciones (diferentes combinaciones de variables) dentro del modelo lineal. Por simplicidad, solo considero unas pocas; vosotros podéis considerar más, aunque quizás no tengáis que reportar todas.</p>
+<p>En primer lugar, consideramos algunas transformaciones no lineales según hemos visto en el análisis exploratorio: el precio en logaritmos y polinomios para edad y porcentaje de población desfavorecida. Luego, incluimos también algunas de las discretizaciones vistas antes e interacciones.</p>
+<p>Notad que voy a seguir usando el mismo modelo de antes, solo cambio actualizando la receta y cambiando el flujo.</p>
+<pre class="r"><code>lm2_receta &lt;- training(Boston_part) %&gt;%            
+                recipe(logmedv ~ chas + crim + zn + indus + nox + rm + 
+                    age + dis + rad + tax + ptratio + b + lstat) %&gt;% 
+                step_corr(all_predictors(), -all_nominal(), threshold = 0.9) %&gt;% 
+                step_poly(age, lstat, degree = 4) 
+
+lm2_flujo &lt;- workflow() %&gt;%
+  add_recipe(lm2_receta) %&gt;%
+  add_model(lm1_modelo)
+
+lm2_flujo_est &lt;- lm2_flujo %&gt;% fit(data = training(Boston_part)) 
+
+lm2_flujo_est %&gt;% pull_workflow_fit() %&gt;% tidy() %&gt;% 
+   kbl(digits = 3, caption = &quot;Table 10. Modelo de Regresión (en logaritmos)&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 10. Modelo de Regresión (en logaritmos)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+3.700
+</td>
+<td style="text-align:right;">
+0.219
+</td>
+<td style="text-align:right;">
+16.901
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+chasYes
+</td>
+<td style="text-align:right;">
+0.095
+</td>
+<td style="text-align:right;">
+0.038
+</td>
+<td style="text-align:right;">
+2.519
+</td>
+<td style="text-align:right;">
+0.012
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+crim
+</td>
+<td style="text-align:right;">
+-0.011
+</td>
+<td style="text-align:right;">
+0.002
+</td>
+<td style="text-align:right;">
+-6.647
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+zn
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+<td style="text-align:right;">
+-0.492
+</td>
+<td style="text-align:right;">
+0.623
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+indus
+</td>
+<td style="text-align:right;">
+-0.002
+</td>
+<td style="text-align:right;">
+0.003
+</td>
+<td style="text-align:right;">
+-0.915
+</td>
+<td style="text-align:right;">
+0.361
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nox
+</td>
+<td style="text-align:right;">
+-0.856
+</td>
+<td style="text-align:right;">
+0.164
+</td>
+<td style="text-align:right;">
+-5.216
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rm
+</td>
+<td style="text-align:right;">
+0.083
+</td>
+<td style="text-align:right;">
+0.020
+</td>
+<td style="text-align:right;">
+4.198
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dis
+</td>
+<td style="text-align:right;">
+-0.041
+</td>
+<td style="text-align:right;">
+0.008
+</td>
+<td style="text-align:right;">
+-4.822
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rad
+</td>
+<td style="text-align:right;">
+0.006
+</td>
+<td style="text-align:right;">
+0.002
+</td>
+<td style="text-align:right;">
+3.176
+</td>
+<td style="text-align:right;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ptratio
+</td>
+<td style="text-align:right;">
+-0.039
+</td>
+<td style="text-align:right;">
+0.006
+</td>
+<td style="text-align:right;">
+-6.728
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+4.164
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age_poly_1
+</td>
+<td style="text-align:right;">
+0.425
+</td>
+<td style="text-align:right;">
+0.340
+</td>
+<td style="text-align:right;">
+1.251
+</td>
+<td style="text-align:right;">
+0.212
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age_poly_2
+</td>
+<td style="text-align:right;">
+0.331
+</td>
+<td style="text-align:right;">
+0.218
+</td>
+<td style="text-align:right;">
+1.516
+</td>
+<td style="text-align:right;">
+0.130
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age_poly_3
+</td>
+<td style="text-align:right;">
+0.205
+</td>
+<td style="text-align:right;">
+0.199
+</td>
+<td style="text-align:right;">
+1.031
+</td>
+<td style="text-align:right;">
+0.303
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age_poly_4
+</td>
+<td style="text-align:right;">
+0.193
+</td>
+<td style="text-align:right;">
+0.196
+</td>
+<td style="text-align:right;">
+0.982
+</td>
+<td style="text-align:right;">
+0.327
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lstat_poly_1
+</td>
+<td style="text-align:right;">
+-4.504
+</td>
+<td style="text-align:right;">
+0.340
+</td>
+<td style="text-align:right;">
+-13.239
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lstat_poly_2
+</td>
+<td style="text-align:right;">
+0.853
+</td>
+<td style="text-align:right;">
+0.218
+</td>
+<td style="text-align:right;">
+3.912
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lstat_poly_3
+</td>
+<td style="text-align:right;">
+0.045
+</td>
+<td style="text-align:right;">
+0.208
+</td>
+<td style="text-align:right;">
+0.215
+</td>
+<td style="text-align:right;">
+0.830
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lstat_poly_4
+</td>
+<td style="text-align:right;">
+0.899
+</td>
+<td style="text-align:right;">
+0.193
+</td>
+<td style="text-align:right;">
+4.662
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>lm_metricas[[2]] &lt;- lm2_flujo_est %&gt;% 
+                  predict(testing(Boston_part)) %&gt;% 
+                  bind_cols(testing(Boston_part)) %&gt;%  
+                  metrics(truth=logmedv, estimate= .pred) </code></pre>
+<p>Notad que la edad sigue sin ser significativa.</p>
+<p>Ahora vamos a incluir versiones discretas de algunas variables, bien nuevas o bien reemplazando otras transformaciones no lineales previas de las mismas.</p>
+<pre class="r"><code>lm3_receta &lt;- training(Boston_part) %&gt;%            
+                recipe(logmedv ~ chas + crim + zn + indus + nox + rm + 
+                    age + dis + rad + tax + ptratio + b + lstat) %&gt;% 
+                step_corr(all_predictors(), -all_nominal(), threshold = 0.9) %&gt;% 
+                step_poly(lstat, degree = 4) %&gt;% 
+                step_cut(dis, breaks = c(0,3,Inf)) %&gt;% 
+                step_cut(b, breaks = c(0,100, 395,Inf)) %&gt;% 
+                step_cut(age, breaks = c(0,25,75,Inf)) %&gt;% 
+                step_interact(terms = ~(rm + lstat):nox)
+
+lm3_flujo &lt;- workflow() %&gt;%
+  add_recipe(lm3_receta) %&gt;%
+  add_model(lm1_modelo)
+
+lm3_flujo_est &lt;- lm3_flujo %&gt;% fit(data = training(Boston_part)) 
+
+lm3_flujo_est %&gt;% pull_workflow_fit() %&gt;% tidy() %&gt;% 
+   kbl(digits = 2, caption = &quot;Table 11. Modelo de Regresión (var. discretas e interacciones)&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 11. Modelo de Regresión (var. discretas e interacciones)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+3.45
+</td>
+<td style="text-align:right;">
+0.22
+</td>
+<td style="text-align:right;">
+15.93
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+chasYes
+</td>
+<td style="text-align:right;">
+0.12
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:right;">
+3.11
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+crim
+</td>
+<td style="text-align:right;">
+-0.01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+-5.99
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+zn
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+-3.16
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+indus
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+-0.67
+</td>
+<td style="text-align:right;">
+0.50
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nox
+</td>
+<td style="text-align:right;">
+-0.83
+</td>
+<td style="text-align:right;">
+0.17
+</td>
+<td style="text-align:right;">
+-4.98
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rm
+</td>
+<td style="text-align:right;">
+0.09
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+4.80
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age(25,75]
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:right;">
+0.61
+</td>
+<td style="text-align:right;">
+0.54
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age(75,Inf]
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:right;">
+0.34
+</td>
+<td style="text-align:right;">
+0.74
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dis(3,Inf]
+</td>
+<td style="text-align:right;">
+-0.14
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-4.41
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rad
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+2.77
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ptratio
+</td>
+<td style="text-align:right;">
+-0.04
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+-6.70
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b(100,395]
+</td>
+<td style="text-align:right;">
+0.28
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:right;">
+6.62
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+b(395,Inf]
+</td>
+<td style="text-align:right;">
+0.24
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:right;">
+5.41
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lstat_poly_1
+</td>
+<td style="text-align:right;">
+-4.21
+</td>
+<td style="text-align:right;">
+0.33
+</td>
+<td style="text-align:right;">
+-12.79
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lstat_poly_2
+</td>
+<td style="text-align:right;">
+1.10
+</td>
+<td style="text-align:right;">
+0.21
+</td>
+<td style="text-align:right;">
+5.34
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lstat_poly_3
+</td>
+<td style="text-align:right;">
+-0.01
+</td>
+<td style="text-align:right;">
+0.20
+</td>
+<td style="text-align:right;">
+-0.07
+</td>
+<td style="text-align:right;">
+0.94
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lstat_poly_4
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+<td style="text-align:right;">
+0.19
+</td>
+<td style="text-align:right;">
+5.01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>lm_metricas[[3]] &lt;- lm3_flujo_est %&gt;% 
+                  predict(testing(Boston_part)) %&gt;% 
+                  bind_cols(testing(Boston_part)) %&gt;%  
+                  metrics(truth=logmedv, estimate= .pred) </code></pre>
+<p>Si comparamos las métricas de los tres modelos, vemos que el mejor modelo es el segundo, a pesar de que el tercero es más flexible. NOTA: <strong>no podemos usar el <span class="math inline">\(R^2\)</span></strong> para comparar el modelo 1 y los demás porque la variable dependiente no es la misma.</p>
+<pre class="r"><code>lm_metricas %&gt;% bind_rows(.id = &quot;modelo&quot;) %&gt;% 
+  pivot_wider(names_from = .metric, values_from=.estimate) %&gt;% 
+  select(-.estimator) %&gt;% 
+  kbl(digits = 4, caption = &quot;Table 12. Métricas de los Modelos de Regresión Lineal&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 12. Métricas de los Modelos de Regresión Lineal
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+modelo
+</th>
+<th style="text-align:right;">
+rmse
+</th>
+<th style="text-align:right;">
+rsq
+</th>
+<th style="text-align:right;">
+mae
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+4.5164
+</td>
+<td style="text-align:right;">
+0.7274
+</td>
+<td style="text-align:right;">
+3.0047
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:right;">
+0.1881
+</td>
+<td style="text-align:right;">
+0.7909
+</td>
+<td style="text-align:right;">
+0.1331
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:right;">
+0.1921
+</td>
+<td style="text-align:right;">
+0.7815
+</td>
+<td style="text-align:right;">
+0.1372
+</td>
+</tr>
+</tbody>
+</table>
+<p>También podemos ver la importancia que cada variable tiene en los distintos modelos.</p>
+<pre class="r"><code>lm1_flujo_est %&gt;% pull_workflow_fit() %&gt;% 
+  vip(num_features = 14)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/model-lineal-importanc-1.png" alt="Figura 11. Imporancia en los tres modelos de regresión lineal" width="33.33%" />
+<p class="caption">
+Figura 11. Imporancia en los tres modelos de regresión lineal
+</p>
+</div>
+<pre class="r"><code>lm2_flujo_est %&gt;% pull_workflow_fit() %&gt;% 
+  vip(num_features = 14)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/model-lineal-importanc-2.png" alt="Figura 11. Imporancia en los tres modelos de regresión lineal" width="33.33%" />
+<p class="caption">
+Figura 11. Imporancia en los tres modelos de regresión lineal
+</p>
+</div>
+<pre class="r"><code>lm3_flujo_est %&gt;% pull_workflow_fit() %&gt;% 
+  vip(num_features = 14)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/model-lineal-importanc-3.png" alt="Figura 11. Imporancia en los tres modelos de regresión lineal" width="33.33%" />
+<p class="caption">
+Figura 11. Imporancia en los tres modelos de regresión lineal
+</p>
+</div>
+</div>
+<div id="lasso" class="section level2">
+<h2><span class="header-section-number">5.3</span> LASSO</h2>
+<p>Para reducir la complejidad de la elección de variables en el modelo lineal podemos considerar modelos de red elástica y/o LASSO. Nuevamente, existen muchas combinaciones iniciales de variables y aquí solo estudiaremos un par de ellas: las del primer y segundo modelos anteriores. Para ajustar <span class="math inline">\(\lambda\)</span> puede ser necesario varios rangos. NOTA: no se pueden pasar factores a LASSO, por lo que debemos convertirlos en dummies con <code>step_dummy</code>.</p>
+<pre class="r"><code>set.seed(9753)
+Boston_cv &lt;- training(Boston_part) %&gt;% vfold_cv(v=10)
+
+lasso1_receta &lt;- training(Boston_part) %&gt;%            
+  recipe(medv ~ chas + crim + zn + indus + nox + rm + 
+           age + dis + rad + tax + ptratio + b + lstat) %&gt;% 
+  step_corr(all_predictors(), -all_nominal(), threshold = 0.9) %&gt;% 
+  step_center(all_predictors(), -all_nominal()) %&gt;% 
+  step_scale(all_predictors(), -all_nominal()) %&gt;% 
+  step_dummy(chas) 
+
+lasso1_modelo &lt;- linear_reg(mode= &quot;regression&quot;, penalty = tune()) %&gt;%
+                    set_engine(&quot;glmnet&quot;)
+
+lasso1_flujo &lt;- workflow() %&gt;%
+  add_recipe(lasso1_receta) %&gt;%
+  add_model(lasso1_modelo)
+
+LASSO_grid &lt;- grid_regular(penalty(range = c(0, 1), trans = NULL),   
+                          levels = 51)                     
+
+lasso1_flujo_tuned &lt;- lasso1_flujo %&gt;% 
+                        tune_grid(
+                          resamples = Boston_cv,
+                          metrics   = metric_set(rmse),
+                          grid      = LASSO_grid                          
+                          ) 
+
+lasso1_flujo_tuned %&gt;% collect_metrics() %&gt;% 
+  ggplot(aes(x=penalty, y=mean)) + 
+              geom_line() + geom_point(color=&quot;red&quot;) + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color=&quot;gray&quot;) </code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/modelo-lasso1-1.png" alt="Figura 12. Ajuste de lamdba, modelo 1" width="672" />
+<p class="caption">
+Figura 12. Ajuste de lamdba, modelo 1
+</p>
+</div>
+<pre class="r"><code>lasso1_flujo_tuned  %&gt;% show_best(&quot;rmse&quot;) %&gt;% 
+  kbl(digits = 4, caption = &quot;Table 13. Mejores lambdas en el Modelo 1 de LASSO&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 13. Mejores lambdas en el Modelo 1 de LASSO
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+penalty
+</th>
+<th style="text-align:left;">
+.metric
+</th>
+<th style="text-align:left;">
+.estimator
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+std_err
+</th>
+<th style="text-align:left;">
+.config
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+4.8801
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.3813
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model02
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+4.8805
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.3794
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model01
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+4.8815
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.3849
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model03
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.06
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+4.8866
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.3885
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model04
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.08
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+4.8912
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.3920
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model05
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>lambda1 &lt;- lasso1_flujo_tuned %&gt;% select_best(&quot;rmse&quot;)</code></pre>
+<p>En el proceso de ajuste, encontramos que <span class="math inline">\(\lambda=0\)</span> (no regularizar) es una opción indistinguible del óptimo. Por tanto, sería el modelo de regresión con todas las variables.</p>
+<pre class="r"><code>lasso2_receta &lt;- training(Boston_part) %&gt;%            
+                recipe(logmedv ~ chas + crim + zn + indus + nox + rm + 
+                    age + dis + rad + tax + ptratio + b + lstat) %&gt;% 
+                step_corr(all_predictors(), -all_nominal(), threshold = 0.9) %&gt;% 
+                step_poly(age, lstat, degree = 4) %&gt;% 
+                step_center(all_predictors(), -all_nominal()) %&gt;% 
+                step_scale(all_predictors(), -all_nominal()) %&gt;% 
+                step_dummy(chas)
+
+lasso2_flujo &lt;- workflow() %&gt;%
+  add_recipe(lasso2_receta) %&gt;%
+  add_model(lasso1_modelo)
+
+lasso2_flujo_tuned &lt;- lasso2_flujo %&gt;% 
+                        tune_grid(
+                          resamples = Boston_cv,
+                          metrics   = metric_set(rmse),
+                          grid      = LASSO_grid                          
+                          ) 
+
+lasso2_flujo_tuned %&gt;% collect_metrics() %&gt;% 
+  ggplot(aes(x=penalty, y=mean)) + 
+              geom_line() + geom_point(color=&quot;red&quot;) + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color=&quot;gray&quot;) </code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/modelo-lasso2-1.png" alt="Figura 13. Ajuste de lamdba, modelo 2" width="672" />
+<p class="caption">
+Figura 13. Ajuste de lamdba, modelo 2
+</p>
+</div>
+<pre class="r"><code>lasso2_flujo_tuned  %&gt;% show_best(&quot;rmse&quot;) %&gt;% 
+  kbl(digits = 4, caption = &quot;Table 14. Mejores lambdas en el Modelo 2 de LASSO&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 14. Mejores lambdas en el Modelo 2 de LASSO
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+penalty
+</th>
+<th style="text-align:left;">
+.metric
+</th>
+<th style="text-align:left;">
+.estimator
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+std_err
+</th>
+<th style="text-align:left;">
+.config
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1905
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0154
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model01
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.2026
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0142
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model02
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.2150
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0137
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model03
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.06
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.2250
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0136
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model04
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.08
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.2367
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0138
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model05
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>lambda2 &lt;- lasso2_flujo_tuned %&gt;% select_best(&quot;rmse&quot;)</code></pre>
+<p>También encontramos que el valor óptimo de <span class="math inline">\(\lamdba=0\)</span>. Dado que obtenemos que los mejores modelos son los dos anteriores, no necesitamos finalizar los modelos ni ver qué variables se han seleccionado.</p>
+</div>
+<div id="knn" class="section level2">
+<h2><span class="header-section-number">5.4</span> kNN</h2>
+<p>Consideremos modelos de k vecinos. Afortunadamente casi todas las variables explicativas son continuas y este método es suficientemente flexible para considerar posibles no linealidades en todas las variables. Vamos a ajustar el número de vecinos por validación cruzada con el precio y su logaritmo como variables dependientes.</p>
+<pre class="r"><code>knn1_receta &lt;- training(Boston_part) %&gt;%            
+  recipe(medv ~ crim + zn + indus + nox + rm + 
+           age + dis + rad + tax + ptratio + b + lstat) %&gt;% 
+  step_center(all_predictors(), -all_nominal()) %&gt;% 
+  step_scale(all_predictors(), -all_nominal())  
+
+knn1_modelo &lt;- nearest_neighbor(mode = &quot;regression&quot;,
+                  neighbors = tune(), dist_power = 2) %&gt;% 
+                set_engine(&quot;kknn&quot;)
+
+knn1_flujo &lt;- workflow() %&gt;%
+  add_recipe(knn1_receta) %&gt;%
+  add_model(knn1_modelo)
+
+knn_grid &lt;- grid_regular(neighbors(range = c(1, 12), trans = NULL),   
+                          levels = 12)                     
+
+knn1_flujo_tuned &lt;- knn1_flujo %&gt;% 
+                        tune_grid(
+                          resamples = Boston_cv,
+                          metrics   = metric_set(rmse),
+                          grid      = knn_grid                          
+                          ) 
+
+knn1_flujo_tuned %&gt;% collect_metrics() %&gt;% 
+  ggplot(aes(x=neighbors, y=mean)) + 
+              geom_line() + geom_point(color=&quot;red&quot;) + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color=&quot;gray&quot;) </code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/modelo-knn1-1.png" alt="Figura 14. Ajuste de k vecinos, modelo 1" width="672" />
+<p class="caption">
+Figura 14. Ajuste de k vecinos, modelo 1
+</p>
+</div>
+<pre class="r"><code>knn1_flujo_tuned  %&gt;% show_best(&quot;rmse&quot;) %&gt;% 
+  kbl(digits = 4, caption = &quot;Table 15. k-vecinos óptimo en el Modelo 1&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 15. k-vecinos óptimo en el Modelo 1
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+neighbors
+</th>
+<th style="text-align:left;">
+.metric
+</th>
+<th style="text-align:left;">
+.estimator
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+std_err
+</th>
+<th style="text-align:left;">
+.config
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+3.2995
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.2094
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model03
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+3.3268
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.2495
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model04
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+3.3601
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.1805
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model02
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+3.3610
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.2776
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model05
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+3.4003
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.3001
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model06
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>k1 &lt;- knn1_flujo_tuned %&gt;% select_best(&quot;rmse&quot;)</code></pre>
+<pre class="r"><code>knn2_receta &lt;- training(Boston_part) %&gt;%            
+  recipe(logmedv ~ crim + zn + indus + nox + rm + 
+           age + dis + rad + tax + ptratio + b + lstat) %&gt;% 
+  step_center(all_predictors(), -all_nominal()) %&gt;% 
+  step_scale(all_predictors(), -all_nominal())  
+
+knn2_flujo &lt;- workflow() %&gt;%
+  add_recipe(knn2_receta) %&gt;%
+  add_model(knn1_modelo)
+
+knn2_flujo_tuned &lt;- knn2_flujo %&gt;% 
+                        tune_grid(
+                          resamples = Boston_cv,
+                          metrics   = metric_set(rmse),
+                          grid      = knn_grid                          
+                          ) 
+
+knn2_flujo_tuned %&gt;% collect_metrics() %&gt;% 
+  ggplot(aes(x=neighbors, y=mean)) + 
+              geom_line() + geom_point(color=&quot;red&quot;) + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color=&quot;gray&quot;) </code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/modelo-knn2-1.png" alt="Figura 15. Ajuste de k vecinos, modelo 2" width="672" />
+<p class="caption">
+Figura 15. Ajuste de k vecinos, modelo 2
+</p>
+</div>
+<pre class="r"><code>knn2_flujo_tuned  %&gt;% show_best(&quot;rmse&quot;) %&gt;% 
+  kbl(digits = 4, caption = &quot;Table 16. k-vecinos óptimo en el Modelo 2&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 16. k-vecinos óptimo en el Modelo 2
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+neighbors
+</th>
+<th style="text-align:left;">
+.metric
+</th>
+<th style="text-align:left;">
+.estimator
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+std_err
+</th>
+<th style="text-align:left;">
+.config
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1713
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0083
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model06
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1714
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0088
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model07
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1718
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0092
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model08
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1721
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0079
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model05
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1723
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0096
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model09
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>k2 &lt;- knn2_flujo_tuned %&gt;% select_best(&quot;rmse&quot;)</code></pre>
+<p>El número óptimo de vecinos es 3 para el primer modelo y 6 en el segundo. Vamos a finalizar los modelos y ver sus métricas en la muestra de prueba.</p>
+<pre class="r"><code>knn_final &lt;- list() 
+knn_final[[1]] &lt;- knn1_flujo %&gt;% 
+                    finalize_workflow(k1) %&gt;% 
+                    last_fit(Boston_part)  %&gt;% 
+                    collect_metrics(&quot;rmse&quot;)
+
+knn_final[[2]] &lt;- knn2_flujo %&gt;% 
+                    finalize_workflow(k2) %&gt;% 
+                    last_fit(Boston_part)  %&gt;% 
+                    collect_metrics(&quot;rmse&quot;)
+
+knn_final %&gt;% bind_rows(.id = &quot;modelo&quot;) %&gt;% 
+  pivot_wider(names_from = .metric, values_from=.estimate) %&gt;% 
+  select(-.estimator) %&gt;% 
+  kbl(digits = 4, caption = &quot;Tabla 17. Métricas de kNN&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Tabla 17. Métricas de kNN
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+modelo
+</th>
+<th style="text-align:left;">
+.config
+</th>
+<th style="text-align:right;">
+rmse
+</th>
+<th style="text-align:right;">
+rsq
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model1
+</td>
+<td style="text-align:right;">
+2.7477
+</td>
+<td style="text-align:right;">
+0.8975
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model1
+</td>
+<td style="text-align:right;">
+0.1534
+</td>
+<td style="text-align:right;">
+0.8649
+</td>
+</tr>
+</tbody>
+</table>
+<p>Comparando estos resultados con los de la Tabla 12, queda claro que kNN tiene una mejor capacidad predictiva, tanto para la variable de precio como usando el logaritmo del precio. Sin embargo, estos modelos no nos dicen mucho sobre qué factores afectan a esa predicción (no tenemos ni modelo paramétrico y contrastes, ni representación gráficas o medidas de importancia).</p>
+</div>
+<div id="árboles-de-regresión" class="section level2">
+<h2><span class="header-section-number">5.5</span> Árboles de regresión</h2>
+<p>Pasamos a considerar modelos de árboles de decisión. Notad que para ajustar el coste de complejidad puede ser necesario varios rangos. Dado que hemos visto que sistemáticamente el modelo con el logaritmo del precio predice mejor, nos centramos en ese modelo (aunque esto es obviamene una elección y quizás deberían probarse más).</p>
+<pre class="r"><code>arbol2_receta &lt;- training(Boston_part) %&gt;%            
+  recipe(logmedv ~ chas + crim + zn + indus + nox + rm + 
+           age + dis + rad + tax + ptratio + b + lstat)
+
+arbol2_modelo &lt;-  decision_tree(mode = &quot;regression&quot;, 
+                                     cost_complexity = tune()) %&gt;% 
+                          set_engine(&quot;rpart&quot;) 
+
+arbol2_flujo &lt;- workflow() %&gt;%
+  add_recipe(arbol2_receta) %&gt;%
+  add_model(arbol2_modelo)
+
+arbol_grid &lt;- grid_regular(cost_complexity(range = c(0, 0.005), trans = NULL),   
+                          levels = 16)                     
+
+arbol2_flujo_tuned &lt;- arbol2_flujo %&gt;% 
+                        tune_grid(
+                          resamples = Boston_cv,
+                          metrics   = metric_set(rmse),
+                          grid      = arbol_grid                          
+                          ) 
+
+arbol2_flujo_tuned %&gt;% collect_metrics() %&gt;% 
+  ggplot(aes(x=cost_complexity, y=mean)) + 
+              geom_line() + geom_point(color=&quot;red&quot;) + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color=&quot;gray&quot;) </code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/modelo-arbol2-1.png" alt="Figura 16. Ajuste de árboles, modelo 2" width="672" />
+<p class="caption">
+Figura 16. Ajuste de árboles, modelo 2
+</p>
+</div>
+<pre class="r"><code>arbol2_flujo_tuned  %&gt;% show_best(&quot;rmse&quot;) %&gt;% 
+  kbl(digits = 4, caption = &quot;Table 18. Coste de complejidad  en el Modelo 1&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 18. Coste de complejidad en el Modelo 1
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+cost_complexity
+</th>
+<th style="text-align:left;">
+.metric
+</th>
+<th style="text-align:left;">
+.estimator
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+std_err
+</th>
+<th style="text-align:left;">
+.config
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0.0027
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1870
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0149
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model09
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.0030
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1872
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0148
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.0033
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1872
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0150
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model11
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.0037
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1879
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0147
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model12
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.0040
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1879
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0145
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model13
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>cost2 &lt;- arbol2_flujo_tuned %&gt;% select_best(&quot;rmse&quot;)</code></pre>
+<pre class="r"><code>arbol_final &lt;- arbol2_flujo %&gt;% 
+                    finalize_workflow(cost2) %&gt;% 
+                    last_fit(Boston_part)  
+
+arbol_final %&gt;%  collect_metrics(&quot;rmse&quot;) %&gt;%  
+  pivot_wider(names_from = .metric, values_from=.estimate) %&gt;% 
+  select(-.estimator) %&gt;% 
+  kbl(digits = 4, caption = &quot;Tabla 19. Métricas del árbol&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Tabla 19. Métricas del árbol
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+.config
+</th>
+<th style="text-align:right;">
+rmse
+</th>
+<th style="text-align:right;">
+rsq
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Preprocessor1_Model1
+</td>
+<td style="text-align:right;">
+0.2015
+</td>
+<td style="text-align:right;">
+0.7577
+</td>
+</tr>
+</tbody>
+</table>
+<p>Vemos que el mejor árbol de regresión no es mejor, a pesar de su flexibilidad, que el modelo de regresión lineal. Aun así podemos ver el flujo del árbol para hacernos una idea de qué factores están afectando a la predicción</p>
+<pre class="r"><code>arb &lt;- arbol_final$.workflow[[1]] %&gt;%   
+  pull_workflow_fit() 
+
+rpart.plot(arb$fit)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/modelos-arbol-final2-1.png" alt="Figura 17a. Mejor árbol de regresión, modelo 2" width="672" />
+<p class="caption">
+Figura 17a. Mejor árbol de regresión, modelo 2
+</p>
+</div>
+<p>También podemos recurrir a medidas de importancia de las variables.</p>
+<pre class="r"><code>arbol_final$.workflow[[1]] %&gt;%   
+  pull_workflow_fit() %&gt;% 
+  vip(num_features = 14)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/modelos-arbol-final3-1.png" alt="Figura 17b. Importancia en el mejor árbol de regresión, modelo 2" width="672" />
+<p class="caption">
+Figura 17b. Importancia en el mejor árbol de regresión, modelo 2
+</p>
+</div>
+</div>
+<div id="random-forests" class="section level2">
+<h2><span class="header-section-number">5.6</span> Random Forests</h2>
+<p>Finalmente intentamos ver si un modelo de “random forests” puede mejorar al árbol de regresión u otros modelos.</p>
+<pre class="r"><code>rf2_receta &lt;- training(Boston_part) %&gt;%            
+  recipe(logmedv ~ chas + crim + zn + indus + nox + rm + 
+           age + dis + rad + tax + ptratio + b + lstat)
+
+rf2_modelo &lt;-  rand_forest(mode = &quot;regression&quot;,
+                                       mtry = tune(), trees = 100) %&gt;% 
+                          set_engine(&quot;ranger&quot;, importance = &quot;impurity&quot;)
+
+rf2_flujo &lt;- workflow() %&gt;%
+  add_recipe(rf2_receta) %&gt;%
+  add_model(rf2_modelo)
+
+rf_grid &lt;- grid_regular(mtry(range = c(1, 12), trans = NULL),   
+                          levels = 12)                     
+
+rf2_flujo_tuned &lt;- rf2_flujo %&gt;% 
+                        tune_grid(
+                          resamples = Boston_cv,
+                          metrics   = metric_set(rmse),
+                          grid      = rf_grid                          
+                          ) 
+
+rf2_flujo_tuned %&gt;% collect_metrics() %&gt;% 
+  ggplot(aes(x=mtry, y=mean)) + 
+              geom_line() + geom_point(color=&quot;red&quot;) + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color=&quot;gray&quot;) </code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/modelo-rf2-1.png" alt="Figura 18. Ajuste de RF, modelo 2" width="672" />
+<p class="caption">
+Figura 18. Ajuste de RF, modelo 2
+</p>
+</div>
+<p>El número óptimo de variables a usar (aleatoriamente) en cada nodo son 7.</p>
+<pre class="r"><code>rf2_flujo_tuned  %&gt;% show_best(&quot;rmse&quot;) %&gt;% 
+  kbl(digits = 4, caption = &quot;Table 20. Ajuste de Random Forest  en el Modelo 2&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Table 20. Ajuste de Random Forest en el Modelo 2
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+mtry
+</th>
+<th style="text-align:left;">
+.metric
+</th>
+<th style="text-align:left;">
+.estimator
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+std_err
+</th>
+<th style="text-align:left;">
+.config
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1541
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0103
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model05
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1564
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0114
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model06
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1568
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0107
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model04
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1572
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0106
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model08
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+rmse
+</td>
+<td style="text-align:left;">
+standard
+</td>
+<td style="text-align:right;">
+0.1575
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0.0109
+</td>
+<td style="text-align:left;">
+Preprocessor1_Model07
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>mtry2 &lt;- rf2_flujo_tuned %&gt;% select_best(&quot;rmse&quot;)</code></pre>
+<p>Por último finalizamos el modelo</p>
+<pre class="r"><code>rf_final &lt;- rf2_flujo %&gt;% 
+                    finalize_workflow(mtry2) %&gt;% 
+                    last_fit(Boston_part)  
+
+rf_final %&gt;%  collect_metrics(&quot;rmse&quot;) %&gt;%  
+  pivot_wider(names_from = .metric, values_from=.estimate) %&gt;% 
+  select(-.estimator) %&gt;% 
+  kbl(digits = 4, caption = &quot;Tabla 21. Métricas de RF&quot;) %&gt;% kable_paper(&quot;hover&quot;)</code></pre>
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<caption>
+Tabla 21. Métricas de RF
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+.config
+</th>
+<th style="text-align:right;">
+rmse
+</th>
+<th style="text-align:right;">
+rsq
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Preprocessor1_Model1
+</td>
+<td style="text-align:right;">
+0.1495
+</td>
+<td style="text-align:right;">
+0.8779
+</td>
+</tr>
+</tbody>
+</table>
+<p>El modelo de “Random Forest” incluso mejor a “kNN”. En este caso, podemos ver qué variables han resultados mejores predictores del precio.</p>
+<pre class="r"><code>rf_final$.workflow[[1]] %&gt;%   
+  pull_workflow_fit() %&gt;% 
+  vip(num_features = 14)</code></pre>
+<div class="figure">
+<img src="Proyect01_files/figure-html/RF-vip-1.png" alt="Figura 19. Importancia en el mejor RF, modelo 2" width="672" />
+<p class="caption">
+Figura 19. Importancia en el mejor RF, modelo 2
+</p>
+</div>
+<p>Este gráfico nos indica que la variable más importante (con diferencia) es la relacionada con la “pobreza” de la zona en la que se encuentra la casa. Después nos encontramos una característica de la casa en sí (número de habitaciones, aunque realmente es la media de la zona) y la criminalidad de la zona. No existe un criterio formal para decidir en que punto parar determinar qué variables son importantes. Quizás en este caso se puede “argumentar” que hay una caida mayor de la importancia después de la contaminación de la zona, la calidad de las escuelas y la distancia al centro.</p>
+</div>
+</div>
+<div id="conclusión" class="section level1">
+<h1><span class="header-section-number">6</span> Conclusión</h1>
+<p>Uno de los objetivos de este informe era determinar los atributos del vecindario que mejor explicaban la variación en los precios de las viviendas. A partir de la información de dos de los mejores modelos (regresión lineal y “random forest”) que ofrecen capacidad de interpretar los resultados, observamos que coinciden en la importancia de que el barrio esté en una zona “deprimida” (mucho porcentaje de población con bajo estatus social) en la determinación del precio. Con mayor o menor importancia, también coinciden en la relevancia de la criminalidad en la zona, el número medio de habitaciones y el ratio de alumnos por profesor. Algunas características como la edad o una localización cercana al río no parecen ser importantes; esto es una diferencia respecto al análisis de covariación, donde sí se apreciaba cierta correlación. Esto nos indica que esas características están relacionadas con otras que sí son más relevantes en la fijación de precios.</p>
+<p>Por otro lado estos resultados también se podrían utilizar para predecir el precio de una nueva casa (o saber si una en el mercado está sobrevalorada).</p>
+<pre class="r"><code>rf_final$.workflow[[1]] %&gt;%   
+  pull_workflow_fit() %&gt;% 
+  predict(new_data = tibble(chas = 1, crim = 0.03,  zn = 0,
+                            indus = 7, nox = 0.5, rm = 2,
+                            age = 10,  dis = 6, rad = 5,  
+                            tax = 290, ptratio = 20, b = 390, lstat=9)) %&gt;% 
+  exp()</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:right;">
+.pred
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+20.68518
+</td>
+</tr>
+</tbody>
+</table>
+<p>Notad que debemos deshacer el logaritmo para dar una predicción en unas unidades con sentido (miles de dólares). Recordad que también podemos ofrecer un intervalo de confianza para la predicción.</p>
+<p>Fijaos que en otros contextos o con otros datos podéis tener un caso más obvio que predecir (o no).</p>
+</div>
+<div id="apéndice-a" class="section level1">
+<h1><span class="header-section-number">7</span> Apéndice A</h1>
+<p>Como se ha comentado, nuestro conjunto de datos dispone de 506 observaciones y 14 variables. A continuación se presenta una breve descripción de cada variable:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CRIM</td>
+<td align="left">tasa de criminalidad per cápita por ciudad</td>
+</tr>
+<tr class="even">
+<td align="left">ZN</td>
+<td align="left">proporción de terreno residencial dividido en</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">zonas para lotes de más de 25,000 pies cuadrados.</td>
+</tr>
+<tr class="even">
+<td align="left">INDUS</td>
+<td align="left">proporción de acres de negocios no comerciales por zona</td>
+</tr>
+<tr class="odd">
+<td align="left">CHAS</td>
+<td align="left">variable “dummy”del río Charles</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">(1 si la zona limita con el río; si no, 0)</td>
+</tr>
+<tr class="odd">
+<td align="left">NOX</td>
+<td align="left">concentración de óxidos nítricos (partes por 10 millones)</td>
+</tr>
+<tr class="even">
+<td align="left">RM</td>
+<td align="left">número medio de habitaciones por vivienda</td>
+</tr>
+<tr class="odd">
+<td align="left">AGE</td>
+<td align="left">proporción de casas ocupadas por sus propietarios</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">construidas antes de 1940.</td>
+</tr>
+<tr class="odd">
+<td align="left">DIS</td>
+<td align="left">distancia media ponderada a cinco centros de empleo de Boston</td>
+</tr>
+<tr class="even">
+<td align="left">RAD</td>
+<td align="left">índice de accesibilidad a carreteras radiales</td>
+</tr>
+<tr class="odd">
+<td align="left">TAX</td>
+<td align="left">impuesto sobre el valor total de la propiedad</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">(por cada $10,000)</td>
+</tr>
+<tr class="odd">
+<td align="left">PTRATIO</td>
+<td align="left">número de alumnos por docente en los colegios de la zona (“town”)</td>
+</tr>
+<tr class="even">
+<td align="left">B</td>
+<td align="left">1000(Bk - 0.63)^2 donde Bk es la proporción de población de color</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">en la zona (0.63 es la media en la ciudad)</td>
+</tr>
+<tr class="even">
+<td align="left">LSTAT</td>
+<td align="left">porcentaje de población desfavorecida (bajo estatus social)</td>
+</tr>
+<tr class="odd">
+<td align="left">MEDV</td>
+<td align="left">valor mediano de las viviendas ocupadas por sus propietarios</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">(en miles de dólares)</td>
+</tr>
+</tbody>
+</table>
 </div>
 
 

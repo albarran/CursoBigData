@@ -16,7 +16,7 @@ output:
 knitr::opts_chunk$set(eval = TRUE, echo = TRUE, 
                       warning = FALSE, message = FALSE,
                       results = "hide", fig.show="hide")
-# se muestra y evalua el código,
+# se muestra y evalúa el código,
 # no se muestran mensajes, ni avisos (warnings)
 # no se muestran los resultados de código (tampoco gráficos)
 #     en los códigos que considere necesarios los mostraré
@@ -33,6 +33,8 @@ library("skimr")
 library("dlookr")
 library("broom")
 library("kableExtra")
+library("rpart.plot")
+library("vip")
 
 #fijo el directorio de trabajo
 #setwd("/home/albarran/Dropbox/MAD/00.TEC")
@@ -43,9 +45,9 @@ library("kableExtra")
 
 ## Comentario General
 
-Este documento debe entenderse como **un ejemplo**, no *la* guía o *la* receta única de hacer las cosas. Cada conjunto de datos es diferente y requiere un tratamiento distinto. Con los mismos datos se pueden hacer distintos análisis. Cada uno puede realizar distintos tratamientos de los datos, distintos modelos (usar regresión lineal, árboles, etc), diferentes especificaciones (incluir distintas combinaciones de variables y transformadas de manera diferente), etc. Por eso existen "hackatones" o competiciones para ver quién predice mejor con los mismos datos: si existiera una receta, ganaría un ordenador.
+Este documento debe entenderse como **un ejemplo**, no *la* guía o *la* receta única de hacer las cosas. Cada conjunto de datos es diferente y requiere un tratamiento distinto. Con los mismos datos se pueden hacer distintos análisis. Cada uno puede realizar distintos tratamientos de los datos, distintos modelos (usar regresión lineal, árboles, etc.), diferentes especificaciones (incluir distintas combinaciones de variables y transformadas de manera diferente), etc. Por eso existen "hackatones" o competiciones para ver quién predice mejor con los mismos datos: si existiera una receta, ganaría un ordenador.
 
-Además en este ejemplo no se entran en muchos detalles de las distintasa fases del trabajo: características de los datos, procedimientos, tablas con encabezados adecuados, gráficos con ejes correctamente nombrados, comentario de resultados, etc. Tampoco se pretende que vuestros trabajos entren en muchos detalles, pero sí algo más de lo que se discute aquí.
+Además en este ejemplo no se entran en muchos detalles en algunas cuestiones de las fases del trabajo: características de los datos, procedimientos, tablas con encabezados adecuados, gráficos con ejes correctamente nombrados, comentario de resultados, etc. Tampoco se pretende que vuestros trabajos sean excesivamente detallados, pero sí algo más de lo que se discute aquí. Sin embargo, este ejemplo tiene probablemente muchos más gráficos y tablas de los que vosotros debéis reportar y se han probado muchas más cosas para ofrecer como ejemplo de los que vosotros tendréis que hacer.
 
 Por otro lado, he incluido la opción de que se muestre o se oculte el código de todo lo que he hecho. Esto es solo por cuestiones didácticas. No tenéis porque hacerlo igual y, de hecho, debéis pensar qué y cuándo queréis mostrar algo.
 
@@ -70,17 +72,17 @@ Boston <- read_tsv("http://lib.stat.cmu.edu/datasets/boston",
 Boston <- read_csv("https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv")
 ```
 
-Los datos tienen `r dim(Boston)[1]` observaciones y `r dim(Boston)[2]` variables. (NOTA: esta información se ha incluido usando el código de R en línea "r dim(Boston)[1]" y "r dim(Boston)[2]") y también se puede obtener con el siguiente código; NO está claro que queráis mostar este código.)
+Los datos tienen `r dim(Boston)[1]` observaciones y `r dim(Boston)[2]` variables. (NOTA: esta información se ha incluido usando el código de R en línea "r dim(Boston)[1]" y "r dim(Boston)[2]") y también se puede obtener con el siguiente código; NO está claro que queráis mostrar este código.)
 
 ```{r dim-datos, results='asis'}
 dim(Boston)
 ```
 
-Una descripción completa los atributos disponibles puede encontrarse en [Apéndice A]. Estos datos fueron originalmente utilizados en un estudio sobre el impacto de la contaminación del aire (utilizando las concentraciones de óxido de nitrógeno). En este trabajo, consideramos el efecto de otras características de la zona donde se encuentra la casa como la proximidad al río Charles, la distancia a los principales centros de empleo, la proporción de alumnos por maestro en las escuelas y los niveles de delincuencia. Nuestra variable de interés para predecir es el valor mediano del precio de la vivienda en mil dólares (denotado por MEDV). Notad que nos centramos en las viviendas ocupadas por sus propietarios, es decir, consideramos que el valor de las casas destinadas al alquiler sigue un proceso diferente para determinar su valor.
+Una descripción completa los atributos disponibles puede encontrarse en [Apéndice A]. Estos datos fueron originalmente utilizados en un estudio sobre el impacto de la contaminación del aire (utilizando las concentraciones de óxido de nitrógeno). En este trabajo, consideramos el efecto de otras características de la zona donde se encuentra la casa como la proximidad al río Charles, la distancia a los principales centros de empleo, la calidad de las escuelas (medida por la el número de alumnos por maestro) y los niveles de delincuencia. Nuestra variable de interés para predecir es el valor mediano del precio de la vivienda en mil dólares (denotado por MEDV). Notad que nos centramos en las viviendas ocupadas por sus propietarios, es decir, consideramos que el valor de las casas destinadas al alquiler se determina según un proceso diferente.
 
 # Exploración Inicial
 
-Debemos considerar si los datos están listos para trabajar o requieren algún tipo de limpieza, ordenación o transformación. En primer comprobamos, el tipo de datos de cada variable y comprobamos si es el adecuado. En este caso, todas las variables son numéricas, lo cual se corresponde con la información cuantitativa de la mayoría de ellos. La variable que nos dice si la zona de la casa está cerca del rio es una variable binaria, es decir, aporta información cualitativa. En este caso, no es crucial convertila en un factor (en los modelos y para otras cuestiones, convertimos los factores en un variables binarias). En otros casos, podemos necesitar convertir más variables con información cualitativa a factores o eliminar variables de tipo carácter o con información que no podamos procesar. NOTA: para esto habremos comprobado el tipo de cada variable, habremos mirado los valores y contrastado con la información que según su descripcion debería tener. Utilizaríamos un código como el siguiente, aunque probablemente NO queráis incluir en el documento ni lo uno ni lo otro.
+Debemos considerar si los datos están listos para trabajar o requieren algún tipo de limpieza, ordenación o transformación. En primer lugar, comprobamos si el tipo de datos de cada variable es el adecuado. En este caso, todas las variables son numéricas, lo cual se corresponde con la información cuantitativa de la mayoría de ellas. La variable que nos dice si la zona de la casa está cerca del río es una variable binaria, es decir, aporta información cualitativa. En este caso, no es crucial convertirla en un factor (en los modelos y para otras cuestiones, convertimos los factores en variables binarias). En otros casos, podemos necesitar convertir más variables con información cualitativa a factores o eliminar variables de tipo carácter o con información que no podamos procesar. NOTA: para esto habremos comprobado el tipo de cada variable, habremos mirado los valores y contrastado con la información que según su descripción debería tener. Utilizaríamos un código como el siguiente, aunque probablemente NO queráis incluir en el documento ni lo uno ni lo otro.
 
 ```{r explo-datos, results='markup'}
 glimpse(Boston)
@@ -97,9 +99,9 @@ Boston$chas <- factor(Boston$chas,
 
 # Análisis Exploratorio y Visualización de los datos
 
-La siguiente fase consiste en analizar la distribución de valores de cada variable (análisis de variación) y de las posibles relaciones entre ellas (análisis de covariación). Esto nos puede llevar a realizar limpieza adicional de los datos (en particular, relacionada con valores ausentes y puede que atípicos) o transformaciones de los datos (como tomar logaritmos o discretizar alguna variable). También podemos encontrar características de los datos que sean de interés por sí mismas como para especificar los modelos. Para este análisis nos podemos ayudar en librerías que realizan algunas de las tareas de forma automátizada. PERO recordad que NO queremos en general mostrar la salida directa de estos paquetes, sino que la utilizaremos para mostar aquello que consideremos más interesante.
+La siguiente fase consiste en analizar la distribución de valores de cada variable (análisis de variación) y las posibles relaciones entre ellas (análisis de covariación). Esto nos puede llevar a realizar limpieza adicional de los datos (en particular, relacionada con valores ausentes y puede que atípicos) o transformaciones de los datos (como tomar logaritmos o discretizar alguna variable). También podemos encontrar características de los datos que sean de interés por sí mismas como para especificar los modelos. Para este análisis nos podemos ayudar en librerías que realizan algunas de las tareas de forma automatizada. PERO recordad que NO queremos en general mostrar la salida directa de estos paquetes, sino que la utilizaremos para aprender nosotros y luego mostrar aquello que consideremos más interesante.
 
-Por ejemplo, usando la libreria `skimr` podemos ver
+Por ejemplo, usando la biblioteca `skimr` podemos ver
 
 ```{r skimr, results='markup'}
 skim(Boston)
@@ -125,7 +127,7 @@ Boston %>%
 
 ## Análisis de variación
 
-Como primer elemento destacable, estos datos no continene valores ausentes en ninguna de las variables.
+Como primer elemento a destacar, estos datos no contiene valores ausentes en ninguna de las variables. En caso contrario, deberíamos identificar cuántas observaciones y qué variables están afectadas. Sabemos que podemos posponer la imputación de valores a una fase posterior (como un paso del pre-procesado antes de estimar un modelo), pero es conveniente tener una visión general y pensar si algunas observaciones probablemente serán descartadas (si tienen muchos valores ausentes y sobre todo afectan a la variable dependiente).
 
 Podemos centrarnos en describir con más detalles algunas distribuciones. Esto nuevamente es un EJEMPLO dependiendo de las variables que tengamos y de qué observemos. En general, caracterizar la variable dependiente suele ser una buena idea. Visualizamos la distribución y densidad del precio mediano de las viviendas. La curva negra representa la densidad. Vemos que el valor medio del precio de la vivienda está sesgado a la derecha. Es decir, observamos precios muy altos con una frecuencia mayor de la esperada en una distribución simétrica donde existiría la misma proporción por encima y debajo de la media.
 
@@ -133,9 +135,9 @@ Podemos centrarnos en describir con más detalles algunas distribuciones. Esto n
 Boston %>%  ggplot(aes(x=medv)) + geom_histogram(aes(y=..density..))+ geom_density() + ggtitle("Distribución del Precio") + xlab("Precio de las casas") + ylab("Densidad")
 ```
 
-Dada esta asimetría, quizás debamos considerar modelizar posteriormente esta variable transformada en logaritmos. La razón: se aprecia un comportamiento que puede modelizarse mejor de forma no lineal. También se puede nota una acumulación de valores en 50 mil dólares (se puede observar en los resultados de `describe()` que esa acumulación NO es producto de la discretización del gráfico sino de que ese valor se repite varias veces).
+Dada esta asimetría, quizás debamos considerar modelizar posteriormente esta variable transformada en logaritmos. La razón: se aprecia un comportamiento que puede modelizarse mejor de forma no lineal. También se puede nota una acumulación de valores en 50 mil dólares (Se puede observar en los resultados de `describe()` que ese valor exacto se repite varias veces, NO es producto de la discretización del gráfico en la que se acumulan varios valores diferentes en un intervalo en torno a 50).
 
-También podemos representar gráficamente o en un tabla la única variable categórica que tenemos. 
+También podemos representar gráficamente o en un tabla la única variable categórica que tenemos. La conclusión no es particularmente interesante: solo unas pocas zonas de la ciudad están cerca del río.
 
 ```{r tabla-rio, results='markup'}
 Boston %>%  count(chas) %>% 
@@ -145,14 +147,14 @@ Boston %>%  count(chas) %>%
 ```
 
 
-En el caso de variables binarias las podemos representar de varias maneras: como una distribución o con una sola barra (NOTA: los gráficos siguientes son redundantes en esta caso, con uno de ellos sería más que suficiente)
+En el caso de variables binarias las podemos representar de varias maneras: como una distribución o con una sola barra (NOTA: los gráficos siguientes son redundantes en esta caso, con uno de ellos sería más que suficiente en caso de considerar relevante esta información.)
 ```{r graf-rio, fig.show='hold', fig.cap="Figura 2. Distribución de la cercanía al río", out.width="50%"}
 Boston %>%  ggplot() + geom_bar(aes(x=chas)) +  xlab("Zona cercana al río") +ylab("Número de casos")
 
 Boston %>%  ggplot() + geom_bar(aes(x="",fill=chas)) + labs(fill="Zona cercana al río") +ylab("Número de casos")
 ```
 
-También podemos mostrar algunas otras características interesantes mediante gráficos y/o tablas de estadísticos descriptivos. Algunas variables como el número de habitaciones tienen distribuciones bastante simétricas. Mientras que otras, como la edad o el porcentaje de población desfavorecida muestran claras asimetrías: hay una alta concentración de casas "viejas" y de zonas no desfavorecidas. NOTA: Recordad que habría que probar varios anchos de intervalos (*binwidth*) para asegurarnos de entender la forma de la distribución. También hay que asegurarse de que los nombres de los gráficos y de los ejes son suficientemente descriptivos (quizás no es el caso en algunos de los que presento aquí).
+También podemos mostrar algunas otras características interesantes mediante gráficos y/o tablas de estadísticos descriptivos. Algunas variables como el número de habitaciones tienen distribuciones bastante simétricas. Mientras que otras, como la edad o el porcentaje de población desfavorecida muestran claras asimetrías: hay una alta concentración de casas "viejas" y de zonas no desfavorecidas. NOTA: Recordad que habría que probar varios anchos de intervalos (*binwidth*) para asegurarnos de entender la forma de la distribución. También debéis poner nombres suficientemente descriptivos e informativos a los gráficos, los ejes, la leyenda, etc. (Quizás no es el caso en algunos de los que presento aquí).
 
 
 ```{r graf-varias, fig.show='hold', fig.cap="Figura 3. Distribuciones", out.width="50%"}
@@ -161,11 +163,21 @@ Boston %>%  ggplot(aes(x=age)) + geom_histogram(aes(y=..density..))+ geom_densit
 Boston %>%  ggplot(aes(x=lstat)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab("Porcentaje de población desfavorecida") + ylab("Densidad")
 ```
 
-El caso de la distancia a los centros de empleo es similar a las dos anteriores: una gran concentración en zonas bien conectadas, aunque una cola de zonas alejadas. Se omite por simplicidad: no hay que mostrar gráficos o tablas de cada variable ni comentar necesariamente las características de la distribución de todas, solo de aquellas con rasgos interesante o relevantes.
+Notad que en la variable edad nuevamente hay una concentración de valores en 100; en la salida `describe()` mostrada anteriormente, se aprecia mejor que ese valor exacto está en los datos originales, no resulta de que se agrupen valores en el gráfico.
+
+El caso de la distancia a los centros de empleo es similar a las dos anteriores: una gran concentración en zonas bien conectadas, aunque una cola de zonas alejadas. Se podría omitir: no hay que mostrar gráficos o tablas de cada variable ni comentar necesariamente las características de la distribución de todas, solo de aquellas con rasgos interesante o relevantes.
+
+Otra variable en principio relacionada, el índice de accesibilidad, muestra una distribución "poco continua": además de un cúmulo de valores en la cola derecha, hay muchos huecos vacíos. Si probáis un transformación logarítmica, veréis que no cambia en esencia. Las variables con este forma en su distribución suelen ser candidatas a ser discretizadas.
+
+```{r graf-dists, fig.show='hold', fig.cap="Figura 4. Distribuciones", out.width="50%"}
+Boston %>%  ggplot(aes(x=dis)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab("Distancia a centro de trabajo") + ylab("Densidad")
+
+Boston %>%  ggplot(aes(x=rad)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab("Índice de accesibilidad") + ylab("Densidad")
+```
 
 Algunas variables tienen distribuciones con características poco reseñables: unas con valores distribuidos de forma relativamente homogénea, otras dispersas, con concentraciones en valores aislados en medio o en los extremos de la distribución, pero no aportan mucho información (se podrían omitir). En este caso, quizás se podría notar una concentración de zonas con altos impuestos, muy diferenciadas del resto.
 
-```{r graf-varias2, fig.show='hold', fig.cap="Figura 4. Distribuciones", out.width="33.33%"}
+```{r graf-varias2, fig.show='hold', fig.cap="Figura 5. Distribuciones", out.width="33.33%"}
 Boston %>%  ggplot(aes(x=nox)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab("Concentración de óxidos nítricos") + ylab("Densidad")
 
 Boston %>%  ggplot(aes(x=ptratio)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab("Ratio de alumnos por profesor") + ylab("Densidad")
@@ -174,21 +186,21 @@ Boston %>%  ggplot(aes(x=tax)) + geom_histogram(aes(y=..density..))+ geom_densit
 
 ```
 
-Algo más interesantes son algunas variables que muestran polaridad en sus valores o una excesiva acumulación en algunos. Por ejemplo, la criminalidad y el porcentaje de población de color tienen distribuciones muy asimétricas y, en el segundo caso, persiste incluso tras transoformar en logaritmos.
+Algo más interesantes son algunas variables que muestran polaridad en sus valores o una excesiva acumulación en algunos. Por ejemplo, la criminalidad y el porcentaje de población de color tienen distribuciones muy asimétricas y, en el segundo caso, persiste incluso tras transformar en logaritmos.
 
-```{r graf-varias3, fig.show='hold', fig.cap="Figura 5. Distribuciones", out.width="50%"}
+```{r graf-varias3, fig.show='hold', fig.cap="Figura 6a. Distribuciones", out.width="50%"}
 Boston %>%  ggplot(aes(x=crim)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab("Criminalidad") + ylab("Densidad")
 Boston %>%  ggplot(aes(x=crim)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab("Criminalidad") + ylab("Densidad") + scale_x_log10()
 
 ```
 
-```{r graf-varias4, fig.show='hold', fig.cap="Figura 6. Distribuciones", out.width="50%"}
+```{r graf-varias4, fig.show='hold', fig.cap="Figura 6b. Distribuciones", out.width="50%"}
 Boston %>%  ggplot(aes(x=b)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab("Población de color") + ylab("Densidad") 
 Boston %>%  ggplot(aes(x=b)) + geom_histogram(aes(y=..density..))+ geom_density() + xlab("Población de color") + ylab("Densidad") + scale_x_log10()
 
 ```
 
-Estas variables y algunas otras anteriores son candidatas a ser discretizadas. La criminalidad, por ejemplo, no solo muestra una concentración en unos pocos valores, sino que una vez transformada en logaritmos se aprecian dos grupos diferenciados, como también pasaba con los impuestos. En el caso de la ratio de profesor/alumno también unos valores con gran concentración de frecuencia y muy pocos por encima de este por lo que podrían agruparse juntos. En el caso de la población de color, vemos que a partir del percentil 75, los valores son prácticamente iguales y antes del percentil 10 son mucho menores que en el resto de la distribución. En estos casos de valores concentrados o infrecuentes, agrupar y discretizar es una buena opción porque es más fácil identificar el efecto medio sobre el precio de la vivienda de un rango de valores (ej., zonas de baja criminalidad frente a alta) que el efecto de incrementar en un punto la variables. Es decir, buscamos efectos no lineales debido a la distribución de la variable.
+Estas variables y algunas otras anteriores son candidatas a ser discretizadas. La criminalidad, por ejemplo, no solo muestra una concentración en unos pocos valores, sino que una vez transformada en logaritmos se aprecian dos grupos diferenciados, como también pasaba con los impuestos. En el caso de la ratio de profesor/alumno también unos valores con gran concentración de frecuencia y muy pocos por encima de este por lo que podrían agruparse juntos. En el caso de la población de color, vemos que a partir del percentil 75, los valores son prácticamente iguales y antes del percentil 10 son mucho menores que en el resto de la distribución. En estos casos de variables con valores concentrados o infrecuentes y con saltos o huecos, no podemos decir que la variable que observamos en nuestra muestra tenga una apariencia de variable continua, aunque en principio lo sea. Por tanto, agrupar y discretizar es una buena opción. En particular, es más fácil identificar el efecto medio sobre el precio de la vivienda de un rango de valores (ej., zonas de baja criminalidad frente a alta) que el efecto de incrementar en un punto la variable (cuando en los datos no observamos valores con ese punto más). En otras palabras, vamos a modelizar efectos flexibles no lineales.
 
 ## Análisis de covariación
 
@@ -203,7 +215,7 @@ Boston %>% ggplot(aes(x = medv)) + geom_density(mapping = aes(colour = chas)) + 
 Boston %>% ggplot(aes(x = medv)) + geom_density() + facet_wrap(~chas) + ylab("Densidad")  + xlab("Precio")
 ```
 
-Parece que las casa cercanas al río tienen un precio (ligeramente) superior, aunque la diferecia no es muy grande. Ambas distribuciones son asimétricas, aunque en el caso de casas cercanas al río la cola derecha no es tan larga. Mediante una regresión simple o calculando las medias podemos comprobar si existen diferencias:
+Parece que las casa cercanas al río tienen un precio superior, aunque la diferencia no parece grande. Ambas distribuciones son asimétricas, aunque en el caso de casas cercanas al río la cola derecha no es tan larga. Mediante una regresión simple o calculando las medias podemos comprobar si existen diferencias en media y si son significativas:
 
 ```{r precio-rio1, results='asis'}
 lm(data = Boston, medv ~ chas) %>% broom::tidy() %>%  kbl(digits = 2, caption = "Table 2a. Precio según cercanía al río") %>% kable_paper("hover")
@@ -214,7 +226,23 @@ lm(data = Boston, medv ~ chas) %>% broom::tidy() %>%  kbl(digits = 2, caption = 
 Boston %>% group_by(chas) %>% describe(medv) %>% select(variable:n, mean, se_mean) %>%  kbl(digits = 2, caption = "Tabla 2b. Precio según cercanía al río") %>% kable_paper("hover")
 ```
 
-A continuación podemos a analizar rápidamente si las variables continuas están relacionadas con nuestra variable de interés, precio de la vivienda. Lo podemos hacer mediante distintos análisis de correlación, en una tabla (excesivamente larga) o visualmente.
+También podríamos analizar si la variable binaria de cercanía al río está relacionada. (NOTA: esto nuevamente es un código de ejemplo para hacer de forma fácil este proceso. NO es necesario que vosotros lo hagáis así.)
+
+```{r regresores-rio, results='asis'}
+dif.rio <- function(var) {
+  formula <- paste0(var," ~ chas")
+  lm(data = Boston, formula) %>% tidy() %>% filter(term=="chasYes") %>% select(estimate, p.value)
+}
+
+vars <- c("crim", "zn", "indus", "nox", "rm", "age", "dis", "rad", "tax", "ptratio", "b", "lstat")
+
+tabla <- vars %>% map_df(dif.rio)
+bind_cols(Variable=vars, tabla) %>%  kbl(digits = 2, caption = "Tabla 2c. Diferencias en variable por cercanía al río") %>% kable_paper("hover")
+```
+
+Vemos que las casas cercanas al rio son más antiguas, con más habitaciones, más cercanas al centro de trabajo, con más contaminación y mejores condiciones escolares.
+
+A continuación podemos analizar rápidamente si las variables continuas están relacionadas con nuestra variable de interés, precio de la vivienda, y entre ellas. Lo podemos hacer mediante distintos análisis de correlación, en una tabla (excesivamente larga) o visualmente.
 
 ```{r tabla-correl}
 Boston %>% correlate() %>% 
@@ -230,7 +258,7 @@ Boston %>% mutate(logmedv=log(medv)) %>% select(-medv) %>% plot_correlate()
 
 Hemos considerado la correlación tanto con el precio como con su logaritmo, dado lo discutido anteriormente. Sin embargo, apenas se aprecian diferencias.
 
-Vemos que existe una fuerte correlación positiva o negativa entre el precio y varias variables que intuitivamente consideraríamos como importartes. El número de habitaciones tiene la correlación positiva más fuerte con el valor medio del precio de la vivienda, mientras que el porcentaje de la población desfavorecida y el número de alumnos por docente tienen una correlación negativa fuerte. También es evidente que las zonas más industriales y la contaminación están fuertemente correlacionados positivamente entre sí, puesto que los niveles de óxido nítrico tienden a aumentar con el aumento de las industrias. También vemos que las zonas con más población desfavorecida son las más industriales y contaminadas, con casas más antiguas y de menos habitaciones y con escuelas con un mayor ratio de alumnos por profesor. Debemos recordar esto de cara a la especificación de los modelos de regresión lineal.
+Vemos que existe una fuerte correlación (positiva o negativa) entre el precio y varias variables que intuitivamente consideraríamos como importantes. El número de habitaciones tiene la correlación positiva más fuerte con el valor medio del precio de la vivienda, mientras que el porcentaje de la población desfavorecida y el número de alumnos por docente tienen una correlación negativa fuerte. También es evidente que las zonas más industriales y la contaminación están fuertemente correlacionados positivamente entre sí, puesto que los niveles de óxido nítrico tienden a aumentar con el aumento de las industrias. También vemos que las zonas con más población desfavorecida son las más industriales y contaminadas, con casas más antiguas y de menos habitaciones y con escuelas con un mayor ratio de alumnos por profesor. Debemos recordar esto de cara a la especificación de los modelos de regresión lineal.
 
 Sin embargo, esto no considera posibles relaciones no lineales. Para ello vamos a representar varios gráficos de dispersión y un ajuste no lineal. Nuevamente, en vuestro trabajo no mostraréis necesariamente todos estos gráficos sino una selección después de haberlos vistos.
 
@@ -280,7 +308,7 @@ Boston %>%
 En primer lugar, no se aprecian grandes diferencias entre el modelo con el precio sin transformar o en logaritmos. En segundo lugar, sí se aprecia cierta no linealidad en la relación con las variables de edad, número de habitaciones y porcentaje de población desfavorecida. En el resto de relaciones, no están tan claras por la  acumulación de valores. 
 
 
-Podemos probar discretizando algunas de las varialbes comentadas anteriormente. Por ejemplo, hacemos dos grupos de criminalidad; los umbrales para discretizar no tienen una justificación muy formal: se basan en lo que aproximadamente hemos visto. 
+Podemos probar discretizando algunas de las variables comentadas anteriormente. Por ejemplo, hacemos dos grupos de criminalidad; los umbrales para discretizar no tienen una justificación muy formal: se basan en lo que aproximadamente hemos visto. 
 
 ```{r graf-crim, fig.cap="Figura 10. Gráficos Criminalidad Discreta", fig.show='hold', out.width="50%"}
   Boston %>% 
@@ -295,142 +323,510 @@ Podemos probar discretizando algunas de las varialbes comentadas anteriormente. 
 ```
 Tanto el gráfico como la regresión apuntan a un efecto significativo de la criminalidad sobre los precios. En principio deberíamos probar con otros puntos de corte para discretizar, pero por simplicidad utilizaremos este obtenido a partir del análisis exploratorio.
 
-```{r precio-crimalta-mut, results='asis'}
-Boston <- Boston %>% 
-            mutate(crim.alta = cut(crim, breaks = c(0,1,Inf), labels = c("Baja","Alta") ) )
-```
-
-Podemos proceder de manera similar con otras variables.
+Podemos proceder de manera similar con otras variables. Nuevamente, tanto el número de grupos como los valores de corte no se derivan de forma super rigurosa, sino en base al análisis exploratorio. Debería probarse con otras variantes.
 
 ```{r precio-otras.discretizadas, results='asis'}
-Boston <- Boston %>% 
-            mutate(dis.alta = cut(dis, breaks = c(0,3,Inf), labels = c("Baja","Alta") ) ) 
+Boston %>% 
+  mutate(dis.alta = cut(dis, breaks = c(0,3,Inf), labels = c("Baja","Alta") ) ) %>% 
+  lm(data = ., medv ~ dis.alta) %>% tidy() %>%
+  kbl(digits = 2, caption = "Table 5. Precio según distancia") %>% kable_paper("hover")
 
-Boston %>% lm(data = ., medv ~ dis.alta) %>% tidy() %>%  kbl(digits = 2, caption = "Table 5. Precio según distancia") %>% kable_paper("hover")
+Boston %>% 
+  mutate(rad.alta = cut(dis, breaks = c(0,10,Inf), labels = c("Baja","Alta") ) ) %>% 
+  lm(data = ., medv ~ rad.alta) %>% tidy() %>%  
+  kbl(digits = 2, caption = "Table 6. Precio según accesibilidad") %>% kable_paper("hover")
 
-Boston <- Boston %>% 
-            mutate(rad.alta = cut(dis, breaks = c(0,10,Inf), labels = c("Baja","Alta") ) ) 
+Boston %>% 
+  mutate(tax.alta = cut(tax, breaks = c(0,350,500,Inf), labels = c("Baja","Media","Alta")) ) %>%
+  lm(data = ., medv ~ tax.alta) %>% tidy() %>%  
+  kbl(digits = 2, caption = "Table 7. Precio según impuestos") %>% kable_paper("hover")
 
-Boston %>% lm(data = ., medv ~ rad.alta) %>% tidy() %>%  kbl(digits = 2, caption = "Table 6. Precio según accesibilidad") %>% kable_paper("hover")
+Boston %>% 
+  mutate(black.cat = cut(b, breaks = c(0,100, 395,Inf), labels = c("Baja","Media","Alta")) ) %>%
+  lm(data = ., medv ~ black.cat) %>% tidy() %>%  
+  kbl(digits = 2, caption = "Table 8. Precio según población de color") %>% kable_paper("hover")
 
-Boston <- Boston %>% 
-            mutate(tax.alta = cut(tax, breaks = c(0,350,500,Inf), labels = c("Baja","Media","Alta")) ) 
-
-Boston %>% lm(data = ., medv ~ tax.alta) %>% tidy() %>%  kbl(digits = 2, caption = "Table 7. Precio según impuestos") %>% kable_paper("hover")
-
-
-Boston <- Boston %>% 
-            mutate(black.cat = cut(b, breaks = c(0,100, 395,Inf), labels = c("Baja","Media","Alta")) ) 
-
-Boston %>% lm(data = ., medv ~ black.cat) %>% tidy() %>%  kbl(digits = 2, caption = "Table 8. Precio según población de color") %>% kable_paper("hover")
-
-
-Boston <- Boston %>% 
-            mutate(black.alta = cut(b, breaks = c(0, 100,Inf), labels = c("Baja","Alta")) ) 
-
-Boston %>% lm(data = ., medv ~ black.alta) %>% tidy() %>%  kbl(digits = 2, caption = "Table 8b. Precio según población de color") %>% kable_paper("hover")
+Boston %>% 
+  mutate(black.alta = cut(b, breaks = c(0, 100,Inf), labels = c("Baja","Alta")) ) %>% 
+  lm(data = ., medv ~ black.alta) %>% tidy() %>%  
+  kbl(digits = 2, caption = "Table 8b. Precio según población de color") %>% kable_paper("hover")
 ```
 
+(NOTA: estas tablas se podrían haber hecho con un bucle. También notad que NO he mantenido la variable discretizada en los datos, aunque podría haberlo hecho.)
 
 # Modelos
 
 ## Muestras de entrenamiento y prueba
 
-Particionamos los datos en una proporción de 8 a 2 como conjuntos de datos de entrenamiento y prueba.
 
-```{r echo=TRUE, evaluate = T, message=F}
+Antes de empezar, generamos una nueva variables igual al logaritmo de la variable dependiente por si queremos usarla transformada dada lo que hemos visto en el análisis exploratorio. Hemos visto que otras variables (explicativas) también podrían ser transformadas tomando logaritmos o polinomios, discretizando, etc. Todo esas transformaciones se pueden hacer en el pre-procesado de `tidymodels`. El caso de la variable dependiente es diferente y, por eso, es la única que transformamos antes y la incluimos transformada en el conjunto de datos. 
+
+```{r logmedv}
+Boston <- Boston %>% mutate(logmedv = log(medv))
+```
+
+A continuación, hacemos la partición de los datos reservando una proporción del 80% como conjuntos de datos de entrenamiento y el 20% restante como prueba.
+
+
+```{r particion}
 set.seed(1)
 Boston_part <- Boston %>% initial_split(prop = .8)
 ```
 
 
-<!--
 ## Modelos de regresión lineal
 
-Primero, probemos el modelo de regresión lineal generalizada con MEDV como variable dependiente y todas las variables restantes como variables independientes. Entrenamos el modelo con el conjunto de datos de formación. Para este modelo lineal, a continuación se muestran los coeficientes de todas las características y la intercepción. A continuación, utilizamos el modelo entrenado para predecir el resultado (MEDV) para el conjunto de datos de la prueba. Una buena métrica para probar la precisión del modelo es calcular la raíz cuadrada del error cuadrático medio.
+Primero, probemos el modelo de regresión lineal para el precio como variable dependiente y todas las variables restantes como variables independientes. Entrenamos el modelo con el conjunto de datos de entrenamiento. A continuación se muestran todos los coeficientes. Finalmente, utilizamos el modelo entrenado para predecir en el conjunto de datos de la prueba y calcular sus métricas.
 
-```{r echo=TRUE, evaluate = T, message=F}
-fit.lm <- lm(medv~.,data = Boston_part %>% training())
-summary(fit.lm)
+```{r modelo-lineal1, results='asis'}
+lm1_receta <- training(Boston_part) %>%            
+  recipe(medv ~ chas + crim + zn + indus + nox + rm + 
+           age + dis + rad + tax + ptratio + b + lstat) %>% 
+  step_corr(all_predictors(), -all_nominal(), threshold = 0.9) 
+
+lm1_modelo <- linear_reg(mode= "regression", penalty = 0) %>%
+                    set_engine("lm")
+
+lm1_flujo <- workflow() %>%
+  add_recipe(lm1_receta) %>%
+  add_model(lm1_modelo)
+
+lm1_flujo_est <- lm1_flujo %>% fit(data = training(Boston_part)) 
+
+lm1_flujo_est %>% pull_workflow_fit() %>% tidy() %>% 
+   kbl(digits = 2, caption = "Table 9. Modelo de Regresión") %>% kable_paper("hover")
 ```
 
-```{r echo=TRUE, evaluate = T, message=F}
-pred.lm <- predict(fit.lm, newdata = Boston_part %>% testing())
+(NOTA: los nombres de las columnas y de las filas/variables son "mejorables": si el documento está en castellano las columnas no deberían tener nombres en inglés y sería preferible que apareciera un nombre más descriptivo de las variables. Pero no voy a exigir esto en el plazo que tenemos. Eso sí, al menos que en algún sitio aparezca la descripción completa del nombre abreviado de las variables, como hago aquí con el Apéndice A.)
 
-# Root-mean squared error 
-rmse.lm <- sqrt(sum((pred.lm - testing(Boston_part)$medv)^2)/
-                   length(testing(Boston_part)$medv))
-                   
-c(RMSE = rmse.lm, R2 = summary(fit.lm)$r.squared)
+Los resultados del modelo con todas las variables son similares a los anteriores con solo una variable cada vez, aunque la edad NO es significativa (*ceteris paribus*). Notad que se ha quitado la variable de impuestos por estar muy correlacionada con otras. 
+
+Finalmente, calculamos las métricas de error de este modelo.
+```{r modelo-lineal1-metrics, results='asis'}
+lm_metricas <- list()
+lm_metricas[[1]] <- lm1_flujo_est %>% 
+                  predict(testing(Boston_part)) %>% 
+                  bind_cols(testing(Boston_part)) %>%  
+                  metrics(truth=medv, estimate= .pred) 
 ```
 
-Notad que el $R^2$ también es una medida basada en los errores de predicción, pero (aquí) está calculada en la muestra de entrenamiento!
+Vamos a considerar algunas otras especificaciones (diferentes combinaciones de variables) dentro del modelo lineal. Por simplicidad, solo considero unas pocas; vosotros podéis considerar más, aunque quizás no tengáis que reportar todas.
 
-También vimos que la variable MEDV estaba sesgada hacia la derecha. Usar una transformación logarítmica normalizaría la distribución de MEDV. Vemos que el modelo predice mejor.
+En primer lugar, consideramos algunas transformaciones no lineales según hemos visto en el análisis exploratorio: el precio en logaritmos y polinomios para edad y porcentaje de población desfavorecida. Luego, incluimos también algunas de las discretizaciones vistas antes e interacciones.
 
-```{r echo=TRUE, evaluate = T, message=F}
-fit.lm1 <- lm(log(medv)~.,data = training(Boston_part))
+Notad que voy a seguir usando el mismo modelo de antes, solo cambio actualizando la receta y cambiando el flujo.
 
-pred.lm1 <- predict(fit.lm1, newdata = testing(Boston_part))
+```{r modelo-lineal2, results='asis'}
+lm2_receta <- training(Boston_part) %>%            
+                recipe(logmedv ~ chas + crim + zn + indus + nox + rm + 
+                    age + dis + rad + tax + ptratio + b + lstat) %>% 
+                step_corr(all_predictors(), -all_nominal(), threshold = 0.9) %>% 
+                step_poly(age, lstat, degree = 4) 
 
-rmse.lm1 <- sqrt(sum((exp(pred.lm1) - testing(Boston_part)$medv)^2)/
-                   length(testing(Boston_part)$medv))
-                   
-c(RMSE = rmse.lm1, R2 = summary(fit.lm1)$r.squared)
+lm2_flujo <- workflow() %>%
+  add_recipe(lm2_receta) %>%
+  add_model(lm1_modelo)
+
+lm2_flujo_est <- lm2_flujo %>% fit(data = training(Boston_part)) 
+
+lm2_flujo_est %>% pull_workflow_fit() %>% tidy() %>% 
+   kbl(digits = 3, caption = "Table 10. Modelo de Regresión (en logaritmos)") %>% kable_paper("hover")
+
+lm_metricas[[2]] <- lm2_flujo_est %>% 
+                  predict(testing(Boston_part)) %>% 
+                  bind_cols(testing(Boston_part)) %>%  
+                  metrics(truth=logmedv, estimate= .pred) 
+```
+
+Notad que la edad sigue sin ser significativa.
+
+Ahora vamos a incluir versiones discretas de algunas variables, bien nuevas o bien reemplazando otras transformaciones no lineales previas de las mismas.
+
+```{r modelo-lineal3, results='asis'}
+lm3_receta <- training(Boston_part) %>%            
+                recipe(logmedv ~ chas + crim + zn + indus + nox + rm + 
+                    age + dis + rad + tax + ptratio + b + lstat) %>% 
+                step_corr(all_predictors(), -all_nominal(), threshold = 0.9) %>% 
+                step_poly(lstat, degree = 4) %>% 
+                step_cut(dis, breaks = c(0,3,Inf)) %>% 
+                step_cut(b, breaks = c(0,100, 395,Inf)) %>% 
+                step_cut(age, breaks = c(0,25,75,Inf)) %>% 
+                step_interact(terms = ~(rm + lstat):nox)
+
+lm3_flujo <- workflow() %>%
+  add_recipe(lm3_receta) %>%
+  add_model(lm1_modelo)
+
+lm3_flujo_est <- lm3_flujo %>% fit(data = training(Boston_part)) 
+
+lm3_flujo_est %>% pull_workflow_fit() %>% tidy() %>% 
+   kbl(digits = 2, caption = "Table 11. Modelo de Regresión (var. discretas e interacciones)") %>% kable_paper("hover")
+
+lm_metricas[[3]] <- lm3_flujo_est %>% 
+                  predict(testing(Boston_part)) %>% 
+                  bind_cols(testing(Boston_part)) %>%  
+                  metrics(truth=logmedv, estimate= .pred) 
+```
+
+Si comparamos las métricas de los tres modelos, vemos que el mejor modelo es el segundo, a pesar de que el tercero es más flexible. NOTA: **no podemos usar el $R^2$** para comparar el modelo 1 y los demás porque la variable dependiente no es la misma.
+```{r modelo-lineal-metricas, results='asis'}
+lm_metricas %>% bind_rows(.id = "modelo") %>% 
+  pivot_wider(names_from = .metric, values_from=.estimate) %>% 
+  select(-.estimator) %>% 
+  kbl(digits = 4, caption = "Table 12. Métricas de los Modelos de Regresión Lineal") %>% kable_paper("hover")
+```
+
+También podemos ver la importancia que cada variable tiene en los distintos modelos.
+
+```{r model-lineal-importanc, results='hold',out.width="33.33%", fig.show='asis', fig.cap="Figura 11. Imporancia en los tres modelos de regresión lineal"}
+lm1_flujo_est %>% pull_workflow_fit() %>% 
+  vip(num_features = 14)
+
+lm2_flujo_est %>% pull_workflow_fit() %>% 
+  vip(num_features = 14)
+
+lm3_flujo_est %>% pull_workflow_fit() %>% 
+  vip(num_features = 14)
+
 ```
 
 
-Examinemos el valor-p calculado para cada característica del modelo lineal. Cualquier característica que no sea significativa (p<0.05) no está contribuyendo significativamente para el modelo, probablemente debido a la multicolinealidad entre otras características. Vemos que las características, ZN, INDUS y AGE no son significativas.
 
+## LASSO
 
-```{r echo=TRUE, evaluate = T, message=F}
-summary(fit.lm1)
+Para reducir la complejidad de la elección de variables en el modelo lineal podemos considerar modelos de red elástica y/o LASSO. Nuevamente, existen muchas combinaciones iniciales de variables y aquí solo estudiaremos un par de ellas: las del primer y segundo modelos anteriores. Para ajustar $\lambda$ puede ser necesario varios rangos. NOTA: no se pueden pasar factores a LASSO, por lo que debemos convertirlos en dummies con `step_dummy`.
+
+```{r modelo-lasso1, results='asis',fig.show='asis', fig.cap="Figura 12. Ajuste de lamdba, modelo 1"}
+set.seed(9753)
+Boston_cv <- training(Boston_part) %>% vfold_cv(v=10)
+
+lasso1_receta <- training(Boston_part) %>%            
+  recipe(medv ~ chas + crim + zn + indus + nox + rm + 
+           age + dis + rad + tax + ptratio + b + lstat) %>% 
+  step_corr(all_predictors(), -all_nominal(), threshold = 0.9) %>% 
+  step_center(all_predictors(), -all_nominal()) %>% 
+  step_scale(all_predictors(), -all_nominal()) %>% 
+  step_dummy(chas) 
+
+lasso1_modelo <- linear_reg(mode= "regression", penalty = tune()) %>%
+                    set_engine("glmnet")
+
+lasso1_flujo <- workflow() %>%
+  add_recipe(lasso1_receta) %>%
+  add_model(lasso1_modelo)
+
+LASSO_grid <- grid_regular(penalty(range = c(0, 1), trans = NULL),   
+                          levels = 51)                     
+
+lasso1_flujo_tuned <- lasso1_flujo %>% 
+                        tune_grid(
+                          resamples = Boston_cv,
+                          metrics   = metric_set(rmse),
+                          grid      = LASSO_grid                          
+                          ) 
+
+lasso1_flujo_tuned %>% collect_metrics() %>% 
+  ggplot(aes(x=penalty, y=mean)) + 
+              geom_line() + geom_point(color="red") + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color="gray") 
 ```
 
-Basándonos en todas estas observaciones, ahora construimos un nuevo modelo lineal.
-
-```{r echo=TRUE, evaluate = T, message=F}
-
-fit.lm2 <- lm(formula = log(medv) ~ . , data = training(Boston_part) %>% select(-zn, -indus, -age))
-
-pred.lm2 <- predict(fit.lm2, newdata = testing(Boston_part))
-
-rmse.lm2 <- sqrt(sum((exp(pred.lm2) - testing(Boston_part)$medv)^2)/
-                   length(testing(Boston_part)$medv))
-
-c(RMSE = rmse.lm2, R2 = summary(fit.lm2)$r.squared)
+```{r modelo-lasso1b, results='asis'}
+lasso1_flujo_tuned  %>% show_best("rmse") %>% 
+  kbl(digits = 4, caption = "Table 13. Mejores lambdas en el Modelo 1 de LASSO") %>% kable_paper("hover")
+lambda1 <- lasso1_flujo_tuned %>% select_best("rmse")
 ```
 
-Este modelo es apenas un poco menos acertado que el modelo anterior.
+En el proceso de ajuste, encontramos que $\lambda=0$ (no regularizar) es una opción indistinguible del óptimo. Por tanto, sería el modelo de regresión con todas las variables.
+
+```{r modelo-lasso2, results='asis',fig.show='asis', fig.cap="Figura 13. Ajuste de lamdba, modelo 2"}
+lasso2_receta <- training(Boston_part) %>%            
+                recipe(logmedv ~ chas + crim + zn + indus + nox + rm + 
+                    age + dis + rad + tax + ptratio + b + lstat) %>% 
+                step_corr(all_predictors(), -all_nominal(), threshold = 0.9) %>% 
+                step_poly(age, lstat, degree = 4) %>% 
+                step_center(all_predictors(), -all_nominal()) %>% 
+                step_scale(all_predictors(), -all_nominal()) %>% 
+                step_dummy(chas)
+
+lasso2_flujo <- workflow() %>%
+  add_recipe(lasso2_receta) %>%
+  add_model(lasso1_modelo)
+
+lasso2_flujo_tuned <- lasso2_flujo %>% 
+                        tune_grid(
+                          resamples = Boston_cv,
+                          metrics   = metric_set(rmse),
+                          grid      = LASSO_grid                          
+                          ) 
+
+lasso2_flujo_tuned %>% collect_metrics() %>% 
+  ggplot(aes(x=penalty, y=mean)) + 
+              geom_line() + geom_point(color="red") + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color="gray") 
+```
+
+
+```{r modelo-lasso2b, results='asis'}
+lasso2_flujo_tuned  %>% show_best("rmse") %>% 
+  kbl(digits = 4, caption = "Table 14. Mejores lambdas en el Modelo 2 de LASSO") %>% kable_paper("hover")
+lambda2 <- lasso2_flujo_tuned %>% select_best("rmse")
+```
+
+También encontramos que el valor óptimo de $\lamdba=0$. Dado que obtenemos que los mejores modelos son los dos anteriores, no necesitamos finalizar los modelos ni ver qué variables se han seleccionado.
+
+## kNN
+
+Consideremos modelos de k vecinos. Afortunadamente casi todas las variables explicativas son continuas y este método es suficientemente flexible para considerar posibles no linealidades en todas las variables. Vamos a ajustar el número de vecinos por validación cruzada con el precio y su logaritmo como variables dependientes.
+
+```{r modelo-knn1, results='asis',fig.show='asis', fig.cap="Figura 14. Ajuste de k vecinos, modelo 1"}
+
+knn1_receta <- training(Boston_part) %>%            
+  recipe(medv ~ crim + zn + indus + nox + rm + 
+           age + dis + rad + tax + ptratio + b + lstat) %>% 
+  step_center(all_predictors(), -all_nominal()) %>% 
+  step_scale(all_predictors(), -all_nominal())  
+
+knn1_modelo <- nearest_neighbor(mode = "regression",
+                  neighbors = tune(), dist_power = 2) %>% 
+                set_engine("kknn")
+
+knn1_flujo <- workflow() %>%
+  add_recipe(knn1_receta) %>%
+  add_model(knn1_modelo)
+
+knn_grid <- grid_regular(neighbors(range = c(1, 12), trans = NULL),   
+                          levels = 12)                     
+
+knn1_flujo_tuned <- knn1_flujo %>% 
+                        tune_grid(
+                          resamples = Boston_cv,
+                          metrics   = metric_set(rmse),
+                          grid      = knn_grid                          
+                          ) 
+
+knn1_flujo_tuned %>% collect_metrics() %>% 
+  ggplot(aes(x=neighbors, y=mean)) + 
+              geom_line() + geom_point(color="red") + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color="gray") 
+```
+
+```{r modelo-knn1b, results='asis'}
+knn1_flujo_tuned  %>% show_best("rmse") %>% 
+  kbl(digits = 4, caption = "Table 15. k-vecinos óptimo en el Modelo 1") %>% kable_paper("hover")
+k1 <- knn1_flujo_tuned %>% select_best("rmse")
+```
+
+
+```{r modelo-knn2, results='asis',fig.show='asis', fig.cap="Figura 15. Ajuste de k vecinos, modelo 2"}
+
+knn2_receta <- training(Boston_part) %>%            
+  recipe(logmedv ~ crim + zn + indus + nox + rm + 
+           age + dis + rad + tax + ptratio + b + lstat) %>% 
+  step_center(all_predictors(), -all_nominal()) %>% 
+  step_scale(all_predictors(), -all_nominal())  
+
+knn2_flujo <- workflow() %>%
+  add_recipe(knn2_receta) %>%
+  add_model(knn1_modelo)
+
+knn2_flujo_tuned <- knn2_flujo %>% 
+                        tune_grid(
+                          resamples = Boston_cv,
+                          metrics   = metric_set(rmse),
+                          grid      = knn_grid                          
+                          ) 
+
+knn2_flujo_tuned %>% collect_metrics() %>% 
+  ggplot(aes(x=neighbors, y=mean)) + 
+              geom_line() + geom_point(color="red") + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color="gray") 
+```
+
+```{r modelo-knn2b, results='asis'}
+knn2_flujo_tuned  %>% show_best("rmse") %>% 
+  kbl(digits = 4, caption = "Table 16. k-vecinos óptimo en el Modelo 2") %>% kable_paper("hover")
+k2 <- knn2_flujo_tuned %>% select_best("rmse")
+```
+
+El número óptimo de vecinos es 3 para el primer modelo y 6 en el segundo. Vamos a finalizar los modelos y ver sus métricas en la muestra de prueba.
+
+
+```{r modelos-knn1-final, results='asis'}
+knn_final <- list() 
+knn_final[[1]] <- knn1_flujo %>% 
+                    finalize_workflow(k1) %>% 
+                    last_fit(Boston_part)  %>% 
+                    collect_metrics("rmse")
+
+knn_final[[2]] <- knn2_flujo %>% 
+                    finalize_workflow(k2) %>% 
+                    last_fit(Boston_part)  %>% 
+                    collect_metrics("rmse")
+
+knn_final %>% bind_rows(.id = "modelo") %>% 
+  pivot_wider(names_from = .metric, values_from=.estimate) %>% 
+  select(-.estimator) %>% 
+  kbl(digits = 4, caption = "Tabla 17. Métricas de kNN") %>% kable_paper("hover")
+```
+
+Comparando estos resultados con los de la Tabla 12, queda claro que kNN tiene una mejor capacidad predictiva, tanto para la variable de precio como usando el logaritmo del precio. Sin embargo, estos modelos no nos dicen mucho sobre qué factores afectan a esa predicción (no tenemos ni modelo paramétrico y contrastes, ni representación gráficas o medidas de importancia).
 
 ## Árboles de regresión
 
-También podemos considerar modelos más flexibles (no restringidos a relaciones lineales) como la variante para variables continuas de los árboles de decisiones; estos se llaman árboles de regresión.
+Pasamos a considerar modelos de árboles de decisión. Notad que para ajustar el coste de complejidad puede ser necesario varios rangos. Dado que hemos visto que sistemáticamente el modelo con el logaritmo del precio predice mejor, nos centramos en ese modelo (aunque esto es obviamene una elección y quizás deberían probarse más).
 
-```{r echo=TRUE, evaluate = T, message=F}
-library(rpart)  
-library(rpart.plot) 
-fit.tree <- rpart(log(medv)~., 
-                   data = training(Boston_part), method = "anova")
+```{r modelo-arbol2, results='asis',fig.show='asis', fig.cap="Figura 16. Ajuste de árboles, modelo 2"}
 
-rpart.plot(fit.tree)
+arbol2_receta <- training(Boston_part) %>%            
+  recipe(logmedv ~ chas + crim + zn + indus + nox + rm + 
+           age + dis + rad + tax + ptratio + b + lstat)
+
+arbol2_modelo <-  decision_tree(mode = "regression", 
+                                     cost_complexity = tune()) %>% 
+                          set_engine("rpart") 
+
+arbol2_flujo <- workflow() %>%
+  add_recipe(arbol2_receta) %>%
+  add_model(arbol2_modelo)
+
+arbol_grid <- grid_regular(cost_complexity(range = c(0, 0.005), trans = NULL),   
+                          levels = 16)                     
+
+arbol2_flujo_tuned <- arbol2_flujo %>% 
+                        tune_grid(
+                          resamples = Boston_cv,
+                          metrics   = metric_set(rmse),
+                          grid      = arbol_grid                          
+                          ) 
+
+arbol2_flujo_tuned %>% collect_metrics() %>% 
+  ggplot(aes(x=cost_complexity, y=mean)) + 
+              geom_line() + geom_point(color="red") + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color="gray") 
 ```
 
-Comprobando su bondad de ajuste mediante la raíz del error cuadrático medio podemos ver que su funcionamiento es inferior a nuestro modelo lineal preferido.
-
-```{r echo=TRUE, evaluate = T, message=F}
-pred.tree <- predict(fit.tree, testing(Boston_part))
-
-rmse.tree <- sqrt(sum(((pred.tree) - testing(Boston_part)$medv)^2)/
-                   length(testing(Boston_part)$medv))
-c(RMSE = rmse.tree)
+```{r modelo-arbol2b, results='asis'}
+arbol2_flujo_tuned  %>% show_best("rmse") %>% 
+  kbl(digits = 4, caption = "Table 18. Coste de complejidad  en el Modelo 1") %>% kable_paper("hover")
+cost2 <- arbol2_flujo_tuned %>% select_best("rmse")
 ```
 
-Podrìamos considerar modelos de árboles de regresión más complejos o variantes más sofisticadas como "random forests".
+```{r modelos-arbol-final, results='asis'}
+arbol_final <- arbol2_flujo %>% 
+                    finalize_workflow(cost2) %>% 
+                    last_fit(Boston_part)  
+
+arbol_final %>%  collect_metrics("rmse") %>%  
+  pivot_wider(names_from = .metric, values_from=.estimate) %>% 
+  select(-.estimator) %>% 
+  kbl(digits = 4, caption = "Tabla 19. Métricas del árbol") %>% kable_paper("hover")
+```
+
+
+Vemos que el mejor árbol de regresión no es mejor, a pesar de su flexibilidad, que el modelo de regresión lineal. Aun así podemos ver el flujo del árbol para hacernos una idea de qué factores están afectando a la predicción
+
+```{r modelos-arbol-final2, results='asis', fig.show='asis', fig.cap="Figura 17a. Mejor árbol de regresión, modelo 2"}
+arb <- arbol_final$.workflow[[1]] %>%   
+  pull_workflow_fit() 
+
+rpart.plot(arb$fit)
+```
+
+También podemos recurrir a medidas de importancia de las variables.
+
+```{r modelos-arbol-final3, results='asis', fig.show='asis', fig.cap="Figura 17b. Importancia en el mejor árbol de regresión, modelo 2"}
+arbol_final$.workflow[[1]] %>%   
+  pull_workflow_fit() %>% 
+  vip(num_features = 14)
+```
+
+
+## Random Forests
+
+Finalmente intentamos ver si un modelo de "random forests" puede mejorar al árbol de regresión u otros modelos.
+
+```{r modelo-rf2, results='asis',fig.show='asis', fig.cap="Figura 18. Ajuste de RF, modelo 2"}
+
+rf2_receta <- training(Boston_part) %>%            
+  recipe(logmedv ~ chas + crim + zn + indus + nox + rm + 
+           age + dis + rad + tax + ptratio + b + lstat)
+
+rf2_modelo <-  rand_forest(mode = "regression",
+                                       mtry = tune(), trees = 100) %>% 
+                          set_engine("ranger", importance = "impurity")
+
+rf2_flujo <- workflow() %>%
+  add_recipe(rf2_receta) %>%
+  add_model(rf2_modelo)
+
+rf_grid <- grid_regular(mtry(range = c(1, 12), trans = NULL),   
+                          levels = 12)                     
+
+rf2_flujo_tuned <- rf2_flujo %>% 
+                        tune_grid(
+                          resamples = Boston_cv,
+                          metrics   = metric_set(rmse),
+                          grid      = rf_grid                          
+                          ) 
+
+rf2_flujo_tuned %>% collect_metrics() %>% 
+  ggplot(aes(x=mtry, y=mean)) + 
+              geom_line() + geom_point(color="red") + 
+              geom_errorbar(aes(ymin=mean-std_err, ymax=mean+std_err), color="gray") 
+```
+El número óptimo de variables a usar (aleatoriamente) en cada nodo son 7.
+
+```{r modelo-rf2b, results='asis'}
+rf2_flujo_tuned  %>% show_best("rmse") %>% 
+  kbl(digits = 4, caption = "Table 20. Ajuste de Random Forest  en el Modelo 2") %>% kable_paper("hover")
+mtry2 <- rf2_flujo_tuned %>% select_best("rmse")
+```
+
+
+Por último finalizamos el modelo
+
+```{r modelos-rf-final, results='asis'}
+rf_final <- rf2_flujo %>% 
+                    finalize_workflow(mtry2) %>% 
+                    last_fit(Boston_part)  
+
+rf_final %>%  collect_metrics("rmse") %>%  
+  pivot_wider(names_from = .metric, values_from=.estimate) %>% 
+  select(-.estimator) %>% 
+  kbl(digits = 4, caption = "Tabla 21. Métricas de RF") %>% kable_paper("hover")
+```
+
+El modelo de "Random Forest" incluso mejor a "kNN". En este caso, podemos ver qué variables han resultados mejores predictores del precio.
+
+```{r RF-vip, results='asis', fig.show='asis', fig.cap="Figura 19. Importancia en el mejor RF, modelo 2"}
+rf_final$.workflow[[1]] %>%   
+  pull_workflow_fit() %>% 
+  vip(num_features = 14)
+```
+
+Este gráfico nos indica que la variable más importante (con diferencia) es la relacionada con la "pobreza" de la zona en la que se encuentra la casa. Después nos encontramos una característica de la casa en sí (número de habitaciones, aunque realmente es la media de la zona) y la criminalidad de la zona. No existe un criterio formal para decidir en que punto parar determinar qué variables son importantes. Quizás en este caso se puede "argumentar" que hay una caida mayor de la importancia después de la contaminación de la zona, la calidad de las escuelas y la distancia al centro.
+
 
 # Conclusión
 
-El objetivo de este informe era determinar los atributos del vecindario que mejor explicaban la variación en los precios de las viviendas. Se utilizaron varias técnicas estadísticas para eliminar los predictores y las observaciones superfluas. Al examinar el modelo final, se observa -de forma bastante razonable- que los precios de la vivienda son más altos en las zonas donde la delincuencia es menor y la proporción de alumnos por maestro es menor. Los precios de las casas también tienden a ser más altos cerca del río Charles, y las casas con más habitaciones son más caras. Este informe está interesado en los atributos del barrio de las casas, por lo que el número de habitaciones no es un predictor importante. Los factores más interesantes a considerar son los niveles de óxido de nitrógeno y la distancia a los principales centros de empleo. Por un lado, la gente querría vivir cerca de su lugar de trabajo. Sin embargo, es razonable sugerir que los niveles de contaminación son más altos a medida que uno se acerca a estos principales centros de empleo. Y lo que es más importante, cuando se habla de contaminación, no sólo son más altos los niveles de óxido de nitrógeno, sino también los niveles de contaminación acústica. El modelo de regresión que se implementó muestra que los niveles más altos de contaminación disminuyen los precios de la vivienda en mayor medida que la distancia a los centros de empleo. Esto sugiere que la gente preferiría vivir más lejos de su lugar de trabajo si esto significara menores niveles de contaminación, lo cual es un punto interesante a considerar. A modo de conclusión, es importante señalar que los datos para este informe se recopilaron hace varias décadas. En los años transcurridos desde entonces, no cabe duda de que los niveles de contaminación han aumentado y sería interesante examinar la forma en que esto afecta a los precios de las viviendas en Boston en la actualidad.
+Uno de los objetivos de este informe era determinar los atributos del vecindario que mejor explicaban la variación en los precios de las viviendas. A partir de la información de dos de los mejores modelos (regresión lineal y "random forest") que ofrecen capacidad de interpretar los resultados, observamos que coinciden en la importancia de que el barrio esté en una zona "deprimida" (mucho porcentaje de población con bajo estatus social) en la determinación del precio. Con mayor o menor importancia, también coinciden en la relevancia de la criminalidad en la zona, el número medio de habitaciones y el ratio de alumnos por profesor. Algunas características como la edad o una localización cercana al río no parecen ser importantes; esto es una diferencia respecto al análisis de covariación, donde sí se apreciaba cierta correlación. Esto nos indica que esas características están relacionadas con otras que sí son más relevantes en la fijación de precios.
+
+Por otro lado estos resultados también se podrían utilizar para predecir el precio de una nueva casa (o saber si una en el mercado está sobrevalorada).
+
+```{r predic-final, results='asis'}
+rf_final$.workflow[[1]] %>%   
+  pull_workflow_fit() %>% 
+  predict(new_data = tibble(chas = 1, crim = 0.03,  zn = 0,
+                            indus = 7, nox = 0.5, rm = 2,
+                            age = 10,  dis = 6, rad = 5,  
+                            tax = 290, ptratio = 20, b = 390, lstat=9)) %>% 
+  exp()
+```
+
+Notad que debemos deshacer el logaritmo para dar una predicción en unas unidades con sentido (miles de dólares). Recordad que también podemos ofrecer un intervalo de confianza para la predicción.
+
+Fijaos que en otros contextos o con otros datos podéis tener un caso más obvio que predecir (o no).
 
 # Apéndice A
 
@@ -459,6 +855,3 @@ Como se ha comentado, nuestro conjunto de datos dispone de 506 observaciones y 1
 |    MEDV    |    valor mediano de las viviendas ocupadas por sus propietarios 
 |            |       (en miles de dólares)
 
-
-
--->
